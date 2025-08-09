@@ -202,7 +202,7 @@ const desktopClasses = {
   content: `${baseClasses.content} px-0`,
   leftSection: 'flex flex-row items-center flex-1 gap-4',
   title: `${baseClasses.title} ml-2`,
-  actions: `${baseClasses.actions} gap-4`,
+  actions: `${baseClasses.actions} gap-4 h-10 items-stretch`,
 };
 
 export default NavBar;

@@ -54,27 +54,26 @@ const LanguageSwitcher = ({ onSelect }: LanguageSwitcherProps) => {
   }, [i18n]);
 
   return (
-    <View className="flex-row items-center">
-      {/* Segmented pill like ThemeSwitcher */}
-      <View className={`flex-row items-center ${isMobile ? 'w-full' : 'rounded-full overflow-hidden border border-base-300'}`}>
+    <View className={`flex-col ${isMobile ? 'w-full' : 'items-center'}`}>
+      <View className={`flex-row items-center ${isMobile ? 'w-full' : 'rounded-full border border-base-300 overflow-hidden'}`}>
         <TouchableOpacity
           onPress={() => onToggle("en")}
           accessibilityRole="button"
           accessibilityLabel="Switch language to English"
-          className={`${isMobile ? 'flex-1 items-center py-2' : 'px-3 py-1'} ${uiLocale === "en" ? "bg-primary" : "bg-base-100 active:bg-base-200/50"}`}
+          className={`${isMobile ? 'flex-1 items-center py-2' : 'px-3 py-2'} ${uiLocale === "en" ? "bg-primary" : "bg-base-100 active:bg-base-200/50"}`}
         >
-          <Text className={`${isMobile ? 'text-sm' : 'text-xs'} ${uiLocale === "en" ? "text-primary-content" : "text-base-content"}`}>
-            {isMobile ? 'English' : 'EN'}
+          <Text className={`text-base ${uiLocale === "en" ? "text-primary-content" : "text-base-content"}`}>
+            {!isMobile ? 'English' : 'EN'}
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => onToggle("es")}
           accessibilityRole="button"
           accessibilityLabel="Cambiar idioma a Español"
-          className={`${isMobile ? 'flex-1 items-center py-2' : 'px-3 py-1'} ${uiLocale === "es" ? "bg-primary" : "bg-base-100 active:bg-base-200/50"}`}
+          className={`${isMobile ? 'flex-1 items-center py-2' : 'px-3 py-2'} ${uiLocale === "es" ? "bg-primary" : "bg-base-100 active:bg-base-200/50"}`}
         >
-          <Text className={`${isMobile ? 'text-sm' : 'text-xs'} ${uiLocale === "es" ? "text-primary-content" : "text-base-content"}`}>
-            {isMobile ? 'Español' : 'ES'}
+          <Text className={`text-base ${uiLocale === "es" ? "text-primary-content" : "text-base-content"}`}>
+            {!isMobile ? 'Español' : 'ES'}
           </Text>
         </TouchableOpacity>
       </View>
