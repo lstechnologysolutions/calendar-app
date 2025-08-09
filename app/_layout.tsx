@@ -6,11 +6,10 @@ import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 import "react-native-reanimated";
 import "../global.css";
-import { Platform, Text, View } from "react-native";
+import { Platform, Text, View, useWindowDimensions, StyleSheet, DimensionValue } from "react-native";
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { I18nProvider, TransRenderProps } from "@lingui/react";
 import { i18n } from "../src/i18n";
-import LanguageSwitcher from "../src/components/LanguageSwitcher";
-import ThemeSwitcher from "../src/components/ThemeSwitcher";
 import { useThemeMode } from "../src/hooks/useThemeMode";
 import NavBar from "../src/components/NavBar";
 
@@ -45,6 +44,8 @@ export default function RootLayout() {
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
   });
   const { isDark } = useThemeMode();
+  const { width } = useWindowDimensions();
+  const isMobile = width < 768; // Standard breakpoint for tablets/desktop
 
   useEffect(() => {
     if (loaded) {
@@ -60,28 +61,45 @@ export default function RootLayout() {
     return <Text>{props.children}</Text>;
   };
 
+  // Fluid container that adapts to screen size
+  const containerStyle = {
+    flex: 1,
+    width: '100%',
+    paddingHorizontal: isMobile ? 16 : Math.min(48, width * 0.05), // Responsive padding
+  };
+
   return (
     <I18nProvider i18n={i18n} defaultComponent={DefaultComponent}>
       <ThemeProvider value={isDark ? DarkTheme : DefaultTheme}>
-        <Stack
-          screenOptions={({ route }) => ({
-            header: () => <NavBar />,
-            headerShown: !route.name.startsWith("tempobook"),
-            headerTransparent: true,
-            headerStyle: { backgroundColor: "transparent" },
-            contentStyle: { backgroundColor: "transparent" },
-          })}
-        >
-          <Stack.Screen
-            name="index"
-            options={{
-              headerShown: true,
-              headerTitle: "",
-            }}
-          />
-        </Stack>
-        {/* Theme-aware status bar tint */}
-        <StatusBar style={isDark ? "light" : "dark"} />
+        <View style={{ 
+          flex: 1, 
+          backgroundColor: 'rgb(var(--b1))',
+          width: '100%',
+          minHeight: '100%' as DimensionValue
+        }}>
+          <NavBar isMobile={isMobile} />
+          <View style={{ flex: 1, width: '100%' }}>
+            <Stack
+              screenOptions={{
+                headerShown: false,
+                contentStyle: { 
+                  backgroundColor: 'rgb(var(--b1))',
+                  flex: 1,
+                },
+              }}
+            >
+              <Stack.Screen
+                name="index"
+                options={{
+                  headerShown: true,
+                  headerTitle: "",
+                }}
+              />
+            </Stack>
+            {/* Theme-aware status bar tint */}
+            <StatusBar style={isDark ? "light" : "dark"} />
+          </View>
+        </View>
       </ThemeProvider>
     </I18nProvider>
   );

@@ -75,7 +75,8 @@ msgid "Book Another"
 msgstr "Book Another"
 
 #: app/index.tsx:112
-#: src/components/NavBar.tsx:20
+#: src/components/NavBar.tsx:57
+#: src/components/NavBar.tsx:94
 msgid "Book Your Appointment"
 msgstr "Book Your Appointment"
 

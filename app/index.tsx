@@ -97,7 +97,7 @@ export default function BookingPage() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-base-100">
+    <SafeAreaView className="flex-1">
       <Stack.Screen
         options={{
           title: "Book Appointment",

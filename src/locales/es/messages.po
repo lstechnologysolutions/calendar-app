@@ -75,7 +75,8 @@ msgid "Book Another"
 msgstr "Reservar otra"
 
 #: app/index.tsx:112
-#: src/components/NavBar.tsx:20
+#: src/components/NavBar.tsx:57
+#: src/components/NavBar.tsx:94
 msgid "Book Your Appointment"
 msgstr "Reserva tu cita"
 
@@ -194,20 +195,6 @@ msgstr "Apellido"
 #: src/components/ThemeSwitcher.tsx:94
 msgid "theme.light"
 msgstr "Claro"
-
-#. js-lingui-explicit-id
-#: src/components/ThemeSwitcher.tsx:88
-msgid "theme.systemDark"
-msgstr "Sistema (Oscuro)"
-
-#. js-lingui-explicit-id
-#: src/components/ThemeSwitcher.tsx:90
-msgid "theme.systemLight"
-msgstr "Sistema (Claro)"
-
-#: src/components/ThemeSwitcher.tsx:90
-msgid "theme.systemLight"
-msgstr "Sistema (Claro)"
 
 #: app/admin/dashboard.tsx:163
 msgid "Manage your booking system"
