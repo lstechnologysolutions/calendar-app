@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { View, Text, TouchableOpacity, Appearance } from "react-native";
+import { View, Text, TouchableOpacity, Appearance, useWindowDimensions } from "react-native";
 import { Trans } from "@lingui/react/macro";
 
 // Core palette of DaisyUI themes to choose from
@@ -21,7 +21,11 @@ const applyTheme = (mode: ThemeMode, theme?: ThemeName) => {
   if (theme) root.setAttribute("data-theme", `${theme}-${effectiveLD}`);
 };
 
-export default function ThemeSwitcher() {
+interface ThemeSwitcherProps {
+  onSelect?: () => void;
+}
+
+export default function ThemeSwitcher({ onSelect }: ThemeSwitcherProps) {
   const [mode, setMode] = useState<ThemeMode>("system");
   const [theme, setTheme] = useState<ThemeName>("nord");
   const systemPrefersDark = useMemo(
@@ -79,6 +83,9 @@ export default function ThemeSwitcher() {
     };
   }, [mode, theme]);
 
+  const { width } = useWindowDimensions();
+  const isMobile = width < 768;
+
   // UI helpers — use Trans components so messages are extracted from source
   const LabelComponent = () => (
     <>
@@ -98,72 +105,119 @@ export default function ThemeSwitcher() {
 
   // Helpers to cycle themes
   const idx = THEMES.indexOf(theme);
-  const prevTheme = () => setTheme(THEMES[(idx - 1 + THEMES.length) % THEMES.length]);
-  const nextTheme = () => setTheme(THEMES[(idx + 1) % THEMES.length]);
+  const prevTheme = () => {
+    setTheme(THEMES[(idx - 1 + THEMES.length) % THEMES.length]);
+    onSelect?.();
+  };
+  
+  const nextTheme = () => {
+    setTheme(THEMES[(idx + 1) % THEMES.length]);
+    onSelect?.();
+  };
+
+  const handleModeChange = (newMode: ThemeMode) => {
+    setMode(newMode);
+    onSelect?.();
+  };
 
   return (
-    <View className="flex-row items-center">
-      {/* Single pill that contains SYS/L/D and theme navigation */}
-      <View className={`flex-row items-center rounded-full border border-base-300 overflow-hidden`}>
-        {/* Prev */}
-        <TouchableOpacity
-          onPress={prevTheme}
-          disabled={mode === "system"}
-          className={`px-2 py-1 ${mode === "system" ? "opacity-50" : ""}`}
-          accessibilityRole="button"
-          accessibilityLabel="Previous theme"
-        >
-          <Text className="text-xs text-base-content">‹</Text>
-        </TouchableOpacity>
-
-        {/* Segmented SYS/L/D with icons */}
-        <View className="flex-row items-center">
+    <View className={`flex-col ${isMobile ? 'w-full' : 'items-center'}`}>
+      {/* Main theme selector row */}
+      <View className={`flex-row items-center ${isMobile ? 'w-full justify-between' : 'rounded-full border border-base-300 overflow-hidden'}`}>
+        {/* Prev button - only show on desktop */}
+        {!isMobile && (
           <TouchableOpacity
-            onPress={() => setMode("system")}
-            className={`px-2 py-1 ${mode === "system" ? "bg-primary" : "bg-base-100"}`}
+            onPress={prevTheme}
+            disabled={mode === "system"}
+            className={`px-3 py-2 ${mode === "system" ? "opacity-50" : "active:bg-base-200/50"}`}
+            accessibilityRole="button"
+            accessibilityLabel="Previous theme"
+          >
+            <Text className="text-base text-base-content">‹</Text>
+          </TouchableOpacity>
+        )}
+
+        {/* Theme mode selector */}
+        <View className={`flex-row items-center ${isMobile ? 'w-full justify-between' : ''}`}>
+          <TouchableOpacity
+            onPress={() => handleModeChange("system")}
+            className={`px-3 py-2 ${isMobile ? 'flex-1 items-center' : ''} ${mode === "system" ? "bg-primary" : "bg-base-100 active:bg-base-200/50"}`}
             accessibilityRole="button"
             accessibilityLabel="Use system theme"
           >
-            <Text className={`text-xs ${mode === "system" ? "text-primary-content" : "text-base-content"}`}>🖥️</Text>
+            <Text className={`text-base ${mode === "system" ? "text-primary-content" : "text-base-content"}`}>
+               🖥️
+              {!isMobile && <Text className="ml-2 text-sm"><Trans>System</Trans></Text>}
+            </Text>
           </TouchableOpacity>
+          
           <TouchableOpacity
-            onPress={() => setMode("light")}
-            className={`px-2 py-1 ${mode === "light" ? "bg-primary" : "bg-base-100"}`}
+            onPress={() => handleModeChange("light")}
+            className={`px-3 py-2 ${isMobile ? 'flex-1 items-center' : ''} ${mode === "light" ? "bg-primary" : "bg-base-100 active:bg-base-200/50"}`}
             accessibilityRole="button"
             accessibilityLabel="Use light theme"
           >
-            <Text className={`text-xs ${mode === "light" ? "text-primary-content" : "text-base-content"}`}>☀️</Text>
+            <Text className={`text-base ${mode === "light" ? "text-primary-content" : "text-base-content"}`}>
+              ☀️
+              {!isMobile && <Text className="ml-2 text-sm"><Trans>Light</Trans></Text>}
+            </Text>
           </TouchableOpacity>
+          
           <TouchableOpacity
-            onPress={() => setMode("dark")}
-            className={`px-2 py-1 ${mode === "dark" ? "bg-primary" : "bg-base-100"}`}
+            onPress={() => handleModeChange("dark")}
+            className={`px-3 py-2 ${isMobile ? 'flex-1 items-center' : ''} ${mode === "dark" ? "bg-primary" : "bg-base-100 active:bg-base-200/50"}`}
             accessibilityRole="button"
             accessibilityLabel="Use dark theme"
           >
-            <Text className={`text-xs ${mode === "dark" ? "text-primary-content" : "text-base-content"}`}>🌙</Text>
+            <Text className={`text-base ${mode === "dark" ? "text-primary-content" : "text-base-content"}`}>
+              🌙
+              {!isMobile && <Text className="ml-2 text-sm"><Trans>Dark</Trans></Text>}
+            </Text>
           </TouchableOpacity>
         </View>
 
-        {/* Label */}
-        <View className="px-3 py-1 bg-base-100">
-          <Text className="text-xs text-base-content">
-            <LabelComponent />
-            {" · "}
-            {theme}
-          </Text>
-        </View>
-
-        {/* Next */}
-        <TouchableOpacity
-          onPress={nextTheme}
-          disabled={mode === "system"}
-          className={`px-2 py-1 ${mode === "system" ? "opacity-50" : ""}`}
-          accessibilityRole="button"
-          accessibilityLabel="Next theme"
-        >
-          <Text className="text-xs text-base-content">›</Text>
-        </TouchableOpacity>
+        {/* Next button - only show on desktop */}
+        {!isMobile && (
+          <TouchableOpacity
+            onPress={nextTheme}
+            disabled={mode === "system"}
+            className={`px-3 py-2 ${mode === "system" ? "opacity-50" : "active:bg-base-200/50"}`}
+            accessibilityRole="button"
+            accessibilityLabel="Next theme"
+          >
+            <Text className="text-base text-base-content">›</Text>
+          </TouchableOpacity>
+        )}
       </View>
+
+      {/* Theme name and navigation - only show on mobile */}
+      {isMobile && (
+        <View className="mt-2 flex-row items-center justify-between w-full px-2">
+          <Text className="text-sm text-base-content/80">
+            <LabelComponent /> · {theme}
+          </Text>
+          <View className="flex-row">
+            <TouchableOpacity 
+              onPress={prevTheme}
+              disabled={mode === "system"}
+              className={`p-2 ${mode === "system" ? "opacity-50" : "active:opacity-70"}`}
+              accessibilityRole="button"
+              accessibilityLabel="Previous theme"
+            >
+              <Text className="text-base-content">‹</Text>
+            </TouchableOpacity>
+            <TouchableOpacity 
+              onPress={nextTheme}
+              disabled={mode === "system"}
+              className={`p-2 ${mode === "system" ? "opacity-50" : "active:opacity-70"}`}
+              accessibilityRole="button"
+              accessibilityLabel="Next theme"
+            >
+              <Text className="text-base-content">›</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      )}
     </View>
   );
 }

@@ -1,11 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, useWindowDimensions } from "react-native";
 import { useLingui } from "@lingui/react";
 import { activateLocale } from "../i18n";
 
+interface LanguageSwitcherProps {
+  onSelect?: () => void;
+}
+
 // Compact, segmented pill toggle for EN/ES styled like ThemeSwitcher
-const LanguageSwitcher = () => {
+const LanguageSwitcher = ({ onSelect }: LanguageSwitcherProps) => {
   const { i18n } = useLingui();
+  const { width } = useWindowDimensions();
+  const isMobile = width < 768;
   const current = (i18n as any)?.locale ?? "en";
   const [uiLocale, setUiLocale] = useState<"en" | "es">(current === "es" ? "es" : "en");
 
@@ -20,6 +26,8 @@ const LanguageSwitcher = () => {
           window.localStorage.setItem("locale", target);
         } catch {}
       }
+      // Call onSelect callback if provided
+      onSelect?.();
     }
   };
 
@@ -48,22 +56,26 @@ const LanguageSwitcher = () => {
   return (
     <View className="flex-row items-center">
       {/* Segmented pill like ThemeSwitcher */}
-      <View className="flex-row items-center rounded-full overflow-hidden border border-base-300">
+      <View className={`flex-row items-center ${isMobile ? 'w-full' : 'rounded-full overflow-hidden border border-base-300'}`}>
         <TouchableOpacity
           onPress={() => onToggle("en")}
           accessibilityRole="button"
           accessibilityLabel="Switch language to English"
-          className={`px-3 py-1 ${uiLocale === "en" ? "bg-primary" : "bg-base-100"}`}
+          className={`${isMobile ? 'flex-1 items-center py-2' : 'px-3 py-1'} ${uiLocale === "en" ? "bg-primary" : "bg-base-100 active:bg-base-200/50"}`}
         >
-          <Text className={`text-xs ${uiLocale === "en" ? "text-primary-content" : "text-base-content"}`}>EN</Text>
+          <Text className={`${isMobile ? 'text-sm' : 'text-xs'} ${uiLocale === "en" ? "text-primary-content" : "text-base-content"}`}>
+            {isMobile ? 'English' : 'EN'}
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => onToggle("es")}
           accessibilityRole="button"
           accessibilityLabel="Cambiar idioma a Español"
-          className={`px-3 py-1 ${uiLocale === "es" ? "bg-primary" : "bg-base-100"}`}
+          className={`${isMobile ? 'flex-1 items-center py-2' : 'px-3 py-1'} ${uiLocale === "es" ? "bg-primary" : "bg-base-100 active:bg-base-200/50"}`}
         >
-          <Text className={`text-xs ${uiLocale === "es" ? "text-primary-content" : "text-base-content"}`}>ES</Text>
+          <Text className={`${isMobile ? 'text-sm' : 'text-xs'} ${uiLocale === "es" ? "text-primary-content" : "text-base-content"}`}>
+            {isMobile ? 'Español' : 'ES'}
+          </Text>
         </TouchableOpacity>
       </View>
     </View>

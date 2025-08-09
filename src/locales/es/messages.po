@@ -13,6 +13,23 @@ msgstr ""
 "Language-Team: \n"
 "Plural-Forms: \n"
 
+# Theme Switcher
+#: components/ThemeSwitcher.tsx
+msgid "System"
+msgstr "Sistema"
+
+#: components/ThemeSwitcher.tsx
+msgid "Light"
+msgstr "Claro"
+
+#: components/ThemeSwitcher.tsx
+msgid "Dark"
+msgstr "Oscuro"
+
+#: components/ThemeSwitcher.tsx
+msgid "Next theme"
+msgstr "Siguiente tema"
+
 #. placeholder {0}: service.description
 #: components/ServiceSelection.tsx:124
 msgid "{0}"

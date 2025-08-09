@@ -4,8 +4,9 @@ import {
   Text, 
   Pressable, 
   Dimensions, 
-  StyleProp, 
-  ViewStyle
+  StyleSheet,
+  TouchableOpacity,
+  Modal
 } from "react-native";
 import { useRouter } from "expo-router";
 import { Trans } from "@lingui/react/macro";
@@ -52,6 +53,7 @@ interface NavBarProps {
 // Mobile-specific NavBar component
 const MobileNavBar = () => {
   const router = useRouter();
+  const [showMenu, setShowMenu] = useState(false);
   const canGoBack = typeof (useRouter() as any)?.canGoBack === "function" ? (router as any).canGoBack() : true;
   const isRoot = !canGoBack;
   const title = <Trans>Book Your Appointment</Trans>;
@@ -60,26 +62,65 @@ const MobileNavBar = () => {
     opacity: pressed ? 0.7 : 1,
   });
 
+  const toggleMenu = () => {
+    setShowMenu(!showMenu);
+  };
+
+  const handleThemeSelect = () => {
+    setShowMenu(false);
+  };
+
   return (
     <View className={mobileClasses.container}>
       <View className={mobileClasses.content}>
-        {!isRoot && (
+        <View className="flex-1 flex-row items-center">
+          {!isRoot && (
+            <Pressable
+              onPress={() => router.back()}
+              accessibilityLabel="Go back"
+              style={backButtonStyle}
+              className={mobileClasses.backButton}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            >
+              <Text className="text-base-content">←</Text>
+            </Pressable>
+          )}
+          <Text className={mobileClasses.title} numberOfLines={1} ellipsizeMode="tail">
+            {title}
+          </Text>
+        </View>
+        
+        <View className="relative">
           <Pressable
-            onPress={() => router.back()}
-            accessibilityLabel="Go back"
-            style={backButtonStyle}
-            className={mobileClasses.backButton}
-            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            onPress={toggleMenu}
+            className="p-2 rounded-full active:bg-base-300/30"
+            accessibilityLabel="Open menu"
           >
-            <Text className="text-base-content">←</Text>
+            <Text className="text-2xl text-base-content">☰</Text>
           </Pressable>
-        )}
-        <Text className={mobileClasses.title} numberOfLines={1} ellipsizeMode="tail">
-          {title}
-        </Text>
-        <View className={mobileClasses.actions}>
-          <LanguageSwitcher />
-          <ThemeSwitcher />
+
+          <Modal
+            visible={showMenu}
+            transparent={true}
+            animationType="fade"
+            onRequestClose={() => setShowMenu(false)}
+          >
+            <TouchableOpacity
+              className="flex-1 bg-black/50"
+              activeOpacity={1}
+              onPress={() => setShowMenu(false)}
+            >
+              <View className="absolute top-16 right-4 bg-base-100 rounded-lg shadow-lg p-4 w-48" style={styles.menuShadow}>
+                <View className="flex-col space-y-3">
+                  <LanguageSwitcher onSelect={handleThemeSelect} />
+                  <View className="border-t border-base-300 my-1"></View>
+                  <View onTouchStart={(e) => e.stopPropagation()}>
+                    <ThemeSwitcher onSelect={handleThemeSelect} />
+                  </View>
+                </View>
+              </View>
+            </TouchableOpacity>
+          </Modal>
         </View>
       </View>
     </View>
@@ -134,12 +175,23 @@ const NavBar: React.FC<NavBarProps> = () => {
 // Shared base styles
 // Base Tailwind classes for common styles
 const baseClasses = {
-  container: 'w-full z-10 bg-base-100 shadow-sm border-b border-base-content/10',
+  container: 'w-full z-50 bg-base-100 shadow-sm border-b border-base-content/10',
   content: 'flex flex-row items-center justify-between w-full max-w-[1200px] mx-auto',
   backButton: 'px-3 py-1.5 rounded-lg bg-base-content/10 border border-base-content/10 active:opacity-70',
   title: 'font-semibold text-base-content flex-shrink text-lg',
   actions: 'flex flex-row items-center gap-3',
 };
+
+// Additional styles
+const styles = StyleSheet.create({
+  menuShadow: {
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+  },
+});
 
 // Mobile-specific classes
 const mobileClasses = {
