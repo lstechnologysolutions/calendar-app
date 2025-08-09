@@ -12,6 +12,8 @@ import { I18nProvider, TransRenderProps } from "@lingui/react";
 import { i18n } from "../src/i18n";
 import { useThemeMode } from "../src/hooks/useThemeMode";
 import NavBar from "../src/components/NavBar";
+import { Footer } from "../src/components/Footer";
+import packageJson from '../package.json';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -21,7 +23,7 @@ try {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   const NW = require("nativewind");
   NW?.NativeWindStyleSheet?.setOutput?.({ default: "web" });
-} catch {}
+} catch { }
 
 // Set initial data-theme before React paints (web) to avoid FOUC and ensure theming applies immediately
 if (typeof document !== "undefined") {
@@ -35,7 +37,7 @@ if (typeof document !== "undefined") {
     const effectiveLD = mode === "system" ? (prefersDark ? "dark" : "light") : mode;
     const theme = savedTheme || "nord";
     root.setAttribute("data-theme", `${theme}-${effectiveLD}`);
-  } catch {}
+  } catch { }
 }
 // i18n initialization is handled in src/i18n.ts (auto-detects & activates locale)
 
@@ -65,41 +67,27 @@ export default function RootLayout() {
   // Removed unused containerStyle
 
   return (
-    <I18nProvider i18n={i18n} defaultComponent={DefaultComponent}>
+    <I18nProvider i18n={i18n}>
       <ThemeProvider value={isDark ? DarkTheme : DefaultTheme}>
-        <View style={styles.container}>
-          <NavBar isMobile={isMobile} />
-          <View style={styles.contentContainer}>
-            <Stack
-              screenOptions={{
-                headerShown: false,
-                header: () => null, 
-              }}
-            >
-              <Stack.Screen
-                name="index"
-                options={{
-                  headerShown: false,
-                  title: '', 
-                }}
-              />
-            </Stack>
-          </View>
-          <StatusBar style={isDark ? "light" : "dark"} />
-        </View>
+        <SafeAreaView style={styles.safeArea} edges={['top']}>
+          <StatusBar style={isDark ? 'light' : 'dark'} />
+          <NavBar />
+          <Stack
+            screenOptions={{
+              headerShown: false,
+              contentStyle: { backgroundColor: 'var(--b1)' },
+            }}
+          />
+          <Footer version={packageJson.version} />
+        </SafeAreaView>
       </ThemeProvider>
     </I18nProvider>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  safeArea: {
     flex: 1,
     backgroundColor: 'var(--b1)',
-  },
-  contentContainer: {
-    flex: 1,
-    width: '100%',
-    backgroundColor: 'var(--b1)',
-  },
+  }
 });
