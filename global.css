@@ -1,0 +1,127 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* DaisyUI is configured in tailwind.config.js */
+
+/* Base layer: ensure readable defaults and good contrast regardless of theme */
+@layer base {
+  :root, html {
+    color-scheme: light dark;
+  }
+  /* Ensure base backgrounds render readable text by default */
+  .bg-base-100, .bg-base-200, .bg-base-300 {
+    color: rgb(var(--color-base-content));
+  }
+  /* Ensure primary backgrounds have proper foreground contrast */
+  .bg-primary, .from-primary, .via-primary, .to-primary {
+    color: rgb(var(--color-primary-content));
+  }
+  /* Links default to primary color for visibility */
+  a { color: rgb(var(--color-primary)); }
+}
+
+/* Global defaults to ensure readable contrast across themes */
+html {
+  color: rgb(var(--color-base-content));
+  background-color: rgb(var(--color-base-100));
+}
+body {
+  color: inherit;
+  background-color: inherit;
+}
+
+/* Custom theme variables (no daisyUI). Each [data-theme] sets CSS variables
+   consumed by Tailwind color tokens defined in tailwind.config.js
+   Variables are RGB triplets for use with rgb(var(--var) / <alpha>) */
+
+/* NORD */
+html[data-theme="nord-light"] {
+  --color-base-100: 236 239 244; /* #ECEFF4 */
+  --color-base-200: 229 233 240; /* #E5E9F0 */
+  --color-base-300: 216 222 233; /* #D8DEE9 */
+  --color-base-content: 46 52 64; /* #2E3440 */
+  --color-primary: 94 129 172; /* #5E81AC */
+  --color-primary-content: 236 239 244; /* #ECEFF4 */
+}
+html[data-theme="nord-dark"] {
+  --color-base-100: 46 52 64; /* #2E3440 */
+  --color-base-200: 59 66 82; /* #3B4252 */
+  --color-base-300: 67 76 94; /* #434C5E */
+  --color-base-content: 236 239 244; /* #ECEFF4 */
+  --color-primary: 136 192 208; /* #88C0D0 */
+  /* Improve contrast of text on primary surfaces in dark mode */
+  --color-primary-content: 255 255 255;
+}
+
+/* ABYSS (dark-first palette) */
+html[data-theme="abyss-light"] {
+  --color-base-100: 242 245 247;
+  --color-base-200: 230 234 238;
+  --color-base-300: 213 220 226;
+  --color-base-content: 17 24 39;
+  --color-primary: 0 122 204; /* azure-ish */
+  --color-primary-content: 255 255 255;
+}
+html[data-theme="abyss-dark"] {
+  --color-base-100: 10 25 47; /* deep blue */
+  --color-base-200: 13 31 58;
+  --color-base-300: 18 40 70;
+  --color-base-content: 203 213 225; /* slate-200 */
+  --color-primary: 0 186 255; /* electric blue */
+  --color-primary-content: 255 255 255;
+}
+
+/* CUPCAKE (pastel) */
+html[data-theme="cupcake-light"] {
+  --color-base-100: 254 251 237;
+  --color-base-200: 251 246 225;
+  --color-base-300: 246 238 206;
+  --color-base-content: 41 37 36;
+  --color-primary: 229 107 111; /* rose */
+  --color-primary-content: 255 255 255;
+}
+html[data-theme="cupcake-dark"] {
+  --color-base-100: 39 39 42; /* zinc-800 */
+  --color-base-200: 63 63 70; /* zinc-700 */
+  --color-base-300: 82 82 91; /* zinc-600 */
+  --color-base-content: 250 250 249; /* zinc-50 */
+  --color-primary: 244 114 182; /* pink-400 */
+  --color-primary-content: 255 255 255;
+}
+
+/* DRACULA */
+html[data-theme="dracula-light"] {
+  --color-base-100: 248 249 255;
+  --color-base-200: 233 236 253;
+  --color-base-300: 217 222 252;
+  --color-base-content: 33 37 41;
+  --color-primary: 189 147 249; /* purple */
+  --color-primary-content: 33 37 41;
+}
+html[data-theme="dracula-dark"] {
+  --color-base-100: 40 42 54;
+  --color-base-200: 68 71 90;
+  --color-base-300: 98 114 164;
+  --color-base-content: 248 248 242;
+  --color-primary: 189 147 249;
+  --color-primary-content: 255 255 255;
+}
+
+/* BUSINESS (professional neutral) */
+html[data-theme="business-light"] {
+  --color-base-100: 250 250 250; /* gray-50 */
+  --color-base-200: 241 245 249; /* slate-100 */
+  --color-base-300: 226 232 240; /* slate-200 */
+  --color-base-content: 15 23 42; /* slate-900 */
+  --color-primary: 2 132 199; /* sky-600 */
+  --color-primary-content: 255 255 255;
+}
+html[data-theme="business-dark"] {
+  --color-base-100: 17 24 39; /* slate-900 */
+  --color-base-200: 31 41 55; /* gray-800 */
+  --color-base-300: 55 65 81; /* gray-700 */
+  --color-base-content: 243 244 246; /* gray-100 */
+  --color-primary: 59 130 246; /* blue-500 */
+  --color-primary-content: 255 255 255;
+}

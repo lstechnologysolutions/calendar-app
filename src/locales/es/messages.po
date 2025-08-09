@@ -1,0 +1,356 @@
+msgid ""
+msgstr ""
+"POT-Creation-Date: 2025-08-08 18:51-0500\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: @lingui/cli\n"
+"Language: es\n"
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Plural-Forms: \n"
+
+#. placeholder {0}: service.description
+#: components/ServiceSelection.tsx:124
+msgid "{0}"
+msgstr "{0}"
+
+#: components/BookingForm.tsx:503
+msgid "& Confirm"
+msgstr "y confirmar"
+
+#: components/BookingForm.tsx:339
+msgid "Additional Notes (Optional)"
+msgstr "Notas adicionales (opcional)"
+
+#: app/admin/dashboard.tsx:161
+msgid "Admin Dashboard"
+msgstr "Panel de administración"
+
+#: components/ServiceSelection.tsx:73
+msgid "All"
+msgstr "Todos"
+
+#: app/admin/dashboard.tsx:119
+msgid "All Appointments"
+msgstr "Todas las citas"
+
+#: components/BookingForm.tsx:538
+msgid "Appointment Details"
+msgstr "Detalles de la cita"
+
+#: app/admin/dashboard.tsx:182
+msgid "Appointments"
+msgstr "Citas"
+
+#: components/BookingForm.tsx:650
+msgid "Attempted Booking"
+msgstr "Intento de reserva"
+
+#: components/AppointmentCalendar.tsx:121
+msgid "Available"
+msgstr "Disponible"
+
+#: components/AppointmentCalendar.tsx:94
+msgid "Available Time Slots"
+msgstr "Horarios disponibles"
+
+#: components/BookingForm.tsx:514
+msgid "Back to Personal Info"
+msgstr "Volver a información personal"
+
+#: components/BookingForm.tsx:383
+msgid "Back to Time Selection"
+msgstr "Volver a selección de hora"
+
+#: components/BookingForm.tsx:615
+msgid "Book Another"
+msgstr "Reservar otra"
+
+#: app/index.tsx:104
+msgid "Book Your Appointment"
+msgstr "Reserva tu cita"
+
+#: components/BookingForm.tsx:526
+msgid "Booking Confirmed!"
+msgstr "¡Reserva confirmada!"
+
+#: components/BookingForm.tsx:639
+msgid "Booking Failed"
+msgstr "La reserva falló"
+
+#: components/BookingForm.tsx:397
+msgid "Booking Summary"
+msgstr "Resumen de la reserva"
+
+#: components/AppointmentCalendar.tsx:56
+msgid "Calendar component placeholder"
+msgstr "Marcador de posición del componente de calendario"
+
+#: components/BookingForm.tsx:412
+msgid "Card Number"
+msgstr "Número de tarjeta"
+
+#: components/BookingForm.tsx:675
+msgid "Check your payment method and try again"
+msgstr "Verifica tu método de pago e inténtalo de nuevo"
+
+#: app/index.tsx:132
+msgid "Choose Time"
+msgstr "Elige hora"
+
+#: app/admin/dashboard.tsx:148
+msgid "Configure booking rules, notifications, and Google Calendar sync."
+msgstr "Configura reglas de reserva, notificaciones y sincronización con Google Calendar."
+
+#: app/admin/dashboard.tsx:139
+msgid "Configure your services, pricing, and availability."
+msgstr "Configura tus servicios, precios y disponibilidad."
+
+#: components/BookingForm.tsx:373
+msgid "Confirm Booking"
+msgstr "Confirmar reserva"
+
+#: app/admin/dashboard.tsx:76
+msgid "Confirmed"
+msgstr "Confirmadas"
+
+#: components/BookingForm.tsx:681
+msgid "Contact our support team for assistance"
+msgstr "Contacta a nuestro equipo de soporte para obtener ayuda"
+
+#: components/BookingForm.tsx:723
+msgid "Contact Support"
+msgstr "Contactar soporte"
+
+#: app/admin/dashboard.tsx:128
+msgid "Customer Management"
+msgstr "Gestión de clientes"
+
+#: app/admin/dashboard.tsx:193
+msgid "Customers"
+msgstr "Clientes"
+
+#: components/BookingForm.tsx:468
+msgid "CVC"
+msgstr "CVC"
+
+#: components/BookingForm.tsx:549
+#: components/BookingForm.tsx:658
+msgid "Date:"
+msgstr "Fecha:"
+
+#: components/BookingForm.tsx:748
+msgid "Done"
+msgstr "Listo"
+
+#: components/BookingForm.tsx:563
+msgid "Duration:"
+msgstr "Duración:"
+
+#: components/BookingForm.tsx:279
+msgid "Email"
+msgstr "Correo electrónico"
+
+#: components/BookingForm.tsx:443
+msgid "Expiry Date"
+msgstr "Fecha de expiración"
+
+#: app/admin/dashboard.tsx:97
+msgid "Filter"
+msgstr "Filtrar"
+
+#: components/BookingForm.tsx:231
+msgid "First Name"
+msgstr "Nombre"
+
+#: components/BookingForm.tsx:581
+#: components/ServiceSelection.tsx:83
+msgid "Free"
+msgstr "Gratis"
+
+#: components/ServiceSelection.tsx:112
+msgid "FREE"
+msgstr "GRATIS"
+
+#: components/BookingForm.tsx:256
+msgid "Last Name"
+msgstr "Apellido"
+
+#: app/admin/dashboard.tsx:163
+msgid "Manage your booking system"
+msgstr "Administra tu sistema de reservas"
+
+#: app/admin/dashboard.tsx:130
+msgid "Manage your customer database here."
+msgstr "Administra tu base de datos de clientes aquí."
+
+#: components/BookingForm.tsx:600
+msgid "Need to reschedule? Contact us at least 24 hours in advance"
+msgstr "¿Necesitas reprogramar? Contáctanos al menos 24 horas antes"
+
+#: app/admin/dashboard.tsx:171
+msgid "Overview"
+msgstr "Resumen"
+
+#: app/admin/dashboard.tsx:276
+#: components/ServiceSelection.tsx:93
+msgid "Paid"
+msgstr "De pago"
+
+#: components/BookingForm.tsx:502
+msgid "Pay"
+msgstr "Pagar"
+
+#: components/BookingForm.tsx:392
+msgid "Payment Information"
+msgstr "Información de pago"
+
+#: app/admin/dashboard.tsx:81
+msgid "Pending"
+msgstr "Pendientes"
+
+#: components/BookingForm.tsx:226
+msgid "Personal Information"
+msgstr "Información personal"
+
+#: components/BookingForm.tsx:304
+msgid "Phone"
+msgstr "Teléfono"
+
+#: components/BookingForm.tsx:579
+msgid "Price:"
+msgstr "Precio:"
+
+#: components/BookingForm.tsx:371
+msgid "Proceed to Payment"
+msgstr "Continuar al pago"
+
+#: components/BookingForm.tsx:626
+msgid "Return Home"
+msgstr "Volver al inicio"
+
+#: app/admin/dashboard.tsx:86
+msgid "Revenue"
+msgstr "Ingresos"
+
+#: components/ServiceSelection.tsx:61
+msgid "Select a Service"
+msgstr "Selecciona un servicio"
+
+#: components/ServiceSelection.tsx:140
+msgid "Select a service to continue booking"
+msgstr "Selecciona un servicio para continuar con la reserva"
+
+#: components/BookingForm.tsx:744
+msgid "Select Country"
+msgstr "Seleccionar país"
+
+#: components/AppointmentCalendar.tsx:50
+msgid "Select Date & Time"
+msgstr "Selecciona fecha y hora"
+
+#: app/index.tsx:116
+msgid "Select Service"
+msgstr "Selecciona servicio"
+
+#: components/AppointmentCalendar.tsx:133
+msgid "Selected"
+msgstr "Seleccionado"
+
+#: components/AppointmentCalendar.tsx:59
+msgid "Selected:"
+msgstr "Seleccionado:"
+
+#: app/admin/dashboard.tsx:137
+msgid "Service Management"
+msgstr "Gestión de servicios"
+
+#: components/BookingForm.tsx:543
+#: components/BookingForm.tsx:654
+msgid "Service:"
+msgstr "Servicio:"
+
+#: app/admin/dashboard.tsx:204
+msgid "Services"
+msgstr "Servicios"
+
+#: app/admin/dashboard.tsx:215
+msgid "Settings"
+msgstr "Configuración"
+
+#: components/BookingForm.tsx:708
+msgid "Start Over"
+msgstr "Empezar de nuevo"
+
+#: app/admin/dashboard.tsx:146
+msgid "System Settings"
+msgstr "Ajustes del sistema"
+
+#: components/BookingForm.tsx:557
+#: components/BookingForm.tsx:664
+msgid "Time:"
+msgstr "Hora:"
+
+#: app/admin/dashboard.tsx:71
+msgid "Total Appointments"
+msgstr "Citas totales"
+
+#: components/BookingForm.tsx:570
+msgid "Total Paid:"
+msgstr "Total pagado:"
+
+#: components/BookingForm.tsx:697
+msgid "Try Again"
+msgstr "Intentar de nuevo"
+
+#: components/BookingForm.tsx:678
+msgid "Try selecting a different time slot"
+msgstr "Intenta seleccionar un horario diferente"
+
+#: components/AppointmentCalendar.tsx:127
+msgid "Unavailable"
+msgstr "No disponible"
+
+#: app/admin/dashboard.tsx:94
+msgid "Upcoming Appointments"
+msgstr "Próximas citas"
+
+#: app/admin/dashboard.tsx:110
+msgid "View All Appointments"
+msgstr "Ver todas las citas"
+
+#: components/BookingForm.tsx:596
+msgid "We'll send a reminder 24 hours before your appointment"
+msgstr "Enviaremos un recordatorio 24 horas antes de tu cita"
+
+#: components/BookingForm.tsx:642
+msgid "We're sorry, but there was an issue processing your booking. This could be due to a payment problem or a technical error."
+msgstr "Lo sentimos, hubo un problema al procesar tu reserva. Puede deberse a un problema de pago o a un error técnico."
+
+#: components/BookingForm.tsx:672
+msgid "What You Can Do:"
+msgstr "Qué puedes hacer:"
+
+#: components/BookingForm.tsx:589
+msgid "What's Next?"
+msgstr "¿Qué sigue?"
+
+#: components/BookingForm.tsx:592
+msgid "You'll receive a calendar invite shortly"
+msgstr "Recibirás una invitación de calendario en breve"
+
+#: components/BookingForm.tsx:529
+msgid "Your appointment has been successfully booked. A confirmation email with all details has been sent to"
+msgstr "Tu cita se ha reservado correctamente. Se ha enviado un correo de confirmación con todos los detalles a"
+
+#: app/index.tsx:148
+msgid "Your Details"
+msgstr "Tus datos"
+
+#: components/BookingForm.tsx:685
+msgid "Your time slot is still available for the next 10 minutes"
+msgstr "Tu horario seguirá disponible durante los próximos 10 minutos"
