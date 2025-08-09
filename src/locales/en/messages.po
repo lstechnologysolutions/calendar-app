@@ -18,11 +18,11 @@ msgstr ""
 msgid "{0}"
 msgstr "{0}"
 
-#: components/BookingForm.tsx:503
+#: components/BookingStep/PaymentMethods.tsx:131
 msgid "& Confirm"
 msgstr "& Confirm"
 
-#: components/BookingForm.tsx:339
+#: components/BookingStep/PersonalInfoForm.tsx:152
 msgid "Additional Notes (Optional)"
 msgstr "Additional Notes (Optional)"
 
@@ -38,7 +38,7 @@ msgstr "All"
 msgid "All Appointments"
 msgstr "All Appointments"
 
-#: components/BookingForm.tsx:538
+#: components/BookingStep/SuccessScreen.tsx:41
 msgid "Appointment Details"
 msgstr "Appointment Details"
 
@@ -46,59 +46,64 @@ msgstr "Appointment Details"
 msgid "Appointments"
 msgstr "Appointments"
 
-#: components/BookingForm.tsx:650
+#: components/BookingStep/ErrorScreen.tsx:46
 msgid "Attempted Booking"
 msgstr "Attempted Booking"
 
-#: components/AppointmentCalendar.tsx:121
+#: components/AppointmentCalendar.tsx:123
 msgid "Available"
 msgstr "Available"
 
-#: components/AppointmentCalendar.tsx:94
+#: components/AppointmentCalendar.tsx:96
 msgid "Available Time Slots"
 msgstr "Available Time Slots"
 
-#: components/BookingForm.tsx:514
+#: components/BookingStep/PaymentMethods.tsx:138
 msgid "Back to Personal Info"
 msgstr "Back to Personal Info"
 
-#: components/BookingForm.tsx:383
+#: app/index.tsx:183
+msgid "Back to service selection"
+msgstr "Back to service selection"
+
+#: components/BookingStep/PersonalInfoForm.tsx:184
 msgid "Back to Time Selection"
 msgstr "Back to Time Selection"
 
-#: components/BookingForm.tsx:615
+#: components/BookingStep/SuccessScreen.tsx:100
 msgid "Book Another"
 msgstr "Book Another"
 
-#: app/index.tsx:104
+#: app/index.tsx:112
+#: src/components/NavBar.tsx:20
 msgid "Book Your Appointment"
 msgstr "Book Your Appointment"
 
-#: components/BookingForm.tsx:526
+#: components/BookingStep/SuccessScreen.tsx:29
 msgid "Booking Confirmed!"
 msgstr "Booking Confirmed!"
 
-#: components/BookingForm.tsx:639
+#: components/BookingStep/ErrorScreen.tsx:35
 msgid "Booking Failed"
 msgstr "Booking Failed"
 
-#: components/BookingForm.tsx:397
+#: components/BookingStep/PaymentMethods.tsx:45
 msgid "Booking Summary"
 msgstr "Booking Summary"
 
-#: components/AppointmentCalendar.tsx:56
+#: components/AppointmentCalendar.tsx:58
 msgid "Calendar component placeholder"
 msgstr "Calendar component placeholder"
 
-#: components/BookingForm.tsx:412
+#: components/BookingStep/PaymentMethods.tsx:58
 msgid "Card Number"
 msgstr "Card Number"
 
-#: components/BookingForm.tsx:675
+#: components/BookingStep/ErrorScreen.tsx:68
 msgid "Check your payment method and try again"
 msgstr "Check your payment method and try again"
 
-#: app/index.tsx:132
+#: app/index.tsx:140
 msgid "Choose Time"
 msgstr "Choose Time"
 
@@ -110,7 +115,7 @@ msgstr "Configure booking rules, notifications, and Google Calendar sync."
 msgid "Configure your services, pricing, and availability."
 msgstr "Configure your services, pricing, and availability."
 
-#: components/BookingForm.tsx:373
+#: components/BookingStep/PersonalInfoForm.tsx:174
 msgid "Confirm Booking"
 msgstr "Confirm Booking"
 
@@ -118,11 +123,11 @@ msgstr "Confirm Booking"
 msgid "Confirmed"
 msgstr "Confirmed"
 
-#: components/BookingForm.tsx:681
+#: components/BookingStep/ErrorScreen.tsx:70
 msgid "Contact our support team for assistance"
 msgstr "Contact our support team for assistance"
 
-#: components/BookingForm.tsx:723
+#: components/BookingStep/ErrorScreen.tsx:89
 msgid "Contact Support"
 msgstr "Contact Support"
 
@@ -134,28 +139,33 @@ msgstr "Customer Management"
 msgid "Customers"
 msgstr "Customers"
 
-#: components/BookingForm.tsx:468
+#: components/BookingStep/PaymentMethods.tsx:105
 msgid "CVC"
 msgstr "CVC"
 
-#: components/BookingForm.tsx:549
-#: components/BookingForm.tsx:658
+#. js-lingui-explicit-id
+#: src/components/ThemeSwitcher.tsx:92
+msgid "theme.dark"
+msgstr "Dark"
+
+#: components/BookingStep/ErrorScreen.tsx:54
+#: components/BookingStep/SuccessScreen.tsx:52
 msgid "Date:"
 msgstr "Date:"
 
-#: components/BookingForm.tsx:748
+#: components/BookingStep/PersonalInfoForm.tsx:197
 msgid "Done"
 msgstr "Done"
 
-#: components/BookingForm.tsx:563
+#: components/BookingStep/SuccessScreen.tsx:64
 msgid "Duration:"
 msgstr "Duration:"
 
-#: components/BookingForm.tsx:279
+#: components/BookingStep/PersonalInfoForm.tsx:96
 msgid "Email"
 msgstr "Email"
 
-#: components/BookingForm.tsx:443
+#: components/BookingStep/PaymentMethods.tsx:84
 msgid "Expiry Date"
 msgstr "Expiry Date"
 
@@ -163,11 +173,11 @@ msgstr "Expiry Date"
 msgid "Filter"
 msgstr "Filter"
 
-#: components/BookingForm.tsx:231
+#: components/BookingStep/PersonalInfoForm.tsx:50
 msgid "First Name"
 msgstr "First Name"
 
-#: components/BookingForm.tsx:581
+#: components/BookingStep/SuccessScreen.tsx:81
 #: components/ServiceSelection.tsx:83
 msgid "Free"
 msgstr "Free"
@@ -176,9 +186,14 @@ msgstr "Free"
 msgid "FREE"
 msgstr "FREE"
 
-#: components/BookingForm.tsx:256
+#: components/BookingStep/PersonalInfoForm.tsx:73
 msgid "Last Name"
 msgstr "Last Name"
+
+#. js-lingui-explicit-id
+#: src/components/ThemeSwitcher.tsx:94
+msgid "theme.light"
+msgstr "Light"
 
 #: app/admin/dashboard.tsx:163
 msgid "Manage your booking system"
@@ -188,7 +203,7 @@ msgstr "Manage your booking system"
 msgid "Manage your customer database here."
 msgstr "Manage your customer database here."
 
-#: components/BookingForm.tsx:600
+#: components/BookingStep/SuccessScreen.tsx:94
 msgid "Need to reschedule? Contact us at least 24 hours in advance"
 msgstr "Need to reschedule? Contact us at least 24 hours in advance"
 
@@ -201,11 +216,11 @@ msgstr "Overview"
 msgid "Paid"
 msgstr "Paid"
 
-#: components/BookingForm.tsx:502
+#: components/BookingStep/PaymentMethods.tsx:131
 msgid "Pay"
 msgstr "Pay"
 
-#: components/BookingForm.tsx:392
+#: components/BookingStep/PaymentMethods.tsx:40
 msgid "Payment Information"
 msgstr "Payment Information"
 
@@ -213,23 +228,23 @@ msgstr "Payment Information"
 msgid "Pending"
 msgstr "Pending"
 
-#: components/BookingForm.tsx:226
+#: components/BookingStep/PersonalInfoForm.tsx:45
 msgid "Personal Information"
 msgstr "Personal Information"
 
-#: components/BookingForm.tsx:304
+#: components/BookingStep/PersonalInfoForm.tsx:121
 msgid "Phone"
 msgstr "Phone"
 
-#: components/BookingForm.tsx:579
+#: components/BookingStep/SuccessScreen.tsx:78
 msgid "Price:"
 msgstr "Price:"
 
-#: components/BookingForm.tsx:371
+#: components/BookingStep/PersonalInfoForm.tsx:172
 msgid "Proceed to Payment"
 msgstr "Proceed to Payment"
 
-#: components/BookingForm.tsx:626
+#: components/BookingStep/SuccessScreen.tsx:105
 msgid "Return Home"
 msgstr "Return Home"
 
@@ -245,23 +260,23 @@ msgstr "Select a Service"
 msgid "Select a service to continue booking"
 msgstr "Select a service to continue booking"
 
-#: components/BookingForm.tsx:744
+#: components/BookingStep/PersonalInfoForm.tsx:193
 msgid "Select Country"
 msgstr "Select Country"
 
-#: components/AppointmentCalendar.tsx:50
+#: components/AppointmentCalendar.tsx:52
 msgid "Select Date & Time"
 msgstr "Select Date & Time"
 
-#: app/index.tsx:116
+#: app/index.tsx:124
 msgid "Select Service"
 msgstr "Select Service"
 
-#: components/AppointmentCalendar.tsx:133
+#: components/AppointmentCalendar.tsx:135
 msgid "Selected"
 msgstr "Selected"
 
-#: components/AppointmentCalendar.tsx:59
+#: components/AppointmentCalendar.tsx:61
 msgid "Selected:"
 msgstr "Selected:"
 
@@ -269,8 +284,8 @@ msgstr "Selected:"
 msgid "Service Management"
 msgstr "Service Management"
 
-#: components/BookingForm.tsx:543
-#: components/BookingForm.tsx:654
+#: components/BookingStep/ErrorScreen.tsx:50
+#: components/BookingStep/SuccessScreen.tsx:46
 msgid "Service:"
 msgstr "Service:"
 
@@ -282,16 +297,26 @@ msgstr "Services"
 msgid "Settings"
 msgstr "Settings"
 
-#: components/BookingForm.tsx:708
+#: components/BookingStep/ErrorScreen.tsx:82
 msgid "Start Over"
 msgstr "Start Over"
+
+#. js-lingui-explicit-id
+#: src/components/ThemeSwitcher.tsx:87
+msgid "theme.systemDark"
+msgstr "System (Dark)"
+
+#. js-lingui-explicit-id
+#: src/components/ThemeSwitcher.tsx:89
+msgid "theme.systemLight"
+msgstr "System (Light)"
 
 #: app/admin/dashboard.tsx:146
 msgid "System Settings"
 msgstr "System Settings"
 
-#: components/BookingForm.tsx:557
-#: components/BookingForm.tsx:664
+#: components/BookingStep/ErrorScreen.tsx:58
+#: components/BookingStep/SuccessScreen.tsx:58
 msgid "Time:"
 msgstr "Time:"
 
@@ -299,19 +324,19 @@ msgstr "Time:"
 msgid "Total Appointments"
 msgstr "Total Appointments"
 
-#: components/BookingForm.tsx:570
+#: components/BookingStep/SuccessScreen.tsx:71
 msgid "Total Paid:"
 msgstr "Total Paid:"
 
-#: components/BookingForm.tsx:697
+#: components/BookingStep/ErrorScreen.tsx:77
 msgid "Try Again"
 msgstr "Try Again"
 
-#: components/BookingForm.tsx:678
+#: components/BookingStep/ErrorScreen.tsx:69
 msgid "Try selecting a different time slot"
 msgstr "Try selecting a different time slot"
 
-#: components/AppointmentCalendar.tsx:127
+#: components/AppointmentCalendar.tsx:129
 msgid "Unavailable"
 msgstr "Unavailable"
 
@@ -323,34 +348,34 @@ msgstr "Upcoming Appointments"
 msgid "View All Appointments"
 msgstr "View All Appointments"
 
-#: components/BookingForm.tsx:596
+#: components/BookingStep/SuccessScreen.tsx:93
 msgid "We'll send a reminder 24 hours before your appointment"
 msgstr "We'll send a reminder 24 hours before your appointment"
 
-#: components/BookingForm.tsx:642
+#: components/BookingStep/ErrorScreen.tsx:38
 msgid "We're sorry, but there was an issue processing your booking. This could be due to a payment problem or a technical error."
 msgstr "We're sorry, but there was an issue processing your booking. This could be due to a payment problem or a technical error."
 
-#: components/BookingForm.tsx:672
+#: components/BookingStep/ErrorScreen.tsx:66
 msgid "What You Can Do:"
 msgstr "What You Can Do:"
 
-#: components/BookingForm.tsx:589
+#: components/BookingStep/SuccessScreen.tsx:90
 msgid "What's Next?"
 msgstr "What's Next?"
 
-#: components/BookingForm.tsx:592
+#: components/BookingStep/SuccessScreen.tsx:92
 msgid "You'll receive a calendar invite shortly"
 msgstr "You'll receive a calendar invite shortly"
 
-#: components/BookingForm.tsx:529
+#: components/BookingStep/SuccessScreen.tsx:32
 msgid "Your appointment has been successfully booked. A confirmation email with all details has been sent to"
 msgstr "Your appointment has been successfully booked. A confirmation email with all details has been sent to"
 
-#: app/index.tsx:148
+#: app/index.tsx:156
 msgid "Your Details"
 msgstr "Your Details"
 
-#: components/BookingForm.tsx:685
+#: components/BookingStep/ErrorScreen.tsx:71
 msgid "Your time slot is still available for the next 10 minutes"
 msgstr "Your time slot is still available for the next 10 minutes"
