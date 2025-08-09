@@ -62,45 +62,44 @@ export default function RootLayout() {
   };
 
   // Fluid container that adapts to screen size
-  const containerStyle = {
-    flex: 1,
-    width: '100%',
-    paddingHorizontal: isMobile ? 16 : Math.min(48, width * 0.05), // Responsive padding
-  };
+  // Removed unused containerStyle
 
   return (
     <I18nProvider i18n={i18n} defaultComponent={DefaultComponent}>
       <ThemeProvider value={isDark ? DarkTheme : DefaultTheme}>
-        <View style={{ 
-          flex: 1, 
-          backgroundColor: 'rgb(var(--b1))',
-          width: '100%',
-          minHeight: '100%' as DimensionValue
-        }}>
+        <View style={styles.container}>
           <NavBar isMobile={isMobile} />
-          <View style={{ flex: 1, width: '100%' }}>
+          <View style={styles.contentContainer}>
             <Stack
               screenOptions={{
                 headerShown: false,
-                contentStyle: { 
-                  backgroundColor: 'rgb(var(--b1))',
-                  flex: 1,
-                },
+                header: () => null, 
               }}
             >
               <Stack.Screen
                 name="index"
                 options={{
-                  headerShown: true,
-                  headerTitle: "",
+                  headerShown: false,
+                  title: '', 
                 }}
               />
             </Stack>
-            {/* Theme-aware status bar tint */}
-            <StatusBar style={isDark ? "light" : "dark"} />
           </View>
+          <StatusBar style={isDark ? "light" : "dark"} />
         </View>
       </ThemeProvider>
     </I18nProvider>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: 'var(--b1)',
+  },
+  contentContainer: {
+    flex: 1,
+    width: '100%',
+    backgroundColor: 'var(--b1)',
+  },
+});

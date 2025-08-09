@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, ScrollView, SafeAreaView, TouchableOpacity } from "react-native";
+import { View, Text, ScrollView, SafeAreaView, TouchableOpacity, StyleSheet } from "react-native";
 import { Stack } from "expo-router";
 import { Trans } from "@lingui/react/macro";
 import ServiceSelection from "../components/ServiceSelection";
@@ -97,17 +97,14 @@ export default function BookingPage() {
   };
 
   return (
-    <SafeAreaView className="flex-1">
-      <Stack.Screen
-        options={{
-          title: "Book Appointment",
-          headerShown: true,
-        }}
-      />
-
-      <ScrollView className="flex-1 bg-base-100">
-
-        <View className="p-4">
+    <View className="flex-1 bg-base-100">
+      <ScrollView 
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+        className="flex-1"
+      >
+        <View className="w-full max-w-4xl mx-auto px-4 py-6">
           <Text className="text-2xl font-bold mb-6 text-center text-base-content">
             <Trans>Book Your Appointment</Trans>
           </Text>
@@ -213,6 +210,14 @@ export default function BookingPage() {
           )}
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  scrollContent: {
+    flexGrow: 1,
+    minHeight: '100%',
+    width: '100%',
+  },
+});

@@ -13,6 +13,10 @@ msgstr ""
 "Language-Team: \n"
 "Plural-Forms: \n"
 
+#: src/components/NavBar.tsx:128
+msgid "Calendar Appointments"
+msgstr "Citas del Calendario"
+
 # Theme Switcher
 #: components/ThemeSwitcher.tsx
 msgid "System"

@@ -44,19 +44,12 @@ interface NavBarProps {
   isMobile?: boolean;
 }
 
-// A clean, lightweight top bar matching the light card-like style
-// - subtle shadow, rounded bottom corners
-// - centered title (from current route if present)
-// - actions on the right (language & theme)
-// - optional back button when not on root
-// - responsive design for mobile and desktop
-// Mobile-specific NavBar component
 const MobileNavBar = () => {
   const router = useRouter();
   const [showMenu, setShowMenu] = useState(false);
   const canGoBack = typeof (useRouter() as any)?.canGoBack === "function" ? (router as any).canGoBack() : true;
   const isRoot = !canGoBack;
-  const title = <Trans>Book Your Appointment</Trans>;
+  const title = <Trans>Calendar Appointments</Trans>;
 
   const backButtonStyle = ({ pressed }: { pressed: boolean }) => ({
     opacity: pressed ? 0.7 : 1,
@@ -132,7 +125,7 @@ const DesktopNavBar = () => {
   const router = useRouter();
   const canGoBack = typeof (useRouter() as any)?.canGoBack === "function" ? (router as any).canGoBack() : true;
   const isRoot = !canGoBack;
-  const title = <Trans>Book Your Appointment</Trans>;
+  const title = <Trans>Calendar Appointments</Trans>;
 
   const backButtonStyle = ({ pressed }: { pressed: boolean }) => ({
     opacity: pressed ? 0.7 : 1,
@@ -175,7 +168,7 @@ const NavBar: React.FC<NavBarProps> = () => {
 // Shared base styles
 // Base Tailwind classes for common styles
 const baseClasses = {
-  container: 'w-full z-50 bg-base-100 shadow-sm border-b border-base-content/10',
+  container: 'w-full z-50 bg-[rgb(var(--b1))] border-b border-base-content/10',
   content: 'flex flex-row items-center justify-between w-full max-w-[1200px] mx-auto',
   backButton: 'px-3 py-1.5 rounded-lg bg-base-content/10 border border-base-content/10 active:opacity-70',
   title: 'font-semibold text-base-content flex-shrink text-lg',

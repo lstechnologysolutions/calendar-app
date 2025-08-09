@@ -56,7 +56,7 @@ export default function ServiceSelection({
   });
 
   return (
-    <View className="bg-base-100 p-4 rounded-lg shadow-sm">
+    <View className="p-4 rounded-lg shadow-sm ">
       <Text className="text-base-content text-2xl font-bold mb-4 text-center">
         <Trans>Select a Service</Trans>
       </Text>
