@@ -1,7 +1,6 @@
 import React, { useRef, useState, useCallback } from "react";
 import { View, Text, ScrollView } from "react-native";
 import { AlertCircle } from "lucide-react-native";
-import { formatDate as utilFormatDate } from "@/utils/dateUtils";
 import { BookingFormData, BookingFormProps } from "src/types/Booking";
 import PersonalInfoForm from "./BookingStep/PersonalInfoForm";
 import PaymentMethods from "./BookingStep/PaymentMethods";
@@ -144,10 +143,7 @@ const BookingForm = ({
     return isValid;
   };
 
-  const formatDate = useCallback((d: string): string => {
-    const result = utilFormatDate(d);
-    return result?.toString() || '';
-  }, []);
+
 
   const handleSubmit = useCallback(async () => {
     // Ensure we have a valid service before proceeding
@@ -217,7 +213,6 @@ const BookingForm = ({
             formData={formData}
             errors={errors}
             selectedServicePrice={service.price ?? 0}
-            formatDate={formatDate}
             onChange={(key, val) => updateFormData(key as string, val)}
             onNext={() => {
               if (service.price && service.price > 0) {
@@ -251,7 +246,6 @@ const BookingForm = ({
             onBack={() => setCurrentStep(1)}
             selectedService={service}
             selectedDateTime={selectedDateTime}
-            formatDate={formatDate}
             isBooking={isBooking}
           />
         )}
@@ -260,7 +254,6 @@ const BookingForm = ({
             formData={formData}
             selectedService={service}
             selectedDateTime={selectedDateTime}
-            formatDate={formatDate}
             isBooking={isBooking}
             onBookAnother={() => {
               setCurrentStep(1);
@@ -276,7 +269,6 @@ const BookingForm = ({
           <ErrorScreen
             selectedService={service}
             selectedDateTime={selectedDateTime}
-            formatDate={formatDate}
             isBooking={isBooking}
             onTryAgain={handleSubmit}
             onStartOver={() => {

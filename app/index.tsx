@@ -1,13 +1,13 @@
 import React, { useState, useCallback } from "react";
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from "react-native";
 import { Trans } from "@lingui/react/macro";
-import { formatDate } from "@/utils/dateUtils";
 import ServiceSelection from "../components/ServiceSelection";
 import useCalendar from "@/hooks/useCalendar";
 import AppointmentCalendar from "../components/AppointmentCalendar";
 import BookingForm from "../components/BookingForm";
 import { Service } from "@/types/Service";
 import { BookingFormData } from "@/types/Booking";
+import { formatDate } from "@/utils/dateUtils";
 
 const mockServices: Service[] = [
   {
@@ -51,6 +51,7 @@ export default function BookingPage() {
     selectedDate,
     selectedTime,
     setSelectedTime,
+    setSelectedDate,
     createBooking,
     isBooking,
   } = useCalendar();
@@ -60,10 +61,14 @@ export default function BookingPage() {
     setCurrentStep(2);
   };
 
-  const handleTimeSlotSelect = useCallback((timeSlot: { time: string }) => {
+  const handleTimeSlotSelect = useCallback((timeSlot: { time: string, date?: Date, isAvailable?: boolean }) => {
+    if (timeSlot.date) {
+      // Update the selected date if provided
+      setSelectedDate(new Date(timeSlot.date));
+    }
     setSelectedTime(timeSlot.time);
     setCurrentStep(3);
-  }, [setSelectedTime]);
+  }, [setSelectedTime, setSelectedDate]);
 
   const handleBackToService = () => {
     setSelectedService(null);
@@ -79,7 +84,7 @@ export default function BookingPage() {
 
     try {
       const result = await createBooking();
-      
+
       if (result.success) {
         alert("Booking submitted successfully!");
         setCurrentStep(1);
@@ -96,7 +101,7 @@ export default function BookingPage() {
 
   return (
     <View className="flex-1 bg-base-100">
-      <ScrollView 
+      <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
@@ -180,14 +185,14 @@ export default function BookingPage() {
             </View>
           )}
 
-          {currentStep === 3 && (
+          {currentStep === 3 && selectedService && selectedTime && selectedDate && (
             <BookingForm
               selectedService={selectedService}
               onSubmit={handleBookingComplete}
               onBack={() => setCurrentStep(2)}
               selectedDateTime={{
-                date: selectedDate ? formatDate(selectedDate) : '',
-                time: selectedTime || ''
+                date: formatDate(selectedDate),
+                time: selectedTime
               }}
               isBooking={isBooking}
             />

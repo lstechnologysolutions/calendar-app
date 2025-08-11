@@ -4,8 +4,6 @@ import { Trans } from "@lingui/react/macro";
 import { User, Phone, Mail, AlertCircle, ChevronDown, Search, Loader2 } from "lucide-react-native";
 import { countryCodes } from "@/config/countryCodes";
 import { BookingFormData, SelectedDateTime } from "@/types/Booking";
-import { formatDate } from "@/utils/dateUtils";
-
 
 export type PersonalInfoFormProps = {
   formData: BookingFormData;
@@ -14,7 +12,6 @@ export type PersonalInfoFormProps = {
   onNext: () => void;
   onBack: () => void;
   selectedServicePrice?: number | null;
-  formatDate?: (dateString: string) => string;
   submitError?: string | null;
   onShowValidationSummary: (show: boolean, message?: string) => void;
   selectedDateTime: SelectedDateTime;  
@@ -75,9 +72,18 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
 
   return (
     <View className="space-y-4">
-      <Text className="text-xl font-bold mb-4 text-base-content">
-        <Trans>Personal Information</Trans>
-      </Text>
+      <View className="flex-row justify-between items-center mb-4">
+        <Text className="text-xl font-bold text-base-content">
+          <Trans>Personal Information</Trans>
+        </Text>
+        {selectedDateTime?.date && selectedDateTime?.time && (
+          <View className="bg-primary/10 px-3 py-1 rounded-lg">
+            <Text className="text-primary font-medium">
+              {selectedDateTime.date} at {selectedDateTime.time}
+            </Text>
+          </View>
+        )}
+      </View>
 
       <View className="space-y-2">
         <Text className="text-sm font-medium text-base-content">
@@ -219,7 +225,7 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
               {selectedServicePrice && selectedServicePrice > 0 ? (
                 <Trans>Continue to Payment</Trans>
               ) : (
-                <Trans>Book Appointment at {selectedDateTime.time} on {formatDate(selectedDateTime.date)}</Trans>
+                <Trans>Book Appointment at {selectedDateTime.time} on {selectedDateTime.date}</Trans>
               )}
             </Text>
           </View>

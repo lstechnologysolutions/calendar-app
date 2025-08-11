@@ -8,7 +8,6 @@ type Props = {
   formData: { email: string };
   selectedService: Service;
   selectedDateTime: SelectedDateTime;
-  formatDate: (d: string) => string;
   isBooking?: boolean;
   onBookAnother: () => void;
   onReturnHome: () => void;
@@ -18,7 +17,6 @@ const SuccessScreen: React.FC<Props> = ({
   formData,
   selectedService,
   selectedDateTime,
-  formatDate,
   onBookAnother,
   onReturnHome,
 }) => {
@@ -53,7 +51,7 @@ const SuccessScreen: React.FC<Props> = ({
             <Text className="text-base-content">
               <Trans>Date:</Trans>
             </Text>
-            <Text className="font-medium text-base-content">{formatDate(selectedDateTime.date)}</Text>
+            <Text className="font-medium text-base-content">{selectedDateTime.date}</Text>
           </View>
           <View className="flex-row justify-between">
             <Text className="text-base-content">

@@ -1,10 +1,11 @@
 export interface TimeSlotProps {
   id?: string;
   time: string;
+  date?: Date;
   isAvailable: boolean;
   isSelected?: boolean;
   isPast?: boolean;
-  onPress?: (time: string) => void;
+  onPress?: (time: string, date?: Date) => void;
 }
 
 
@@ -70,5 +71,5 @@ export interface ICalendarService {
 }
 
 export interface CalendarComponentProps {
-  onTimeSlotSelect?: (timeSlot: { time: string }) => void;
+  onTimeSlotSelect: (timeSlot: TimeSlotProps) => void;
 }

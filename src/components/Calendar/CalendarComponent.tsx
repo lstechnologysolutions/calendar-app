@@ -1,38 +1,38 @@
 import React, { useEffect, useMemo } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
-import { Calendar } from 'react-native-calendars';
-import { format, isToday } from 'date-fns';
+import { Calendar, DateData } from 'react-native-calendars';
+import { isToday } from 'date-fns';
 import { TimeSlotProps, CalendarComponentProps } from '@/types/Calendar';
 import { formatDate, isSlotInPast } from '@/utils/dateUtils';
 import useCalendar from '@/hooks/useCalendar';
 import { Trans } from "@lingui/react/macro";
 
-const TimeSlot: React.FC<TimeSlotProps> = ({ time, isAvailable, isSelected, isPast = false, onPress }) => {
+const TimeSlot: React.FC<TimeSlotProps> = ({ time, date, isAvailable, isSelected, isPast = false, onPress }) => {
   const handlePress = () => {
     if (isAvailable && !isPast && onPress) {
-      onPress(time);
+      onPress(time, date);
     }
   };
 
   return (
     <TouchableOpacity
-      className={`p-3 rounded-lg border-2 transition-colors duration-200 ${isSelected 
-        ? 'bg-primary border-primary' 
-        : isPast 
-          ? 'bg-base-200 border-base-300 opacity-70' 
-          : isAvailable 
-            ? 'bg-base-100 border-base-300 hover:bg-base-200' 
+      className={`p-3 rounded-lg border-2 transition-colors duration-200 ${isSelected
+        ? 'bg-primary border-primary'
+        : isPast
+          ? 'bg-base-200 border-base-300 opacity-70'
+          : isAvailable
+            ? 'bg-base-100 border-base-300 hover:bg-base-200'
             : 'bg-base-200 border-base-200 opacity-50'}`}
       onPress={handlePress}
       disabled={!isAvailable || isPast}
       activeOpacity={0.7}
     >
-      <Text className={`text-sm font-medium ${isSelected 
-        ? 'text-primary-content' 
-        : isPast 
-          ? 'text-base-content/50' 
-          : isAvailable 
-            ? 'text-base-content' 
+      <Text className={`text-sm font-medium ${isSelected
+        ? 'text-primary-content'
+        : isPast
+          ? 'text-base-content/50'
+          : isAvailable
+            ? 'text-base-content'
             : 'text-base-content/50'}`}>
         {time}
         {isPast && ' (Past)'}
@@ -45,12 +45,11 @@ const TimeSlot: React.FC<TimeSlotProps> = ({ time, isAvailable, isSelected, isPa
 const getNextWorkingDay = (date: Date): Date => {
   const nextDay = new Date(date);
   nextDay.setDate(nextDay.getDate() + 1);
-  
-  // Skip weekends (0 = Sunday, 6 = Saturday)
+
   while (nextDay.getDay() === 0 || nextDay.getDay() === 6) {
     nextDay.setDate(nextDay.getDate() + 1);
   }
-  
+
   return nextDay;
 };
 
@@ -72,45 +71,65 @@ const CalendarComponent: React.FC<CalendarComponentProps> = ({ onTimeSlotSelect 
   }, [fetchBusySlotsForDate, selectedDate]);
 
   const handleDateSelect = (dateString: string) => {
-    console.log(`Date selected: ${dateString}`);
-    const newDate = new Date(dateString);
+    console.log('Selected date:', dateString);
+    // Create date in local timezone to avoid timezone issues
+    const [year, month, day] = dateString.split('-').map(Number);
+    const newDate = new Date(year, month - 1, day);
+    
+    // Don't allow selecting past dates
+    const todayStart = new Date(today);
+    todayStart.setHours(0, 0, 0, 0);
+    
+    if (newDate < todayStart) {
+      return;
+    }
+    
+    // Update UI immediately for better responsiveness
     setSelectedDate(newDate);
     setSelectedTime('');
+    setTentativeSelectedTime('');
+    // Fetch slots in the background
     fetchBusySlotsForDate(newDate);
   };
 
   const [tentativeSelectedTime, setTentativeSelectedTime] = React.useState<string>('');
 
   const handleTimeSelect = (time: string) => {
-    console.log(`Time tentatively selected: ${time}`);
     setTentativeSelectedTime(time);
+    // Only update the selected time in local state
+    // The parent component will be notified when the confirm button is clicked
+    setSelectedTime(time);
   };
 
   useEffect(() => {
-    const day = selectedDate.getDay();
-    if (day !== 0 && day !== 6) { // 0 = Sunday, 6 = Saturday
-      fetchBusySlotsForDate(selectedDate);
-    } else {
-      const nextWorkingDay = getNextWorkingDay(selectedDate);
-      setSelectedDate(nextWorkingDay);
-    }
+    fetchBusySlotsForDate(selectedDate);
   }, [selectedDate, fetchBusySlotsForDate]);
-  
+
   const markedDates = useMemo(() => {
     const marked: any = {
-      [formatDate(selectedDate)]: { selected: true, selectedColor: '#4F46E5' },
+      [formatDate(selectedDate)]: {
+        selected: true,
+        selectedColor: '#4F46E5',
+        selectedTextColor: '#FFFFFF'
+      },
     };
-    
+
     if (!isToday(selectedDate)) {
-      marked[formatDate(today)] = { marked: true, dotColor: '#4F46E5' };
+      marked[formatDate(today)] = {
+        marked: true,
+        dotColor: '#4F46E5',
+        textColor: 'hsl(var(--bc))'
+      };
     }
-    
+
+    // Disable past days
+    const todayStr = formatDate(today);
+    if (formatDate(selectedDate) < todayStr) {
+      marked[formatDate(selectedDate)].disabled = true;
+    }
+
     return marked;
   }, [selectedDate, today]);
-
-  const handleInternalTimeSlotSelect = (timeSlot: { time: string }) => {
-    handleTimeSelect(timeSlot.time);
-  };
 
   if (initializationError) {
     return (
@@ -128,14 +147,7 @@ const CalendarComponent: React.FC<CalendarComponentProps> = ({ onTimeSlotSelect 
     );
   }
 
-  if (isLoading) {
-    return (
-      <View className="flex-1 justify-center items-center p-8">
-        <ActivityIndicator size="large" className="text-base-content" />
-        <Text className="mt-4 text-base-content/80">Loading availability...</Text>
-      </View>
-    );
-  }
+
 
   return (
     <View className="w-full space-y-6">
@@ -155,10 +167,51 @@ const CalendarComponent: React.FC<CalendarComponentProps> = ({ onTimeSlotSelect 
           }}
           markedDates={markedDates}
           minDate={formatDate(today)}
-          disableAllTouchEventsForDisabledDays={true}
-          disableAllTouchEventsForInactiveDays={true}
           enableSwipeMonths={true}
           firstDay={1}
+          hideDayNames={false}
+          hideArrows={false}
+          disableMonthChange={false}
+          disableArrowLeft={false}
+          disableArrowRight={false}
+          disableAllTouchEventsForDisabledDays={true}
+          renderHeader={(date) => {
+            const month = date.toString('MMMM yyyy');
+            return (
+              <View className="flex-row justify-between items-center px-4 py-2">
+                <Text className="text-lg font-bold text-base-content">{month}</Text>
+              </View>
+            );
+          }}
+          dayComponent={(props) => {
+            const { date, state } = props as { date: DateData, state: 'selected' | 'disabled' | 'today' | '' };
+            if (!date) return null;
+
+            const dateObj = new Date(date.year, date.month - 1, date.day);
+            const dateStr = formatDate(dateObj);
+            const isSunday = dateObj.getDay() === 0;
+            const isDisabled = state === 'disabled' || dateObj < today || isSunday;
+
+            return (
+              <TouchableOpacity
+                onPress={isDisabled ? undefined : () => handleDateSelect(dateStr)}
+                className={`w-10 h-10 items-center justify-center rounded-full 
+                  ${isDisabled ? 'opacity-50' : ''}
+                  ${dateStr === formatDate(selectedDate) ? 'bg-primary' : ''}
+                `}
+              >
+                <Text
+                  className={`text-center text-sm font-medium
+                    ${isDisabled ? 'text-base-content/50' : 'text-base-content'}
+                    ${dateStr === formatDate(selectedDate) ? 'text-primary-content' : ''}
+                    ${isSunday ? 'line-through' : ''}
+                  `}
+                >
+                  {date.day}
+                </Text>
+              </TouchableOpacity>
+            );
+          }}
           renderArrow={(direction) => (
             <View className="flex-1 items-center justify-center p-2">
               <Text className="text-lg font-semibold text-base-content/80">
@@ -194,12 +247,13 @@ const CalendarComponent: React.FC<CalendarComponentProps> = ({ onTimeSlotSelect 
           {selectedDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
         </Text>
         {isLoading ? (
-          <View className="py-4">
+          <View className="py-4 flex items-center justify-center">
             <ActivityIndicator size="small" color="hsl(var(--p))" />
+            <Text className="mt-2 text-sm text-base-content/70">Loading time slots...</Text>
           </View>
         ) : timeSlots.length > 0 ? (
-          <ScrollView 
-            horizontal 
+          <ScrollView
+            horizontal
             showsHorizontalScrollIndicator={true}
             className="flex-grow-0 pb-2"
             contentContainerStyle={{
@@ -229,7 +283,7 @@ const CalendarComponent: React.FC<CalendarComponentProps> = ({ onTimeSlotSelect 
             <Text className="mb-4 text-base-content/80">
               No available time slots for this date
             </Text>
-            <TouchableOpacity 
+            <TouchableOpacity
               className="rounded-lg bg-primary/10 px-4 py-2"
               onPress={() => {
                 // Find next available day with time slots
@@ -244,15 +298,20 @@ const CalendarComponent: React.FC<CalendarComponentProps> = ({ onTimeSlotSelect 
       </View>
 
       <TouchableOpacity
-        className={`mx-5 mb-6 rounded-lg px-6 py-3 ${!tentativeSelectedTime || isBooking 
-          ? 'bg-primary/50 cursor-not-allowed' 
+        className={`mx-5 mb-6 rounded-lg px-6 py-3 ${!tentativeSelectedTime || isBooking
+          ? 'bg-primary/50 cursor-not-allowed'
           : 'bg-primary'}`}
         disabled={!tentativeSelectedTime || isBooking}
         onPress={() => {
           if (tentativeSelectedTime) {
-            setSelectedTime(tentativeSelectedTime);
+            // Only notify parent component when confirming the booking
             if (onTimeSlotSelect) {
-              onTimeSlotSelect({ time: tentativeSelectedTime });
+              onTimeSlotSelect({
+                time: tentativeSelectedTime,
+                date: selectedDate,
+                isAvailable: true,
+                isSelected: true
+              });
             }
           }
         }}

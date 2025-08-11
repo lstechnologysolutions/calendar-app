@@ -15,7 +15,6 @@ export type PaymentMethodsProps = {
   onBack: () => void;
   selectedService: Service | null;
   selectedDateTime: SelectedDateTime;
-  formatDate: (dateString: string) => string;
 };
 
 const PaymentMethods: React.FC<PaymentMethodsProps> = ({
@@ -27,7 +26,6 @@ const PaymentMethods: React.FC<PaymentMethodsProps> = ({
   onBack,
   selectedService,
   selectedDateTime,
-  formatDate,
 }) => {
   // Auto-format expiry to MM/YY as user types
   const formatExpiry = (input: string) => {
@@ -60,7 +58,7 @@ const PaymentMethods: React.FC<PaymentMethodsProps> = ({
           {selectedService.name} ({selectedService.duration})
         </Text>
         <Text className="text-base-content/70">
-          {formatDate(selectedDateTime.date || '')} at {selectedDateTime.time}
+          {selectedDateTime.date} at {selectedDateTime.time}
         </Text>
         <Text className="font-bold mt-2 text-base-content">${selectedService.price?.toFixed(2)}</Text>
       </View>
@@ -144,7 +142,7 @@ const PaymentMethods: React.FC<PaymentMethodsProps> = ({
               <Trans>Pay</Trans> ${selectedService.price?.toFixed(2)} <Trans>& Confirm</Trans>
             </Text>
             <Text className="text-primary-content/80 text-xs mt-1">
-              {formatDate(selectedDateTime.date)} at {selectedDateTime.time}
+              {selectedDateTime.date} at {selectedDateTime.time}
             </Text>
           </View>
         )}
