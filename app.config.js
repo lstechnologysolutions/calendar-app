@@ -1,8 +1,9 @@
+import version from "./package.json";
 export default {
   "expo": {
     "name": "Calendar App",
     "slug": "calendar-app",
-    "version": "1.0.5",
+    "version": version.version,
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "calendar-app",
