@@ -1,13 +1,15 @@
 import React from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import { Trans } from "@lingui/react/macro";
-import { Service } from "../../types/Service";
+import { Service } from "@/types/Service";
+import { SelectedDateTime } from "@/types/Booking";
 
-type Props = {
+type Props = {  
   formData: { email: string };
   selectedService: Service;
-  selectedDateTime: { date: string; time: string };
+  selectedDateTime: SelectedDateTime;
   formatDate: (d: string) => string;
+  isBooking?: boolean;
   onBookAnother: () => void;
   onReturnHome: () => void;
 };

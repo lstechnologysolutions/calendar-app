@@ -2,18 +2,19 @@ import React from "react";
 import { View, Text, TextInput, TouchableOpacity, ActivityIndicator } from "react-native";
 import { Trans } from "@lingui/react/macro";
 import { CreditCard, AlertCircle } from "lucide-react-native";
-import { BookingFormData } from "../../types/Booking";
-import { Service } from "../../types/Service";
+import { BookingFormData , SelectedDateTime} from "@/types/Booking";
+import { Service } from "@/types/Service";
 
 export type PaymentMethodsProps = {
   formData: BookingFormData;
   errors: Record<string, string>;
   isLoading: boolean;
+  isBooking?: boolean;
   onChange: (key: keyof BookingFormData, value: string) => void;
   onPay: () => void;
   onBack: () => void;
-  selectedService: Service;
-  selectedDateTime: { date: string; time: string };
+  selectedService: Service | null;
+  selectedDateTime: SelectedDateTime;
   formatDate: (dateString: string) => string;
 };
 
@@ -34,6 +35,17 @@ const PaymentMethods: React.FC<PaymentMethodsProps> = ({
     if (digits.length <= 2) return digits;
     return `${digits.slice(0, 2)}/${digits.slice(2)}`;
   };
+  // Early return if no service is selected (shouldn't happen as this component should only be shown when a service is selected)
+  if (!selectedService) {
+    return (
+      <View className="p-4 bg-yellow-50 border-l-4 border-yellow-500">
+        <Text className="text-yellow-700">
+          <Trans>No service selected. Please go back and select a service.</Trans>
+        </Text>
+      </View>
+    );
+  }
+
   return (
     <View className="space-y-4">
       <Text className="text-xl font-bold mb-4 text-base-content">
@@ -48,7 +60,7 @@ const PaymentMethods: React.FC<PaymentMethodsProps> = ({
           {selectedService.name} ({selectedService.duration})
         </Text>
         <Text className="text-base-content/70">
-          {formatDate(selectedDateTime.date)} at {selectedDateTime.time}
+          {formatDate(selectedDateTime.date || '')} at {selectedDateTime.time}
         </Text>
         <Text className="font-bold mt-2 text-base-content">${selectedService.price?.toFixed(2)}</Text>
       </View>
@@ -127,9 +139,14 @@ const PaymentMethods: React.FC<PaymentMethodsProps> = ({
         {isLoading ? (
           <ActivityIndicator color="rgb(var(--color-primary-content))" />
         ) : (
-          <Text className="text-primary-content text-center font-medium">
-            <Trans>Pay</Trans> ${selectedService.price?.toFixed(2)} <Trans>& Confirm</Trans>
-          </Text>
+          <View className="items-center">
+            <Text className="text-primary-content text-center font-medium">
+              <Trans>Pay</Trans> ${selectedService.price?.toFixed(2)} <Trans>& Confirm</Trans>
+            </Text>
+            <Text className="text-primary-content/80 text-xs mt-1">
+              {formatDate(selectedDateTime.date)} at {selectedDateTime.time}
+            </Text>
+          </View>
         )}
       </TouchableOpacity>
 

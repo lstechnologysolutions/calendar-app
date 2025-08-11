@@ -1,9 +1,11 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useCallback } from "react";
 import { View, Text, TextInput, TouchableOpacity, Modal, FlatList } from "react-native";
 import { Trans } from "@lingui/react/macro";
-import { User, Phone, Mail, AlertCircle, ChevronDown, Search } from "lucide-react-native";
-import { countryCodes } from "../../src/config/countryCodes";
-import { BookingFormData } from "../../types/Booking";
+import { User, Phone, Mail, AlertCircle, ChevronDown, Search, Loader2 } from "lucide-react-native";
+import { countryCodes } from "@/config/countryCodes";
+import { BookingFormData, SelectedDateTime } from "@/types/Booking";
+import { formatDate } from "@/utils/dateUtils";
+
 
 export type PersonalInfoFormProps = {
   formData: BookingFormData;
@@ -12,8 +14,11 @@ export type PersonalInfoFormProps = {
   onNext: () => void;
   onBack: () => void;
   selectedServicePrice?: number | null;
+  formatDate?: (dateString: string) => string;
   submitError?: string | null;
   onShowValidationSummary: (show: boolean, message?: string) => void;
+  selectedDateTime: SelectedDateTime;  
+  isBooking: boolean;
 };
 
 const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
@@ -22,12 +27,41 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
   onChange,
   onNext,
   onBack,
-  selectedServicePrice = 0,
-  submitError,
+  selectedServicePrice,
   onShowValidationSummary,
+  selectedDateTime,
+  isBooking,
 }) => {
   const [showCountryPicker, setShowCountryPicker] = useState(false);
   const [countrySearchQuery, setCountrySearchQuery] = useState("");
+  
+  
+  const handleNext = useCallback(() => {
+    // Clear any previous validation errors
+    onShowValidationSummary(false);
+
+    // Validate required fields
+    if (!formData.firstName?.trim() || !formData.lastName?.trim()) {
+      onShowValidationSummary(true, 'Please fill in all required fields');
+      return;
+    }
+    
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!formData.email?.trim() || !emailRegex.test(formData.email)) {
+      onShowValidationSummary(true, 'Please enter a valid email address');
+      return;
+    }
+
+    // Validate phone number (basic validation)
+    if (!formData.phone?.trim() || formData.phone.replace(/\D/g, '').length < 7) {
+      onShowValidationSummary(true, 'Please enter a valid phone number');
+      return;
+    }
+
+    // If all validations pass, proceed to the next step
+    onNext();
+  }, [formData, onNext, onShowValidationSummary]);
 
   const filteredCountries = useMemo(
     () =>
@@ -164,17 +198,34 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
       </View>
 
       <TouchableOpacity
-        className="bg-primary py-3 px-4 rounded-lg mt-4 text-base-content"
-        onPress={onNext}
+        className={`py-3 px-6 rounded-lg flex-col items-center justify-center ${
+          isBooking 
+            ? 'bg-blue-400 dark:bg-blue-500' 
+            : 'bg-blue-600 dark:bg-blue-700'
+        }`}
+        onPress={handleNext}
+        disabled={isBooking}
       >
-        <Text className="text-primary-content  text-center font-medium">
-          {selectedServicePrice && selectedServicePrice > 0 ? (
-            <Trans>Proceed to Payment</Trans>
-          ) : (
-            <Trans>Confirm Booking</Trans>
-          )}
-        </Text>
+        {isBooking ? (
+          <View className="flex-row items-center">
+            <Loader2 className="w-4 h-4 mr-2 text-white animate-spin" />
+            <Text className="text-white font-medium dark:text-white/90">
+              <Trans>Processing...</Trans>
+            </Text>
+          </View>
+        ) : (
+          <View className="items-center">
+            <Text className="text-white font-medium text-center dark:text-white/90">
+              {selectedServicePrice && selectedServicePrice > 0 ? (
+                <Trans>Continue to Payment</Trans>
+              ) : (
+                <Trans>Book Appointment at {selectedDateTime.time} on {formatDate(selectedDateTime.date)}</Trans>
+              )}
+            </Text>
+          </View>
+        )}
       </TouchableOpacity>
+
 
       <TouchableOpacity
         className="py-3 px-4 rounded-lg border border-base-200 mt-2 bg-base-200"
