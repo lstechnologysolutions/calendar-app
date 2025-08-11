@@ -1,12 +1,13 @@
 import React from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import { Trans } from "@lingui/react/macro";
-import { Service } from "../../types/Service";
+import { Service } from "@/types/Service";
+
 
 type Props = {
   selectedService: Service;
   selectedDateTime: { date: string; time: string };
-  formatDate: (d: string) => string;
+  isBooking?: boolean;
   onTryAgain: () => void;
   onStartOver: () => void;
   onContactSupport?: () => void;
@@ -15,7 +16,6 @@ type Props = {
 const ErrorScreen: React.FC<Props> = ({
   selectedService,
   selectedDateTime,
-  formatDate,
   onTryAgain,
   onStartOver,
   onContactSupport,
@@ -52,7 +52,7 @@ const ErrorScreen: React.FC<Props> = ({
           </View>
           <View className="flex-row justify-between">
             <Text className="text-gray-600"><Trans>Date:</Trans></Text>
-            <Text className="font-medium">{formatDate(selectedDateTime.date)}</Text>
+            <Text className="font-medium">{selectedDateTime.date}</Text>
           </View>
           <View className="flex-row justify-between">
             <Text className="text-gray-600"><Trans>Time:</Trans></Text>

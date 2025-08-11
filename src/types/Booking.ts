@@ -1,3 +1,5 @@
+import { Service } from "./Service";
+
 export type BookingFormData = {
   firstName: string;
   lastName: string;
@@ -22,3 +24,13 @@ export type SelectedDateTime = {
   date: string; // e.g. YYYY-MM-DD
   time: string; // e.g. 10:00 AM
 };
+
+export type BookingFormProps = {
+  selectedService: Service | null;
+  selectedDateTime?: SelectedDateTime;
+  isBooking?: boolean;
+  onSubmit?: (formData: BookingFormData) => Promise<{ status: 'success' | 'error'; error?: string }>;
+  onBack?: () => void;
+  onBookAnother?: () => void;
+  onReturnHome?: () => void;
+};  

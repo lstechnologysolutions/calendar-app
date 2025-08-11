@@ -1,51 +1,33 @@
-import React, { useRef, useState } from "react";
-import {
-  View,
-  Text,
-  ScrollView,
-} from "react-native";
-import { Trans } from "@lingui/react/macro";
-import {
-  AlertCircle,
-} from "lucide-react-native";
-import { Service } from "../types/Service";
-import {
-  BookingFormData,
-  BookingSubmitPayload,
-  SelectedDateTime,
-} from "../types/Booking";
+import React, { useRef, useState, useCallback } from "react";
+import { View, Text, ScrollView } from "react-native";
+import { AlertCircle } from "lucide-react-native";
+import { BookingFormData, BookingFormProps } from "src/types/Booking";
 import PersonalInfoForm from "./BookingStep/PersonalInfoForm";
 import PaymentMethods from "./BookingStep/PaymentMethods";
 import SuccessScreen from "./BookingStep/SuccessScreen";
 import ErrorScreen from "./BookingStep/ErrorScreen";
 
-type BookingFormProps = {
-  selectedService?: Service;
-  selectedDateTime?: SelectedDateTime;
-  onSubmit?: (formData: BookingSubmitPayload) => void;
-  onBack?: () => void;
-};
-
-// Country codes are imported from a centralized config file
-
 const BookingForm = ({
-  selectedService = {
+  selectedService,
+  onSubmit = async () => ({ status: 'success' as const }),
+  onBack = () => {},
+  onBookAnother = () => {},
+  onReturnHome = () => {},
+  selectedDateTime,
+  isBooking = false,
+}: BookingFormProps) => {
+  const defaultService = {
     id: "1",
     name: "Consultation",
     duration: "30 min",
     price: 0,
     description: "Initial consultation to discuss your needs",
     type: "free",
-  },
-  selectedDateTime = {
-    date: "2023-06-15",
-    time: "10:00 AM",
-  },
-  onSubmit = () => {},
-  onBack = () => {},
-}: BookingFormProps) => {
+  } as const;
+
+  const service = selectedService || defaultService;
   const [currentStep, setCurrentStep] = useState(1);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const scrollRef = useRef<ScrollView>(null);
   const [formData, setFormData] = useState<BookingFormData>({
     firstName: "",
@@ -60,7 +42,6 @@ const BookingForm = ({
     cardCvc: "",
   });
 
-
   const [errors, setErrors] = useState({
     firstName: "",
     lastName: "",
@@ -71,17 +52,14 @@ const BookingForm = ({
     cardCvc: "",
   });
 
-  // Global validation summary and submit error banner
   const [showValidationSummary, setShowValidationSummary] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
   const updateFormData = (key: string, value: string) => {
     setFormData((prev) => ({ ...prev, [key]: value }));
-    // Clear error when user starts typing
     if (errors[key as keyof typeof errors]) {
       setErrors((prev) => ({ ...prev, [key]: "" }));
     }
-    // Clear global banners as user corrects input
     if (showValidationSummary) setShowValidationSummary(false);
     if (submitError) setSubmitError(null);
   };
@@ -92,9 +70,7 @@ const BookingForm = ({
   };
 
   const validatePhone = (phone: string) => {
-    // Remove all non-digit characters except +
     const cleanPhone = phone.replace(/[^\d+]/g, "");
-    // Check if it has at least 7 digits (minimum for most countries)
     const digitCount = cleanPhone.replace(/[^\d]/g, "").length;
     return digitCount >= 7 && digitCount <= 15;
   };
@@ -126,20 +102,20 @@ const BookingForm = ({
       newErrors.email = "Email is required";
       isValid = false;
     } else if (!validateEmail(formData.email)) {
-      newErrors.email = "Please enter a valid email address";
+      newErrors.email = "Please enter a valid email";
       isValid = false;
     }
 
     if (!formData.phone.trim()) {
       newErrors.phone = "Phone number is required";
       isValid = false;
-    } else if (!validatePhone(formData.countryCode + formData.phone)) {
+    } else if (formData.phone && !validatePhone(formData.countryCode + formData.phone)) {
       newErrors.phone = "Please enter a valid phone number";
       isValid = false;
     }
 
     // Validate payment fields if it's a paid service and we're including payment validation
-    if (includePayment && selectedService.price && selectedService.price > 0) {
+    if (includePayment && service && service.price && service.price > 0) {
       if (!formData.cardNumber.trim()) {
         newErrors.cardNumber = "Card number is required";
         isValid = false;
@@ -169,46 +145,44 @@ const BookingForm = ({
     return isValid;
   };
 
-  const handleSubmit = () => {
-    if (!validateForm()) {
+
+
+  const handleSubmit = useCallback(async () => {
+    // Ensure we have a valid service before proceeding
+    if (!service) {
+      console.error('No service selected');
+      return;
+    }
+
+    if (!validateForm(service.type === 'paid')) {
       setShowValidationSummary(true);
-      setSubmitError("Please fix the errors highlighted below.");
-      // Bring the summary banner into view
       scrollRef.current?.scrollTo({ y: 0, animated: true });
       return;
     }
 
-    setIsLoading(true);
+    setIsSubmitting(true);
     try {
-      // Simulate API call with random success/failure
-      setTimeout(() => {
-        setIsLoading(false);
-        const random = Math.random();
-        if (random > 0.8) {
-          // 20% chance of failure
-          setSubmitError("We couldn't complete your payment. Please try again.");
-          setCurrentStep(4); // Error step view
-        } else {
-          setCurrentStep(3); // Success step
-        }
-        onSubmit({ ...formData, status: random > 0.8 ? "error" : "success" });
-      }, 1500);
+      // Call the parent's onSubmit handler with the form data
+      const result = await onSubmit(formData);
+      
+      // Check the response status
+      if (result.status === 'success') {
+        setCurrentStep(3); // Show success screen
+      } else {
+        const errorMessage = result.error || "Something went wrong while processing your request.";
+        setSubmitError(errorMessage);
+        setCurrentStep(4); // Show error screen
+      }
     } catch (e) {
-      setIsLoading(false);
-      setSubmitError("Something went wrong while processing your request.");
+      console.error('Form submission error:', e);
+      const errorMessage = e instanceof Error ? e.message : "An unexpected error occurred. Please try again.";
+      setSubmitError(errorMessage);
+      setCurrentStep(4); // Show error screen
+    } finally {
+      setIsSubmitting(false);
     }
-  };
+  }, [formData, service, onSubmit, validateForm]);
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  };
-  
 
   return (
     <ScrollView ref={scrollRef} className="bg-base-100 p-4">
@@ -245,14 +219,14 @@ const BookingForm = ({
         )}
 
         {/* Form steps */}
-        {currentStep === 1 && (
+        {currentStep === 1  && selectedDateTime && (
           <PersonalInfoForm
             formData={formData}
             errors={errors}
-            selectedServicePrice={selectedService.price ?? 0}
+            selectedServicePrice={service.price ?? 0}
             onChange={(key, val) => updateFormData(key as string, val)}
-            onNext={() => {
-              if (selectedService.price && selectedService.price > 0) {
+            onNext={async () => {
+              if (service.price && service.price > 0) {
                 if (validateForm(false)) {
                   setCurrentStep(2);
                 } else {
@@ -261,7 +235,7 @@ const BookingForm = ({
                   scrollRef.current?.scrollTo({ y: 0, animated: true });
                 }
               } else {
-                handleSubmit();
+                await handleSubmit();
               }
             }}
             onBack={onBack}
@@ -269,43 +243,38 @@ const BookingForm = ({
               setShowValidationSummary(show);
               if (message !== undefined) setSubmitError(message || null);
             }}
+            selectedDateTime={selectedDateTime}
+            isBooking={isBooking}
           />
         )}
-        {currentStep === 2 && (
+        {currentStep === 2 && selectedDateTime && (
           <PaymentMethods
             formData={formData}
             errors={errors}
-            isLoading={isLoading}
+            isLoading={isSubmitting}
             onChange={(key, val) => updateFormData(key as string, val)}
             onPay={handleSubmit}
             onBack={() => setCurrentStep(1)}
-            selectedService={selectedService}
+            selectedService={service}
             selectedDateTime={selectedDateTime}
-            formatDate={formatDate}
+            isBooking={isBooking}
           />
         )}
-        {currentStep === 3 && (
+        {currentStep === 3 && selectedDateTime && (
           <SuccessScreen
             formData={formData}
-            selectedService={selectedService}
+            selectedService={service}
             selectedDateTime={selectedDateTime}
-            formatDate={formatDate}
-            onBookAnother={() => {
-              setCurrentStep(1);
-              onBack();
-            }}
-            onReturnHome={() => {
-              setCurrentStep(1);
-              onBack();
-            }}
+            onBookAnother={onBookAnother}
+            onReturnHome={onReturnHome}
           />
         )}
-        {currentStep === 4 && (
+        {currentStep === 4 && selectedDateTime && (
           <ErrorScreen
-            selectedService={selectedService}
+            selectedService={service}
             selectedDateTime={selectedDateTime}
-            formatDate={formatDate}
-            onTryAgain={() => setCurrentStep(1)}
+            isBooking={isBooking}
+            onTryAgain={handleSubmit}
             onStartOver={() => {
               setCurrentStep(1);
               onBack();

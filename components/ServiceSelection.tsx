@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { View, Text, TouchableOpacity, ScrollView } from "react-native";
 import { Trans } from "@lingui/react/macro";
 import { Clock, DollarSign, Info } from "lucide-react-native";
-import { Service } from "../types/Service";
+import { Service } from "src/types/Service";
 
 interface ServiceSelectionProps {
   onSelectService?: (service: Service) => void;

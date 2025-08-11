@@ -1,16 +1,13 @@
-import React, { useState } from "react";
-import { View, Text, ScrollView, SafeAreaView, TouchableOpacity, StyleSheet } from "react-native";
-import { Stack } from "expo-router";
+import React, { useState, useCallback } from "react";
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from "react-native";
 import { Trans } from "@lingui/react/macro";
 import ServiceSelection from "../components/ServiceSelection";
+import useCalendar from "@/hooks/useCalendar";
 import AppointmentCalendar from "../components/AppointmentCalendar";
 import BookingForm from "../components/BookingForm";
-import { Service } from "../types/Service";
-import { SelectedDateTime, BookingSubmitPayload } from "../types/Booking";
-import { TimeSlot as CalendarTimeSlot } from "../types/Calendar";
+import { Service } from "@/types/Service";
+import { BookingFormData } from "@/types/Booking";
 
-
-// Mock data for services
 const mockServices: Service[] = [
   {
     id: "1",
@@ -49,56 +46,88 @@ const mockServices: Service[] = [
 export default function BookingPage() {
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedService, setSelectedService] = useState<Service | null>(null);
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-  const [selectedTimeSlot, setSelectedTimeSlot] = useState<SelectedDateTime | null>(null);
+
+  const {
+    selectedDate,
+    selectedTime,
+    setSelectedDate,
+    setSelectedTime,
+    createBooking,
+    isBooking,
+  } = useCalendar();
 
   const handleServiceSelect = (service: Service) => {
     setSelectedService(service);
     setCurrentStep(2);
   };
 
-  const handleTimeSlotSelect = (timeSlot: CalendarTimeSlot) => {
-    // Compose a {date, time} pair for the booking form using the currently selected date
-    const dateStr = selectedDate.toISOString().split("T")[0];
-    setSelectedTimeSlot({ date: dateStr, time: timeSlot.time });
-    setCurrentStep(3);
-  };
+  const handleTimeSlotSelect = useCallback((timeSlot: { time: string, date?: Date, isAvailable?: boolean }) => {
+    if (timeSlot.date) {
+      // Update the selected date if provided
+      setSelectedDate(new Date(timeSlot.date));
+    }
+    if (timeSlot.time) {
+      setSelectedTime(timeSlot.time);
+      setCurrentStep(3);
+    }
+  }, [setSelectedTime, setSelectedDate]);
 
   const handleBackToService = () => {
-    // Return to service selection and clear selections
-    setSelectedTimeSlot(null);
     setSelectedService(null);
+    setSelectedTime('');
     setCurrentStep(1);
   };
 
-  const handleBookingComplete = (bookingData: BookingSubmitPayload) => {
-    // Handle different booking outcomes
-    if (bookingData.status === "success") {
-      // Booking was successful - the BookingForm will show confirmation
-      console.log("Booking successful:", bookingData);
-    } else if (bookingData.status === "error") {
-      // Booking failed - the BookingForm will show error page
-      console.log("Booking failed:", bookingData);
-    }
-    // Don't reset immediately - let user see the confirmation/error page
+  const handleBookAnother = () => {
+    setCurrentStep(1);
+    setSelectedService(null);
+    setSelectedDate(new Date());
+    setSelectedTime('');
   };
 
-  const handleBack = () => {
-    // From booking form (step 3), go back to time selection (step 2)
-    if (currentStep === 3) {
-      setSelectedTimeSlot(null); // clear time so user can reselect
-      setCurrentStep(2);
+  const handleReturnHome = () => {
+    setCurrentStep(1);
+    setSelectedService(null);
+    setSelectedDate(new Date());
+    setSelectedTime('');
+    // Add navigation to home if needed
+  };
+
+  const handleBookingComplete = async (formData: BookingFormData) => {
+    if (!selectedService) {
+      alert("Please select a service");
       return;
     }
-    // Generic back for other steps
-    if (currentStep > 1) {
-      setCurrentStep(currentStep - 1);
+    if (!selectedDate) {
+      alert("Please select a date");
+      return;
+    }
+    if (!selectedTime) {
+      alert("Please select a time");
+      return;
+    }
+
+    try {
+      const result = await createBooking({
+        ...formData,
+        serviceName: selectedService.name,
+      });
+
+      if (!result || !result.success) {
+        throw new Error(result?.error || 'Failed to create booking');
+      }
+      // The BookingForm will handle showing the success screen
+      return { success: true };
+    } catch (error) {
+      console.error("Error creating booking:", error);
+      const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
+      return { success: false, error: errorMessage };
     }
   };
 
   return (
     <View className="flex-1 bg-base-100">
-      <ScrollView 
+      <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
@@ -109,7 +138,6 @@ export default function BookingPage() {
             <Trans>Book Your Appointment</Trans>
           </Text>
 
-          {/* Progress indicator */}
           <View className="flex-row justify-between mb-8">
             <View className="items-center">
               <View
@@ -155,7 +183,6 @@ export default function BookingPage() {
             </View>
           </View>
 
-          {/* Step 1: Service Selection */}
           {currentStep === 1 && (
             <ServiceSelection
               services={mockServices}
@@ -163,7 +190,6 @@ export default function BookingPage() {
             />
           )}
 
-          {/* Step 2: Appointment Calendar */}
           {currentStep === 2 && (
             <View>
               <Text className="text-base-content text-lg font-semibold mb-4">
@@ -181,32 +207,32 @@ export default function BookingPage() {
                   </Text>
                 </TouchableOpacity>
               </View>
-              <AppointmentCalendar
-                selectedDate={selectedDate}
-                onDateChange={setSelectedDate}
-                onTimeSlotSelect={handleTimeSlotSelect}
-              />
+              <AppointmentCalendar onTimeSlotSelect={handleTimeSlotSelect} />
             </View>
           )}
 
-          {/* Step 3: Booking Form */}
-          {currentStep === 3 && (
-            <View>
-              <Text className="text-base-content text-lg font-semibold mb-2">
-                Selected Service: {selectedService?.name} (
-                {selectedService?.duration})
-              </Text>
-              <Text className="text-base-content text-md mb-4">
-                Selected Time: {selectedTimeSlot?.date} at{" "}
-                {selectedTimeSlot?.time}
-              </Text>
-              <BookingForm
-                selectedService={selectedService || undefined}
-                selectedDateTime={selectedTimeSlot || undefined}
-                onSubmit={handleBookingComplete}
-                onBack={handleBack}
-              />
-            </View>
+          {currentStep === 3 && selectedService && selectedDate && selectedTime && (
+            <BookingForm
+              selectedService={selectedService}
+              onBack={handleBackToService}
+              onSubmit={async (formData) => {
+                const result = await handleBookingComplete(formData);
+                if (result?.success) {
+                  // Return success status to BookingForm to show success screen
+                  return { status: 'success' as const };
+                } else {
+                  // Return error status to BookingForm to show error
+                  return { status: 'error' as const, error: result?.error };
+                }
+              }}
+              selectedDateTime={{
+                date: selectedDate.toISOString(),
+                time: selectedTime
+              }}
+              isBooking={isBooking}
+              onBookAnother={handleBookAnother}
+              onReturnHome={handleReturnHome}
+            />
           )}
         </View>
       </ScrollView>
