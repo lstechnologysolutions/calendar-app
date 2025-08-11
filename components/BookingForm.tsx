@@ -9,8 +9,10 @@ import ErrorScreen from "./BookingStep/ErrorScreen";
 
 const BookingForm = ({
   selectedService,
-  onSubmit = () => {},
+  onSubmit = async () => ({ status: 'success' as const }),
   onBack = () => {},
+  onBookAnother = () => {},
+  onReturnHome = () => {},
   selectedDateTime,
   isBooking = false,
 }: BookingFormProps) => {
@@ -161,11 +163,20 @@ const BookingForm = ({
     setIsSubmitting(true);
     try {
       // Call the parent's onSubmit handler with the form data
-      // The parent is responsible for the actual submission
-      onSubmit({ ...formData, status: "success" });
+      const result = await onSubmit(formData);
+      
+      // Check the response status
+      if (result.status === 'success') {
+        setCurrentStep(3); // Show success screen
+      } else {
+        const errorMessage = result.error || "Something went wrong while processing your request.";
+        setSubmitError(errorMessage);
+        setCurrentStep(4); // Show error screen
+      }
     } catch (e) {
       console.error('Form submission error:', e);
-      setSubmitError("Something went wrong while processing your request.");
+      const errorMessage = e instanceof Error ? e.message : "An unexpected error occurred. Please try again.";
+      setSubmitError(errorMessage);
       setCurrentStep(4); // Show error screen
     } finally {
       setIsSubmitting(false);
@@ -214,7 +225,7 @@ const BookingForm = ({
             errors={errors}
             selectedServicePrice={service.price ?? 0}
             onChange={(key, val) => updateFormData(key as string, val)}
-            onNext={() => {
+            onNext={async () => {
               if (service.price && service.price > 0) {
                 if (validateForm(false)) {
                   setCurrentStep(2);
@@ -224,7 +235,7 @@ const BookingForm = ({
                   scrollRef.current?.scrollTo({ y: 0, animated: true });
                 }
               } else {
-                handleSubmit();
+                await handleSubmit();
               }
             }}
             onBack={onBack}
@@ -254,15 +265,8 @@ const BookingForm = ({
             formData={formData}
             selectedService={service}
             selectedDateTime={selectedDateTime}
-            isBooking={isBooking}
-            onBookAnother={() => {
-              setCurrentStep(1);
-              onBack();
-            }}
-            onReturnHome={() => {
-              setCurrentStep(1);
-              onBack();
-            }}
+            onBookAnother={onBookAnother}
+            onReturnHome={onReturnHome}
           />
         )}
         {currentStep === 4 && selectedDateTime && (

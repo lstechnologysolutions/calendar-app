@@ -57,20 +57,27 @@ export async function POST(request: Request) {
       );
     }
 
-    const { summary, startTime, endTime, calendarId = 'primary' } = body;
+    const { summary, startTime, endTime, calendarId = 'primary', options, attendeeEmail } = body;
     
-    if (!summary || !startTime || !endTime) {
+    if (!summary || !startTime || !endTime || !attendeeEmail) {
       return jsonResponse(
         { 
           success: false,
           error: 'Missing required fields',
-          message: 'Please provide summary, startTime, and endTime'
+          message: 'Please provide summary, startTime, endTime, and attendeeEmail'
         },
         400
       );
     }
 
-    const result = await calendarService.createCalendarEvent(summary, startTime, endTime, calendarId);
+    const result = await calendarService.createCalendarEvent(
+      summary, 
+      startTime, 
+      endTime, 
+      attendeeEmail,
+      options || {},
+      calendarId
+    );
 
     if (!result.success) {
       console.error('Failed to create event:', result.message);

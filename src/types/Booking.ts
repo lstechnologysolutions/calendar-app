@@ -29,6 +29,8 @@ export type BookingFormProps = {
   selectedService: Service | null;
   selectedDateTime?: SelectedDateTime;
   isBooking?: boolean;
-  onSubmit?: (formData: BookingSubmitPayload) => void;
+  onSubmit?: (formData: BookingFormData) => Promise<{ status: 'success' | 'error'; error?: string }>;
   onBack?: () => void;
+  onBookAnother?: () => void;
+  onReturnHome?: () => void;
 };  

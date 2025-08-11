@@ -7,7 +7,6 @@ import AppointmentCalendar from "../components/AppointmentCalendar";
 import BookingForm from "../components/BookingForm";
 import { Service } from "@/types/Service";
 import { BookingFormData } from "@/types/Booking";
-import { formatDate } from "@/utils/dateUtils";
 
 const mockServices: Service[] = [
   {
@@ -47,11 +46,12 @@ const mockServices: Service[] = [
 export default function BookingPage() {
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedService, setSelectedService] = useState<Service | null>(null);
+
   const {
     selectedDate,
     selectedTime,
-    setSelectedTime,
     setSelectedDate,
+    setSelectedTime,
     createBooking,
     isBooking,
   } = useCalendar();
@@ -66,8 +66,10 @@ export default function BookingPage() {
       // Update the selected date if provided
       setSelectedDate(new Date(timeSlot.date));
     }
-    setSelectedTime(timeSlot.time);
-    setCurrentStep(3);
+    if (timeSlot.time) {
+      setSelectedTime(timeSlot.time);
+      setCurrentStep(3);
+    }
   }, [setSelectedTime, setSelectedDate]);
 
   const handleBackToService = () => {
@@ -76,26 +78,50 @@ export default function BookingPage() {
     setCurrentStep(1);
   };
 
+  const handleBookAnother = () => {
+    setCurrentStep(1);
+    setSelectedService(null);
+    setSelectedDate(new Date());
+    setSelectedTime('');
+  };
+
+  const handleReturnHome = () => {
+    setCurrentStep(1);
+    setSelectedService(null);
+    setSelectedDate(new Date());
+    setSelectedTime('');
+    // Add navigation to home if needed
+  };
+
   const handleBookingComplete = async (formData: BookingFormData) => {
-    if (!selectedService || !selectedDate || !selectedTime) {
-      console.error("Missing required booking information");
+    if (!selectedService) {
+      alert("Please select a service");
+      return;
+    }
+    if (!selectedDate) {
+      alert("Please select a date");
+      return;
+    }
+    if (!selectedTime) {
+      alert("Please select a time");
       return;
     }
 
     try {
-      const result = await createBooking();
+      const result = await createBooking({
+        ...formData,
+        serviceName: selectedService.name,
+      });
 
-      if (result.success) {
-        alert("Booking submitted successfully!");
-        setCurrentStep(1);
-        setSelectedService(null);
-        setSelectedTime('');
-      } else {
-        throw new Error(result.error || 'Failed to create booking');
+      if (!result || !result.success) {
+        throw new Error(result?.error || 'Failed to create booking');
       }
+      // The BookingForm will handle showing the success screen
+      return { success: true };
     } catch (error) {
       console.error("Error creating booking:", error);
-      alert("Failed to create booking. Please try again.");
+      const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
+      return { success: false, error: errorMessage };
     }
   };
 
@@ -185,16 +211,27 @@ export default function BookingPage() {
             </View>
           )}
 
-          {currentStep === 3 && selectedService && selectedTime && selectedDate && (
+          {currentStep === 3 && selectedService && selectedDate && selectedTime && (
             <BookingForm
               selectedService={selectedService}
-              onSubmit={handleBookingComplete}
-              onBack={() => setCurrentStep(2)}
+              onBack={handleBackToService}
+              onSubmit={async (formData) => {
+                const result = await handleBookingComplete(formData);
+                if (result?.success) {
+                  // Return success status to BookingForm to show success screen
+                  return { status: 'success' as const };
+                } else {
+                  // Return error status to BookingForm to show error
+                  return { status: 'error' as const, error: result?.error };
+                }
+              }}
               selectedDateTime={{
-                date: formatDate(selectedDate),
+                date: selectedDate.toISOString(),
                 time: selectedTime
               }}
               isBooking={isBooking}
+              onBookAnother={handleBookAnother}
+              onReturnHome={handleReturnHome}
             />
           )}
         </View>

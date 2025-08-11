@@ -31,9 +31,10 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
 }) => {
   const [showCountryPicker, setShowCountryPicker] = useState(false);
   const [countrySearchQuery, setCountrySearchQuery] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   
   
-  const handleNext = useCallback(() => {
+  const handleNext = useCallback(async () => {
     // Clear any previous validation errors
     onShowValidationSummary(false);
 
@@ -56,8 +57,15 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
       return;
     }
 
-    // If all validations pass, proceed to the next step
-    onNext();
+    try {
+      setIsLoading(true);
+      // Call onNext which will be handled by the parent component
+      onNext();
+    } catch (error) {
+      console.error('Error during booking:', error);
+      onShowValidationSummary(true, 'An error occurred. Please try again.');
+      setIsLoading(false);
+    }
   }, [formData, onNext, onShowValidationSummary]);
 
   const filteredCountries = useMemo(
@@ -76,13 +84,6 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
         <Text className="text-xl font-bold text-base-content">
           <Trans>Personal Information</Trans>
         </Text>
-        {selectedDateTime?.date && selectedDateTime?.time && (
-          <View className="bg-primary/10 px-3 py-1 rounded-lg">
-            <Text className="text-primary font-medium">
-              {selectedDateTime.date} at {selectedDateTime.time}
-            </Text>
-          </View>
-        )}
       </View>
 
       <View className="space-y-2">
@@ -203,34 +204,48 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
         </View>
       </View>
 
-      <TouchableOpacity
-        className={`py-3 px-6 rounded-lg flex-col items-center justify-center ${
-          isBooking 
-            ? 'bg-blue-400 dark:bg-blue-500' 
-            : 'bg-blue-600 dark:bg-blue-700'
-        }`}
-        onPress={handleNext}
-        disabled={isBooking}
-      >
-        {isBooking ? (
-          <View className="flex-row items-center">
-            <Loader2 className="w-4 h-4 mr-2 text-white animate-spin" />
-            <Text className="text-white font-medium dark:text-white/90">
-              <Trans>Processing...</Trans>
-            </Text>
+      <View className="space-y-2">
+        <View className="bg-base-200 dark:bg-base-300 p-3 rounded-lg border border-base-300 dark:border-base-400">
+          <View className="flex-row justify-between items-center mb-1">
+            <Text className="text-sm font-medium text-base-content/70"><Trans>Date & Time</Trans></Text>
+            <Text className="text-sm font-medium text-base-content">{selectedDateTime.date} • {selectedDateTime.time}</Text>
           </View>
-        ) : (
-          <View className="items-center">
-            <Text className="text-white font-medium text-center dark:text-white/90">
-              {selectedServicePrice && selectedServicePrice > 0 ? (
-                <Trans>Continue to Payment</Trans>
-              ) : (
-                <Trans>Book Appointment at {selectedDateTime.time} on {selectedDateTime.date}</Trans>
-              )}
-            </Text>
+          <View className="flex-row justify-between items-center">
+            <Text className="text-sm font-medium text-base-content/70"><Trans>Service</Trans></Text>
+            <Text className="text-sm font-medium text-base-content">{selectedServicePrice ? `$${selectedServicePrice.toFixed(2)}` : <Trans>Free</Trans>}</Text>
           </View>
-        )}
-      </TouchableOpacity>
+        </View>
+        
+        <TouchableOpacity
+          className={`py-4 rounded-xl flex-row items-center justify-center ${
+            isBooking || isLoading ? 'bg-primary/70 dark:bg-primary/50' : 'bg-primary dark:bg-primary/80'
+          }`}
+          onPress={handleNext}
+          disabled={isBooking || isLoading}
+          activeOpacity={0.9}
+        >
+          {isLoading ? (
+            <View className="flex-row items-center">
+              <Text className="text-white font-semibold text-base">
+                <Trans>Processing...</Trans>
+              </Text>
+            </View>
+          ) : (
+            <View className="items-center">
+              <Text className="text-white font-semibold text-base">
+                {selectedServicePrice && selectedServicePrice > 0 ? (
+                  <Trans>Continue to Payment</Trans>
+                ) : (
+                  <Trans>Confirm Appointment</Trans>
+                )}
+              </Text>
+              <Text className="text-white/90 text-xs mt-1">
+                <Trans>You'll receive a confirmation email</Trans>
+              </Text>
+            </View>
+          )}
+        </TouchableOpacity>
+      </View>
 
 
       <TouchableOpacity
@@ -242,7 +257,6 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
         </Text>
       </TouchableOpacity>
 
-      {/* Country Picker Modal */}
       <Modal visible={showCountryPicker} animationType="slide" presentationStyle="pageSheet">
         <View className="flex-1 bg-base-100">
           <View className="flex-row items-center justify-between p-4 border-b border-base-200">

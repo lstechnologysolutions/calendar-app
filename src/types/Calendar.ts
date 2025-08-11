@@ -44,14 +44,17 @@ export interface GoogleCredentials {
   universe_domain: string;
 }
 
-export const CALENDAR_SCOPES = ['https://www.googleapis.com/auth/calendar'];
+export const CALENDAR_SCOPES = [
+  'https://www.googleapis.com/auth/calendar',
+  'https://www.googleapis.com/auth/calendar.events'
+];
 export const CALENDAR_ID = process.env.EXPO_PUBLIC_CALENDAR_ID || 'primary';
 export const TIME_SLOT_DURATION = 60;
 export const API_BASE_URL = '/api/calendar';
 
 export interface CalendarServiceResponse<T = any> {
   success: boolean;
-  data?: T;
+  data?: T & { meetLink?: string };
   error?: string;
   message?: string;
 }
@@ -66,8 +69,20 @@ export interface ICalendarService {
     summary: string,
     startTime: string,
     endTime: string,
-    calendarId?: string
-  ): Promise<CalendarServiceResponse<{ eventId?: string; htmlLink?: string }>>;
+    attendeeEmail: string,
+    options: {
+      sendEmail?: boolean;
+      locale?: string;
+      organizerName?: string;
+      organizerEmail?: string;
+    },
+    calendarId: string,
+    description?: string,
+  ): Promise<CalendarServiceResponse<{ 
+    eventId?: string; 
+    htmlLink?: string | null;
+    meetLink?: string;
+  }>>;
 }
 
 export interface CalendarComponentProps {

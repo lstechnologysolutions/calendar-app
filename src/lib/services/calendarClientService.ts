@@ -58,7 +58,14 @@ class ClientCalendarService implements ICalendarService {
     summary: string,
     startTime: string,
     endTime: string,
-    calendarId: string = 'primary'
+    attendeeEmail: string,
+    options: {
+      sendEmail?: boolean;
+      locale?: string;
+      organizerName?: string;
+      organizerEmail?: string;
+    },
+    description?: string,
   ): Promise<CalendarServiceResponse<{ eventId?: string; htmlLink?: string }>> {
     try {
       const response = await fetch(API_BASE_URL, {
@@ -71,7 +78,9 @@ class ClientCalendarService implements ICalendarService {
           summary,
           startTime,
           endTime,
-          calendarId,
+          attendeeEmail,
+          options,
+          description
         }),
       });
 

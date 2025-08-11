@@ -1,4 +1,5 @@
 import { useState, useCallback, useMemo } from 'react';
+import { i18n } from '@/i18n';
 import { format } from 'date-fns';
 import { Alert } from 'react-native';
 import { ClientCalendarService } from '@/lib/services/calendarClientService';
@@ -54,7 +55,15 @@ export const useCalendar = () => {
     setSelectedTime(time);
   }, []); 
 
-  const createBooking = useCallback(async (): Promise<{ success: boolean; error?: string }> => {
+  const createBooking = useCallback(async (bookingDetails: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone: string;
+    notes: string;
+    serviceName: string;
+  }): Promise<{ success: boolean; error?: string }> => {
+    const { firstName, lastName, email, phone, notes, serviceName } = bookingDetails;
     if (!selectedTime) {
       console.warn('No time selected for booking');
       return { success: false, error: 'No time selected for booking' };
@@ -67,13 +76,34 @@ export const useCalendar = () => {
       const startTime = createISODateTime(selectedDate, selectedTime);
       const endTime = new Date(new Date(startTime).getTime() + TIME_SLOT_DURATION * 60 * 1000).toISOString();
       
-      console.log('Creating calendar event with:', { startTime, endTime, calendarId: CALENDAR_ID });
+      // Create event description with booking details
+      const eventDescription = `
+        Customer: ${firstName} ${lastName}
+        Email: ${email}
+        Phone: ${phone}
+        Service: ${serviceName}
+        Notes: ${notes || 'No additional notes'}
+      `;
+      
+      console.log('Creating calendar event with:', { 
+        startTime, 
+        endTime, 
+        calendarId: CALENDAR_ID,
+        description: eventDescription
+      });
       
       const result = await calendarService.createCalendarEvent(
-        'Appointment',
+        `Appointment: ${serviceName} - ${firstName} ${lastName}`,
         startTime,
         endTime,
-        CALENDAR_ID
+        email,
+        {
+          sendEmail: true,
+          locale: i18n.locale,
+          organizerName: 'LSTS',
+          organizerEmail: CALENDAR_ID
+        },
+        eventDescription
       );
       
       if (result) {
