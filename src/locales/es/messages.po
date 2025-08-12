@@ -66,14 +66,6 @@ msgstr "Citas"
 msgid "Attempted Booking"
 msgstr "Intento de reserva"
 
-#: components/AppointmentCalendar.tsx:123
-#~ msgid "Available"
-#~ msgstr "Disponible"
-
-#: components/AppointmentCalendar.tsx:96
-#~ msgid "Available Time Slots"
-#~ msgstr "Horarios disponibles"
-
 #: components/BookingStep/PaymentMethods.tsx:153
 msgid "Back to Personal Info"
 msgstr "Volver a información personal"
@@ -85,10 +77,6 @@ msgstr "Volver a la selección de servicio"
 #: components/BookingStep/PersonalInfoForm.tsx:256
 msgid "Back to Time Selection"
 msgstr "Volver a selección de hora"
-
-#: components/BookingStep/SuccessScreen.tsx:100
-#~ msgid "Book Another"
-#~ msgstr "Reservar otra"
 
 #: components/BookingStep/SuccessScreen.tsx:138
 msgid "Book Another Appointment"
@@ -114,10 +102,6 @@ msgstr "Resumen de la reserva"
 #: src/components/NavBar.tsx:128
 msgid "Calendar Appointments"
 msgstr "Citas del Calendario"
-
-#: components/AppointmentCalendar.tsx:58
-#~ msgid "Calendar component placeholder"
-#~ msgstr "Marcador de posición del componente de calendario"
 
 #: components/BookingStep/PaymentMethods.tsx:68
 msgid "Card Number"
@@ -146,10 +130,6 @@ msgstr "Configura tus servicios, precios y disponibilidad."
 #: components/BookingStep/PersonalInfoForm.tsx:239
 msgid "Confirm Appointment"
 msgstr "Confirmar cita"
-
-#: components/BookingStep/PersonalInfoForm.tsx:174
-#~ msgid "Confirm Booking"
-#~ msgstr "Confirmar reserva"
 
 #: app/admin/dashboard.tsx:76
 msgid "Confirmed"
@@ -205,10 +185,6 @@ msgstr "Fecha:"
 msgid "Done"
 msgstr "Listo"
 
-#: components/BookingStep/SuccessScreen.tsx:64
-#~ msgid "Duration:"
-#~ msgstr "Duración:"
-
 #: components/BookingStep/PersonalInfoForm.tsx:137
 msgid "Email"
 msgstr "Correo electrónico"
@@ -260,13 +236,9 @@ msgstr "Administra tu base de datos de clientes aquí."
 msgid "Need to reschedule? Contact us at least 24 hours in advance"
 msgstr "¿Necesitas reprogramar? Contáctanos al menos 24 horas antes"
 
-#: components/ThemeSwitcher.tsx:
-#~ msgid "Next theme"
-#~ msgstr "Siguiente tema"
-
 #: components/BookingStep/PaymentMethods.tsx:41
 msgid "No service selected. Please go back and select a service."
-msgstr ""
+msgstr "No se ha seleccionado ningún servicio. Por favor, regrese y seleccione un servicio."
 
 #: app/admin/dashboard.tsx:171
 msgid "Overview"
@@ -299,27 +271,15 @@ msgstr "Teléfono"
 
 #: components/BookingStep/SuccessScreen.tsx:91
 msgid "Price"
-msgstr ""
-
-#: components/BookingStep/SuccessScreen.tsx:78
-#~ msgid "Price:"
-#~ msgstr "Precio:"
-
-#: components/BookingStep/PersonalInfoForm.tsx:172
-#~ msgid "Proceed to Payment"
-#~ msgstr "Continuar al pago"
+msgstr "Precio"
 
 #: components/BookingStep/PersonalInfoForm.tsx:230
 msgid "Processing..."
-msgstr ""
-
-#: components/BookingStep/SuccessScreen.tsx:105
-#~ msgid "Return Home"
-#~ msgstr "Volver al inicio"
+msgstr "Procesando..."
 
 #: components/BookingStep/SuccessScreen.tsx:151
 msgid "Return to Home"
-msgstr ""
+msgstr "Volver al inicio"
 
 #: app/admin/dashboard.tsx:86
 msgid "Revenue"
@@ -345,18 +305,10 @@ msgstr "Selecciona fecha y hora"
 msgid "Select Service"
 msgstr "Selecciona servicio"
 
-#: components/AppointmentCalendar.tsx:135
-#~ msgid "Selected"
-#~ msgstr "Seleccionado"
-
-#: components/AppointmentCalendar.tsx:61
-#~ msgid "Selected:"
-#~ msgstr "Seleccionado:"
-
 #: components/BookingStep/PersonalInfoForm.tsx:214
 #: components/BookingStep/SuccessScreen.tsx:73
 msgid "Service"
-msgstr ""
+msgstr "Servicio"
 
 #: app/admin/dashboard.tsx:137
 msgid "Service Management"
@@ -402,15 +354,11 @@ msgstr "Hora:"
 
 #: components/BookingStep/SuccessScreen.tsx:82
 msgid "Total"
-msgstr ""
+msgstr "Total"
 
 #: app/admin/dashboard.tsx:71
 msgid "Total Appointments"
 msgstr "Citas totales"
-
-#: components/BookingStep/SuccessScreen.tsx:71
-#~ msgid "Total Paid:"
-#~ msgstr "Total pagado:"
 
 #: components/BookingStep/ErrorScreen.tsx:77
 msgid "Try Again"
@@ -419,10 +367,6 @@ msgstr "Intentar de nuevo"
 #: components/BookingStep/ErrorScreen.tsx:69
 msgid "Try selecting a different time slot"
 msgstr "Intenta seleccionar un horario diferente"
-
-#: components/AppointmentCalendar.tsx:129
-#~ msgid "Unavailable"
-#~ msgstr "No disponible"
 
 #: app/admin/dashboard.tsx:94
 msgid "Upcoming Appointments"
@@ -454,11 +398,7 @@ msgstr "Recibirás una invitación de calendario en breve"
 
 #: components/BookingStep/PersonalInfoForm.tsx:243
 msgid "You'll receive a confirmation email"
-msgstr ""
-
-#: components/BookingStep/SuccessScreen.tsx:32
-#~ msgid "Your appointment has been successfully booked. A confirmation email with all details has been sent to"
-#~ msgstr "Tu cita se ha reservado correctamente. Se ha enviado un correo de confirmación con todos los detalles a"
+msgstr "Recibirás un correo de confirmación"
 
 #: app/index.tsx:181
 msgid "Your Details"
@@ -467,7 +407,7 @@ msgstr "Tus datos"
 #. placeholder {0}: eventDetails.title
 #: src/lib/services/email/EmailService.ts:128
 msgid "Your Event: {0}"
-msgstr ""
+msgstr "Tu evento: {0}"
 
 #: components/BookingStep/ErrorScreen.tsx:71
 msgid "Your time slot is still available for the next 10 minutes"

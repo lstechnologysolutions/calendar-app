@@ -66,14 +66,6 @@ msgstr "Appointments"
 msgid "Attempted Booking"
 msgstr "Attempted Booking"
 
-#: components/AppointmentCalendar.tsx:123
-#~ msgid "Available"
-#~ msgstr "Available"
-
-#: components/AppointmentCalendar.tsx:96
-#~ msgid "Available Time Slots"
-#~ msgstr "Available Time Slots"
-
 #: components/BookingStep/PaymentMethods.tsx:153
 msgid "Back to Personal Info"
 msgstr "Back to Personal Info"
@@ -85,10 +77,6 @@ msgstr "Back to service selection"
 #: components/BookingStep/PersonalInfoForm.tsx:256
 msgid "Back to Time Selection"
 msgstr "Back to Time Selection"
-
-#: components/BookingStep/SuccessScreen.tsx:100
-#~ msgid "Book Another"
-#~ msgstr "Book Another"
 
 #: components/BookingStep/SuccessScreen.tsx:138
 msgid "Book Another Appointment"
@@ -114,10 +102,6 @@ msgstr "Booking Summary"
 #: src/components/NavBar.tsx:128
 msgid "Calendar Appointments"
 msgstr "Calendar Appointments"
-
-#: components/AppointmentCalendar.tsx:58
-#~ msgid "Calendar component placeholder"
-#~ msgstr "Calendar component placeholder"
 
 #: components/BookingStep/PaymentMethods.tsx:68
 msgid "Card Number"
@@ -146,10 +130,6 @@ msgstr "Configure your services, pricing, and availability."
 #: components/BookingStep/PersonalInfoForm.tsx:239
 msgid "Confirm Appointment"
 msgstr "Confirm Appointment"
-
-#: components/BookingStep/PersonalInfoForm.tsx:174
-#~ msgid "Confirm Booking"
-#~ msgstr "Confirm Booking"
 
 #: app/admin/dashboard.tsx:76
 msgid "Confirmed"
@@ -205,10 +185,6 @@ msgstr "Date:"
 msgid "Done"
 msgstr "Done"
 
-#: components/BookingStep/SuccessScreen.tsx:64
-#~ msgid "Duration:"
-#~ msgstr "Duration:"
-
 #: components/BookingStep/PersonalInfoForm.tsx:137
 msgid "Email"
 msgstr "Email"
@@ -260,10 +236,6 @@ msgstr "Manage your customer database here."
 msgid "Need to reschedule? Contact us at least 24 hours in advance"
 msgstr "Need to reschedule? Contact us at least 24 hours in advance"
 
-#: components/ThemeSwitcher.tsx:
-#~ msgid "Next theme"
-#~ msgstr "Next theme"
-
 #: components/BookingStep/PaymentMethods.tsx:41
 msgid "No service selected. Please go back and select a service."
 msgstr "No service selected. Please go back and select a service."
@@ -301,21 +273,9 @@ msgstr "Phone"
 msgid "Price"
 msgstr "Price"
 
-#: components/BookingStep/SuccessScreen.tsx:78
-#~ msgid "Price:"
-#~ msgstr "Price:"
-
-#: components/BookingStep/PersonalInfoForm.tsx:172
-#~ msgid "Proceed to Payment"
-#~ msgstr "Proceed to Payment"
-
 #: components/BookingStep/PersonalInfoForm.tsx:230
 msgid "Processing..."
 msgstr "Processing..."
-
-#: components/BookingStep/SuccessScreen.tsx:105
-#~ msgid "Return Home"
-#~ msgstr "Return Home"
 
 #: components/BookingStep/SuccessScreen.tsx:151
 msgid "Return to Home"
@@ -344,14 +304,6 @@ msgstr "Select Date & Time"
 #: app/index.tsx:149
 msgid "Select Service"
 msgstr "Select Service"
-
-#: components/AppointmentCalendar.tsx:135
-#~ msgid "Selected"
-#~ msgstr "Selected"
-
-#: components/AppointmentCalendar.tsx:61
-#~ msgid "Selected:"
-#~ msgstr "Selected:"
 
 #: components/BookingStep/PersonalInfoForm.tsx:214
 #: components/BookingStep/SuccessScreen.tsx:73
@@ -408,10 +360,6 @@ msgstr "Total"
 msgid "Total Appointments"
 msgstr "Total Appointments"
 
-#: components/BookingStep/SuccessScreen.tsx:71
-#~ msgid "Total Paid:"
-#~ msgstr "Total Paid:"
-
 #: components/BookingStep/ErrorScreen.tsx:77
 msgid "Try Again"
 msgstr "Try Again"
@@ -419,10 +367,6 @@ msgstr "Try Again"
 #: components/BookingStep/ErrorScreen.tsx:69
 msgid "Try selecting a different time slot"
 msgstr "Try selecting a different time slot"
-
-#: components/AppointmentCalendar.tsx:129
-#~ msgid "Unavailable"
-#~ msgstr "Unavailable"
 
 #: app/admin/dashboard.tsx:94
 msgid "Upcoming Appointments"
@@ -455,10 +399,6 @@ msgstr "You'll receive a calendar invite shortly"
 #: components/BookingStep/PersonalInfoForm.tsx:243
 msgid "You'll receive a confirmation email"
 msgstr "You'll receive a confirmation email"
-
-#: components/BookingStep/SuccessScreen.tsx:32
-#~ msgid "Your appointment has been successfully booked. A confirmation email with all details has been sent to"
-#~ msgstr "Your appointment has been successfully booked. A confirmation email with all details has been sent to"
 
 #: app/index.tsx:181
 msgid "Your Details"
