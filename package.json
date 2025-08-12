@@ -9,7 +9,7 @@
     "ios": "expo start --ios",
     "dev": "expo start --web",
     "prebuild": "rm -rf dist",
-    "build:web": "export NODE_OPTIONS=--max_old_space_size=4096 && npm run prebuild && expo export -p web && NODE_OPTIONS=--max_old_space_size=4096 npx workbox-cli generateSW workbox-config.js",
+    "build:web": "npm run prebuild && expo export -p web && npx workbox-cli generateSW workbox-config.js",
     "web": "expo start --web",
     "test": "jest --watchAll",
     "lint": "expo lint"
