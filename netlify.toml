@@ -5,7 +5,7 @@
   
 [build.environment]
   NODE_VERSION = "22"
-  NODE_OPTIONS = "--max_old_space_size=4096"
+  NODE_OPTIONS = "--max_old_space_size=8192"
   NPM_FLAGS = "--legacy-peer-deps"  # Helps with dependency resolution
 
 [build.processing]
