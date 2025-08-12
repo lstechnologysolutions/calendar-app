@@ -2,6 +2,14 @@
   command = "npm run build:web"
   functions = "netlify/functions"
   publish = "dist/client"
+  
+[build.environment]
+  NODE_VERSION = "22"
+  NODE_OPTIONS = "--max_old_space_size=4096"
+  NPM_FLAGS = "--legacy-peer-deps"  # Helps with dependency resolution
+
+[build.processing]
+  skip_processing = true  # Skip Netlify's default processing
 
 [[redirects]]
   from = "/*"
