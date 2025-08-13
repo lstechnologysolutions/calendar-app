@@ -8,7 +8,6 @@ export interface TimeSlotProps {
   onPress?: (time: string, date?: Date) => void;
 }
 
-
 export interface AppointmentCalendarProps {
   selectedDate?: Date;
   onDateChange?: (date: Date) => void;

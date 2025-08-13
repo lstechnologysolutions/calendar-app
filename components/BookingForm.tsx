@@ -252,12 +252,14 @@ const BookingForm = ({
             formData={formData}
             errors={errors}
             isLoading={isSubmitting}
-            onChange={(key, val) => updateFormData(key as string, val)}
-            onPay={handleSubmit}
+            onChange={(key, value) => updateFormData(key, value)}
+            onPaymentSuccess={(paymentData) => {
+              console.log('Payment successful:', paymentData);
+              handleSubmit();
+            }}
             onBack={() => setCurrentStep(1)}
             selectedService={service}
             selectedDateTime={selectedDateTime}
-            isBooking={isBooking}
           />
         )}
         {currentStep === 3 && selectedDateTime && (

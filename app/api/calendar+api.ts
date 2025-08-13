@@ -1,4 +1,4 @@
-import { ServerCalendarService } from '@/lib/services/calendarServerService';
+import { ServerCalendarService } from '@/lib/services/calendar/calendarServerService';
 
 const calendarService = ServerCalendarService.getInstance();
 

@@ -4,6 +4,7 @@ import { Calendar as CalendarIcon, Scissors as ScissorsIcon, Info as InfoIcon } 
 import { Trans } from "@lingui/react/macro";
 import { Service } from "@/types/Service";
 import { SelectedDateTime } from "@/types/Booking";
+import { PriceDisplay } from "../PriceDisplay";
 
 type Props = {
   formData: { email: string };
@@ -76,25 +77,18 @@ const SuccessScreen: React.FC<Props> = ({
             </View>
           </View>
 
-          {selectedService.price ? (
-            <View className="flex-row items-center justify-between pt-3 mt-2 border-t border-base-200 dark:border-base-700">
-              <Text className="font-medium text-base-content">
-                <Trans>Total</Trans>
-              </Text>
-              <Text className="text-lg font-bold text-green-600 dark:text-green-400">
-                ${selectedService.price.toFixed(2)}
-              </Text>
+          <View className="flex-row items-center justify-between pt-3 mt-2 border-t border-base-200 dark:border-base-700">
+            <Text className="font-medium text-base-content">
+              <Trans>Total</Trans>
+            </Text>
+            <View className="items-end">
+              <PriceDisplay 
+                amount={selectedService.price} 
+                variant="large"
+                showFree={true}
+              />
             </View>
-          ) : (
-            <View className="flex-row items-center justify-between pt-3 mt-2 border-t border-base-200 dark:border-base-700">
-              <Text className="font-medium text-base-content">
-                <Trans>Price</Trans>
-              </Text>
-              <Text className="text-lg font-bold text-green-600 dark:text-green-400">
-                <Trans>Free</Trans>
-              </Text>
-            </View>
-          )}
+          </View>
         </View>
       </View>
 

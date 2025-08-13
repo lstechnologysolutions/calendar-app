@@ -1,7 +1,7 @@
 import { google, calendar_v3 } from 'googleapis';
 import { JWT } from 'google-auth-library';
 import { BusyTimeSlot, ICalendarService, GoogleCredentials, CALENDAR_SCOPES } from '@/types/Calendar';
-import { EmailService } from './email/EmailService';
+import { EmailService } from '../email/EmailService';
 
 class ServerCalendarService implements ICalendarService {
   private static instance: ServerCalendarService;

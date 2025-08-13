@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity, ScrollView } from "react-native";
 import { Trans } from "@lingui/react/macro";
-import { Clock, DollarSign, Info } from "lucide-react-native";
+import { Clock, Info } from "lucide-react-native";
 import { Service } from "src/types/Service";
+import { PriceDisplay } from "./PriceDisplay";
 
 interface ServiceSelectionProps {
   onSelectService?: (service: Service) => void;
@@ -113,10 +114,7 @@ export default function ServiceSelection({
                     </Text>
                   </View>
                 ) : (
-                  <View className="flex-row items-center">
-                    <DollarSign size={16} color={`rgba(var(--color-base-content), 0.7)`} />
-                    <Text className="text-base-content/70 ml-1">${service.price}</Text>
-                  </View>
+                  <PriceDisplay amount={service.price} variant="default" />
                 )}
               </View>
 

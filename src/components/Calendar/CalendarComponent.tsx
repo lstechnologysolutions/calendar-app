@@ -4,7 +4,7 @@ import { Calendar, DateData } from 'react-native-calendars';
 import { isToday } from 'date-fns';
 import { TimeSlotProps, CalendarComponentProps } from '@/types/Calendar';
 import { formatDate, isSlotInPast } from '@/utils/dateUtils';
-import useCalendar from '@/hooks/useCalendar';
+import useCalendar from 'hooks/useCalendar';
 import { Trans } from "@lingui/react/macro";
 
 const TimeSlot: React.FC<TimeSlotProps> = ({ time, date, isAvailable, isSelected, isPast = false, onPress }) => {

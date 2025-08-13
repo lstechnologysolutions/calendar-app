@@ -1,9 +1,17 @@
-import React from "react";
-import { View, Text, TextInput, TouchableOpacity, ActivityIndicator } from "react-native";
-import { Trans } from "@lingui/react/macro";
-import { CreditCard, AlertCircle } from "lucide-react-native";
-import { BookingFormData , SelectedDateTime} from "@/types/Booking";
-import { Service } from "@/types/Service";
+import React, { useCallback, useState } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
+import { useRouter } from 'expo-router';
+import { Trans } from '@lingui/react/macro';
+import { CreditCard, ArrowLeft, AlertCircle, CheckCircle2 } from 'lucide-react-native';
+import { PriceDisplay } from '../PriceDisplay';
+import { BookingFormData, SelectedDateTime } from '@/types/Booking';
+import { Service } from '@/types/Service';
+import { paymentService } from '@/lib/services/payment/paymentClientService';
+import PaymentCardForm from '../Payment/PaymentCardForm';
+
+
+
+type PaymentStatus = 'idle' | 'processing' | 'success' | 'error';
 
 export type PaymentMethodsProps = {
   formData: BookingFormData;
@@ -11,7 +19,7 @@ export type PaymentMethodsProps = {
   isLoading: boolean;
   isBooking?: boolean;
   onChange: (key: keyof BookingFormData, value: string) => void;
-  onPay: () => void;
+  onPaymentSuccess: (paymentData: any) => void;
   onBack: () => void;
   selectedService: Service | null;
   selectedDateTime: SelectedDateTime;
@@ -20,35 +28,92 @@ export type PaymentMethodsProps = {
 const PaymentMethods: React.FC<PaymentMethodsProps> = ({
   formData,
   errors,
-  isLoading,
-  onChange,
-  onPay,
+  isLoading: isParentLoading,
+  onPaymentSuccess,
   onBack,
   selectedService,
   selectedDateTime,
 }) => {
-  // Auto-format expiry to MM/YY as user types
-  const formatExpiry = (input: string) => {
-    const digits = input.replace(/[^0-9]/g, "").slice(0, 4);
-    if (digits.length <= 2) return digits;
-    return `${digits.slice(0, 2)}/${digits.slice(2)}`;
-  };
-  // Early return if no service is selected (shouldn't happen as this component should only be shown when a service is selected)
+  const [paymentStatus, setPaymentStatus] = useState<PaymentStatus>('idle');
+  const [errorMessage, setErrorMessage] = useState<string>('');
+
+  const handlePaymentError = useCallback((error: Error) => {
+    console.error('Payment form error:', error);
+    setPaymentStatus('error');
+    setErrorMessage(error.message || 'Error initializing payment form.');
+  }, []);
+
+  const handlePaymentSuccess = useCallback(async (paymentData: any) => {
+    if (!selectedService) return;
+
+    setPaymentStatus('processing');
+
+    try {
+      const { data, error } = await paymentService.processPayment({
+        ...paymentData,
+        description: `Booking for ${selectedService.name}`,
+        amount: selectedService.price,
+      });
+
+      if (error) {
+        throw new Error(error);
+      }
+
+      setPaymentStatus('success');
+      onPaymentSuccess(data);
+    } catch (error: any) {
+      console.error('Payment error:', error);
+      setPaymentStatus('error');
+      setErrorMessage(error.message || 'Failed to process payment. Please try again.');
+    }
+  }, [selectedService, onPaymentSuccess]);
+
+  // Early return if no service is selected
   if (!selectedService) {
     return (
-      <View className="p-4 bg-yellow-50 border-l-4 border-yellow-500">
-        <Text className="text-yellow-700">
-          <Trans>No service selected. Please go back and select a service.</Trans>
+      <View style={styles.container}>
+        <View style={styles.errorContainer}>
+          <AlertCircle size={20} color="#d32f2f" />
+          <Text style={styles.errorText}>
+            <Trans>No service selected. Please go back and select a service.</Trans>
+          </Text>
+        </View>
+      </View>
+    );
+  }
+
+  // Show success state
+  if (paymentStatus === 'success') {
+    return (
+      <View style={styles.successContainer}>
+        <CheckCircle2 size={48} color="#2e7d32" />
+        <Text style={styles.successText}>
+          <Trans>Payment Successful!</Trans>
+        </Text>
+        <Text style={[styles.successText, { marginTop: 8 }]}>
+          <Trans>Your booking has been confirmed. You will receive a confirmation email shortly.</Trans>
         </Text>
       </View>
     );
   }
 
   return (
-    <View className="space-y-4">
-      <Text className="text-xl font-bold mb-4 text-base-content">
-        <Trans>Payment Information</Trans>
-      </Text>
+    <View style={styles.container}>
+      <View style={styles.header}>
+        <TouchableOpacity onPress={onBack} style={styles.backButton}>
+          <ArrowLeft size={24} color="#000" />
+        </TouchableOpacity>
+        <Text style={styles.title}>
+          <Trans>Payment Information</Trans>
+        </Text>
+      </View>
+
+      {errorMessage ? (
+        <View style={styles.errorContainer}>
+          <AlertCircle size={20} color="#d32f2f" />
+          <Text style={styles.errorText}>{errorMessage}</Text>
+        </View>
+      ) : null}
 
       <View className="bg-base-200 p-4 rounded-lg mb-4 border border-base-200">
         <Text className="font-medium text-base-content">
@@ -60,101 +125,100 @@ const PaymentMethods: React.FC<PaymentMethodsProps> = ({
         <Text className="text-base-content/70">
           {selectedDateTime.date} at {selectedDateTime.time}
         </Text>
-        <Text className="font-bold mt-2 text-base-content">${selectedService.price?.toFixed(2)}</Text>
-      </View>
-
-      <View className="space-y-2">
-        <Text className="text-sm font-medium text-base-content">
-          <Trans>Card Number</Trans>
-        </Text>
-        <View
-          className={`flex-row items-center border rounded-lg p-3 bg-base-100 ${errors.cardNumber ? "border-red-500" : "border-base-200"}`}
-        >
-          <CreditCard size={20} />
-          <TextInput
-            className="flex-1 ml-2"
-            placeholder="1234 5678 9012 3456"
-            keyboardType="number-pad"
-            maxLength={19}
-            value={formData.cardNumber}
-            onChangeText={(text) => onChange("cardNumber", text)}
+        <View className="mt-2">
+          <PriceDisplay 
+            amount={selectedService.price} 
+            variant="large" 
+            showFree={false}
           />
         </View>
-        {errors.cardNumber ? (
-          <View className="flex-row items-center mt-1">
-            <AlertCircle size={16} color="#ef4444" />
-            <Text className="text-red-500 text-sm ml-1">{errors.cardNumber}</Text>
+      </View>
+
+
+      <View style={styles.content}>
+        {paymentStatus === 'processing' ? (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color="#3B82F6" />
+            <Text style={styles.loadingText}>
+              <Trans>Processing your payment...</Trans>
+            </Text>
+          </View>
+        ) : selectedService.price !== null ? (
+          <View style={{ width: '100%' }}>
+            <PaymentCardForm
+              amount={selectedService.price}
+              onPaymentSuccess={handlePaymentSuccess}
+              onError={handlePaymentError}
+              publicKey={process.env.EXPO_PUBLIC_MERCADOPAGO_PUBLIC_KEY || ''}
+              formId="form-checkout"
+              email={formData.email}
+            />
           </View>
         ) : null}
       </View>
-
-      <View className="flex-row space-x-4">
-        <View className="flex-1 space-y-2">
-          <Text className="text-sm font-medium text-base-content">
-            <Trans>Expiry Date</Trans>
-          </Text>
-          <View className={`border rounded-lg p-3 bg-base-100 ${errors.cardExpiry ? "border-red-500" : "border-base-200"}`}>
-            <TextInput
-              placeholder="MM/YY"
-              keyboardType="number-pad"
-              maxLength={5}
-              value={formData.cardExpiry}
-              onChangeText={(text) => onChange("cardExpiry", formatExpiry(text))}
-            />
-          </View>
-          {errors.cardExpiry ? (
-            <View className="flex-row items-center mt-1">
-              <AlertCircle size={12} color="#ef4444" />
-              <Text className="text-red-500 text-xs ml-1">{errors.cardExpiry}</Text>
-            </View>
-          ) : null}
-        </View>
-
-        <View className="flex-1 space-y-2">
-          <Text className="text-sm font-medium text-base-content">
-            <Trans>CVC</Trans>
-          </Text>
-          <View className={`border rounded-lg p-3 bg-base-100 ${errors.cardCvc ? "border-red-500" : "border-base-200"}`}>
-            <TextInput
-              placeholder="123"
-              keyboardType="number-pad"
-              maxLength={3}
-              secureTextEntry
-              value={formData.cardCvc}
-              onChangeText={(text) => onChange("cardCvc", text)}
-            />
-          </View>
-          {errors.cardCvc ? (
-            <View className="flex-row items-center mt-1">
-              <AlertCircle size={12} color="#ef4444" />
-              <Text className="text-red-500 text-xs ml-1">{errors.cardCvc}</Text>
-            </View>
-          ) : null}
-        </View>
-      </View>
-
-      <TouchableOpacity className="bg-primary py-3 px-4 rounded-lg mt-4" onPress={onPay} disabled={isLoading}>
-        {isLoading ? (
-          <ActivityIndicator color="rgb(var(--color-primary-content))" />
-        ) : (
-          <View className="items-center">
-            <Text className="text-primary-content text-center font-medium">
-              <Trans>Pay</Trans> ${selectedService.price?.toFixed(2)} <Trans>& Confirm</Trans>
-            </Text>
-            <Text className="text-primary-content/80 text-xs mt-1">
-              {selectedDateTime.date} at {selectedDateTime.time}
-            </Text>
-          </View>
-        )}
-      </TouchableOpacity>
-
-      <TouchableOpacity className="py-3 px-4 rounded-lg border border-base-200 mt-2 bg-base-200" onPress={onBack} disabled={isLoading}>
-        <Text className="text-base-content text-center font-medium">
-          <Trans>Back to Personal Info</Trans>
-        </Text>
-      </TouchableOpacity>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    width: '100%',
+    maxWidth: 600,
+    padding: 16,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  backButton: {
+    marginRight: 12,
+    padding: 8,
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 16,
+  },
+  content: {
+    flex: 1,
+    width: '100%',
+  },
+  errorContainer: {
+    backgroundColor: '#fff0f0',
+    padding: 12,
+    borderRadius: 4,
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  errorText: {
+    color: '#d32f2f',
+    marginLeft: 8,
+  },
+  successContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  successText: {
+    fontSize: 18,
+    textAlign: 'center',
+    marginTop: 16,
+    color: '#2e7d32',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  loadingText: {
+    marginTop: 16,
+    color: '#666',
+  },
+});
 
 export default PaymentMethods;

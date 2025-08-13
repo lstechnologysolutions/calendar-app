@@ -20,10 +20,16 @@
         "./src/utils/*"
       ],
       "@/hooks/*": [
-        "./src/hooks/*"
+        "./app/hooks/*"
       ],
       "@/config/*": [
         "./src/config/*"
+      ],
+      "@/lib/*": [
+        "./src/lib/*"
+      ],
+      "@/components/*": [
+        "./src/components/*"
       ],
       "expo-router/node/locales/*": [
         "./src/locales/*"

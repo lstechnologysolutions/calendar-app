@@ -10,7 +10,7 @@ import { Platform, Text, View, useWindowDimensions, StyleSheet, DimensionValue }
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { I18nProvider, TransRenderProps } from "@lingui/react";
 import { i18n } from "../src/i18n";
-import { useThemeMode } from "../src/hooks/useThemeMode";
+import { useThemeMode } from "../hooks/useThemeMode";
 import NavBar from "../src/components/NavBar";
 import { Footer } from "../src/components/Footer";
 import packageJson from '../package.json';

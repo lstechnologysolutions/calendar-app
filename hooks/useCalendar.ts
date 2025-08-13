@@ -2,7 +2,7 @@ import { useState, useCallback, useMemo } from 'react';
 import { i18n } from '@/i18n';
 import { format } from 'date-fns';
 import { Alert } from 'react-native';
-import { ClientCalendarService } from '@/lib/services/calendarClientService';
+import { ClientCalendarService } from '@/lib/services/calendar/calendarClientService';
 import { BusyTimeSlot, CALENDAR_ID, TIME_SLOT_DURATION } from '@/types/Calendar';
 import { generateTimeSlots, createISODateTime } from '@/utils/dateUtils';
 

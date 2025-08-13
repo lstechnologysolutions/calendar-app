@@ -2,7 +2,7 @@ import React, { useState, useCallback } from "react";
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from "react-native";
 import { Trans } from "@lingui/react/macro";
 import ServiceSelection from "../components/ServiceSelection";
-import useCalendar from "@/hooks/useCalendar";
+import useCalendar from "hooks/useCalendar";
 import AppointmentCalendar from "../components/AppointmentCalendar";
 import BookingForm from "../components/BookingForm";
 import { Service } from "@/types/Service";
