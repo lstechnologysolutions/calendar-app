@@ -22,7 +22,6 @@ export const useMercadoPago = (options: UseMercadoPagoProps): UseMercadoPagoRetu
         'MercadoPago'
     );
 
-    // Load identification types when MercadoPago instance is ready
     useEffect(() => {
         const fetchIdentificationTypes = async () => {
             if (!mpInstance) return;
@@ -33,7 +32,7 @@ export const useMercadoPago = (options: UseMercadoPagoProps): UseMercadoPagoRetu
                     setIdentificationTypes(types);
                 }
             } catch (err) {
-                // We already have the default IDENTIFICATION_TYPES as initial state
+                console.error('Error fetching identification types:', err);
             }
         };
 
@@ -109,7 +108,6 @@ export const useMercadoPago = (options: UseMercadoPagoProps): UseMercadoPagoRetu
                                 throw new Error('No se pudo obtener los datos del formulario');
                             }
 
-                            // Ensure we have a valid identification type
                             const defaultIdType = identificationTypes.length > 0 ? identificationTypes[0].id : 'CC';
                             const tokenData = {
                                 cardNumber: formData.cardNumber?.replace(/\s/g, '') || '',
@@ -127,7 +125,7 @@ export const useMercadoPago = (options: UseMercadoPagoProps): UseMercadoPagoRetu
                                 .then((tokenData: CardTokenData) => {
                                     console.log('Token data received:', tokenData);
                                     if (tokenData && tokenData.id) {
-                                        return tokenData; // Just return the token data, don't process payment here
+                                        return tokenData;
                                     }
                                     throw new Error('No se pudo generar el token de pago: ' + JSON.stringify(tokenData));
                                 })
@@ -162,13 +160,11 @@ export const useMercadoPago = (options: UseMercadoPagoProps): UseMercadoPagoRetu
                         console.log('Error data:', errorData);
                         if (errorData && errorData.error.fieldErrors.length !== 0) {
                             errorData.error.fieldErrors.forEach((errorMessage: any) => {
-                                alert(errorMessage);
+                                alert(errorMessage)
                             });
                         }
-
                         return token;
-                    }
-
+                    },
                 },
             });
 
@@ -303,12 +299,20 @@ export const useMercadoPago = (options: UseMercadoPagoProps): UseMercadoPagoRetu
             }
 
             const result = response.data;
+            console.log('Payment result from server:', result);
 
-            if (result.status === 'approved') {
-                onSuccess?.(result) || onPaymentSuccess?.(result);
-                return result;
+            if (result.success && (result.status === 'approved' || result.status === 'in_process')) {
+                // Only call one of the success callbacks, not both
+                //TODO: SIMPLY THIS 
+                if (onSuccess) {
+                    console.log('Calling onSuccess callback with result:', result);
+                    onSuccess(result);
+                } else if (onPaymentSuccess) {
+                    console.log('Calling onPaymentSuccess callback with result:', result);
+                    onPaymentSuccess(result);
+                }
             } else {
-                throw new Error(result.message || 'El pago no fue aprobado');
+                throw new Error(result.error || result.message || 'El pago no fue aprobado');
             }
         } catch (err) {
             const error = err instanceof Error ? err : new Error('Error al procesar el pago');

@@ -3,11 +3,12 @@ import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator } from 'rea
 import { useRouter } from 'expo-router';
 import { Trans } from '@lingui/react/macro';
 import { CreditCard, ArrowLeft, AlertCircle, CheckCircle2 } from 'lucide-react-native';
-import { PriceDisplay } from '../PriceDisplay';
+import { PriceDisplay } from '../../src/components/ui/PriceDisplay';
 import { BookingFormData, SelectedDateTime } from '@/types/Booking';
 import { Service } from '@/types/Service';
 import { paymentService } from '@/lib/services/payment/paymentClientService';
 import PaymentCardForm from '../Payment/PaymentCardForm';
+import SuccessScreen from './SuccessScreen';
 
 
 
@@ -44,12 +45,12 @@ const PaymentMethods: React.FC<PaymentMethodsProps> = ({
   }, []);
 
   const handlePaymentSuccess = useCallback(async (paymentData: any) => {
+    console.log('processing payment...');
     if (!selectedService) return;
-
     setPaymentStatus('processing');
 
     try {
-      const { data, error } = await paymentService.processPayment({
+     /*  const { data, error } = await paymentService.processPayment({
         ...paymentData,
         description: `Booking for ${selectedService.name}`,
         amount: selectedService.price,
@@ -57,10 +58,10 @@ const PaymentMethods: React.FC<PaymentMethodsProps> = ({
 
       if (error) {
         throw new Error(error);
-      }
+      } */
 
       setPaymentStatus('success');
-      onPaymentSuccess(data);
+      //onPaymentSuccess(data);
     } catch (error: any) {
       console.error('Payment error:', error);
       setPaymentStatus('error');
@@ -86,13 +87,13 @@ const PaymentMethods: React.FC<PaymentMethodsProps> = ({
   if (paymentStatus === 'success') {
     return (
       <View style={styles.successContainer}>
-        <CheckCircle2 size={48} color="#2e7d32" />
-        <Text style={styles.successText}>
-          <Trans>Payment Successful!</Trans>
-        </Text>
-        <Text style={[styles.successText, { marginTop: 8 }]}>
-          <Trans>Your booking has been confirmed. You will receive a confirmation email shortly.</Trans>
-        </Text>
+        <SuccessScreen 
+          formData={formData}
+          selectedService={selectedService}
+          selectedDateTime={selectedDateTime}
+          onBookAnother={() => {}}
+          onReturnHome={() => {}}
+          />
       </View>
     );
   }

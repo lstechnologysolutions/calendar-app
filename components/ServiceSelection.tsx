@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, ScrollView } from "react-native";
 import { Trans } from "@lingui/react/macro";
 import { Clock, Info } from "lucide-react-native";
 import { Service } from "src/types/Service";
-import { PriceDisplay } from "./PriceDisplay";
+import { PriceDisplay } from "../src/components/ui/PriceDisplay";
 
 interface ServiceSelectionProps {
   onSelectService?: (service: Service) => void;

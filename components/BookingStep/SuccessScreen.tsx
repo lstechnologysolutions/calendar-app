@@ -4,7 +4,7 @@ import { Calendar as CalendarIcon, Scissors as ScissorsIcon, Info as InfoIcon } 
 import { Trans } from "@lingui/react/macro";
 import { Service } from "@/types/Service";
 import { SelectedDateTime } from "@/types/Booking";
-import { PriceDisplay } from "../PriceDisplay";
+import { PriceDisplay } from "../../src/components/ui/PriceDisplay";
 
 type Props = {
   formData: { email: string };
