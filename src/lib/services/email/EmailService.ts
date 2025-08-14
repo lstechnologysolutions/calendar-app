@@ -3,17 +3,8 @@ import { i18n } from '@lingui/core';
 import { t } from '@lingui/macro';
 import { SentMessageInfo } from 'nodemailer';
 import { activateLocale } from '@/i18n';
-
-export interface EmailOptions {
-    to: string;
-    subject: string;
-    html: string;
-    text?: string;
-    icalEvent?: {
-        filename: string;
-        content: string;
-    };
-}
+import { EmailOptions } from '@/types/services/email/email';
+import { capitalizeFirstLetter } from '@/utils/textUtils';
 
 export class EmailService {
     private transporter: nodemailer.Transporter;
@@ -28,11 +19,8 @@ export class EmailService {
                 user: process.env.NODEMAILER_USER,
                 pass: process.env.NODEMAILER_PASS,
             },
-            // Add connection timeout
-            connectionTimeout: 10000, // 10 seconds
-            // Add TLS options
+            connectionTimeout: 10000,
             tls: {
-                // Do not fail on invalid certs
                 rejectUnauthorized: process.env.NODE_ENV === 'production'
             },
             requireTLS: true,
@@ -78,16 +66,14 @@ export class EmailService {
             description?: string;
             location?: string;
             organizer?: { name: string; email: string };
+            customerName?: string;
         },
         locale: string = 'en'
     ): Promise<SentMessageInfo> {
-        // Activate the requested locale for this request
         await activateLocale(locale);
 
         const startDate = new Date(eventDetails.startTime);
         const endDate = new Date(eventDetails.endTime);
-
-        // Format dates for display
         const formattedDate = startDate.toLocaleDateString(locale, {
             weekday: 'long',
             year: 'numeric',
@@ -100,7 +86,7 @@ export class EmailService {
             minute: '2-digit',
         });
 
-        // Create iCalendar event
+        // Create iCal event
         const icalEvent = this.createICalEvent({
             start: eventDetails.startTime,
             end: eventDetails.endTime,
@@ -108,19 +94,23 @@ export class EmailService {
             description: eventDetails.description || '',
             location: eventDetails.location || '',
             organizer: eventDetails.organizer,
-            timezone: eventDetails.timeZone,
+            timezone: eventDetails.timeZone
         });
 
         // Render email template
-        const emailHtml = this.renderConfirmationEmail({
-            title: eventDetails.title,
-            date: formattedDate,
-            time: formattedTime,
-            description: eventDetails.description,
-            location: eventDetails.location,
-            organizerName: eventDetails.organizer?.name,
-            icalEvent: icalEvent.toString(),
-        }, locale);
+        const emailHtml = this.renderConfirmationEmail(
+            {
+                title: eventDetails.title,
+                date: formattedDate,
+                time: formattedTime,
+                description: eventDetails.description,
+                location: eventDetails.location,
+                organizerName: eventDetails.organizer?.name,
+                customerName: eventDetails.customerName,
+                icalEvent: icalEvent.toString(),
+            },
+            locale
+        );
 
         // Send email with translated subject using Lingui
         return this.sendEmail({
@@ -195,6 +185,7 @@ export class EmailService {
             description?: string;
             location?: string;
             organizerName?: string;
+            customerName?: string;
             icalEvent: string;
         },
         locale: string
@@ -202,6 +193,7 @@ export class EmailService {
         // Common translations using Lingui's t macro directly
         const translations = {
             title: 'Event Confirmation',
+            hello: 'Hi!',
             thankYou: 'Thank you for scheduling with us! Your event has been confirmed.',
             date: 'Date',
             time: 'Time',
@@ -216,6 +208,7 @@ export class EmailService {
         // Get translations for the current locale
         const translated = {
             title: i18n._(t`${translations.title}`),
+            hello: i18n._(t`${translations.hello}`),
             thankYou: i18n._(t`${translations.thankYou}`),
             date: i18n._(t`${translations.date}`),
             time: i18n._(t`${translations.time}`),
@@ -257,6 +250,7 @@ export class EmailService {
             <h1>${translated.title}</h1>
           </div>
           <div class="content">
+            <p>${translated.hello} ${capitalizeFirstLetter(event.customerName || '')}</p>
             <p>${translated.thankYou}</p>
             
             <div class="event-details">
@@ -264,8 +258,18 @@ export class EmailService {
               <p><strong>${translated.date}:</strong> ${event.date}</p>
               <p><strong>${translated.time}:</strong> ${event.time}</p>
               ${event.location ? `<p><strong>${translated.location}:</strong> ${event.location}</p>` : ''}
-              ${event.description ? `<p><strong>${translated.description}:</strong> ${event.description}</p>` : ''}
               ${event.organizerName ? `<p><strong>${translated.organizer}:</strong> ${event.organizerName}</p>` : ''}
+              ${event.description ? `
+              <div style="margin: 20px 0; padding: 15px; background: #fff8e1; border-left: 4px solid #ffc107; border-radius: 4px;">
+                <h3 style="margin: 0 0 10px 0; color: #5d4037; font-size: 16px; font-weight: bold;">
+                  ${translated.description}
+                </h3>
+                <div style="background: white; padding: 12px; border-radius: 4px; border: 1px solid #ffe0b2;">
+                  <p style="margin: 0; color: #333; font-size: 14px; line-height: 1.6; white-space: pre-line;">
+                    ${event.description}
+                  </p>
+                </div>
+              </div>` : ''}
             </div>
 
             <div style="text-align: center; margin: 25px 0;">

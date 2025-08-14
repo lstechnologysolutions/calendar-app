@@ -57,7 +57,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const { summary, startTime, endTime, calendarId = 'primary', options, attendeeEmail } = body;
+    const { summary, startTime, endTime, calendarId = 'primary', options, attendeeEmail, description } = body;
     
     if (!summary || !startTime || !endTime || !attendeeEmail) {
       return jsonResponse(
@@ -76,7 +76,8 @@ export async function POST(request: Request) {
       endTime, 
       attendeeEmail,
       options || {},
-      calendarId
+      calendarId,
+      description
     );
 
     if (!result.success) {
@@ -90,16 +91,6 @@ export async function POST(request: Request) {
         400
       );
     }
-
-    // Log the successful creation with the event details
-    console.log('Event created successfully:', {
-      summary,
-      startTime,
-      endTime,
-      calendarId,
-      eventId: result.eventId,
-      htmlLink: result.htmlLink
-    });
 
     return jsonResponse({
       success: true,

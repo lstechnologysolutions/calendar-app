@@ -63,7 +63,6 @@ export default function BookingPage() {
 
   const handleTimeSlotSelect = useCallback((timeSlot: { time: string, date?: Date, isAvailable?: boolean }) => {
     if (timeSlot.date) {
-      // Update the selected date if provided
       setSelectedDate(new Date(timeSlot.date));
     }
     if (timeSlot.time) {
@@ -90,7 +89,6 @@ export default function BookingPage() {
     setSelectedService(null);
     setSelectedDate(new Date());
     setSelectedTime('');
-    // Add navigation to home if needed
   };
 
   const handleBookingComplete = async (formData: BookingFormData) => {
@@ -116,7 +114,6 @@ export default function BookingPage() {
       if (!result || !result.success) {
         throw new Error(result?.error || 'Failed to create booking');
       }
-      // The BookingForm will handle showing the success screen
       return { success: true };
     } catch (error) {
       console.error("Error creating booking:", error);
@@ -218,10 +215,8 @@ export default function BookingPage() {
               onSubmit={async (formData) => {
                 const result = await handleBookingComplete(formData);
                 if (result?.success) {
-                  // Return success status to BookingForm to show success screen
                   return { status: 'success' as const };
                 } else {
-                  // Return error status to BookingForm to show error
                   return { status: 'error' as const, error: result?.error };
                 }
               }}

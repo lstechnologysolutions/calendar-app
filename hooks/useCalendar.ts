@@ -5,6 +5,7 @@ import { Alert } from 'react-native';
 import { ClientCalendarService } from '@/lib/services/calendar/calendarClientService';
 import { BusyTimeSlot, CALENDAR_ID, TIME_SLOT_DURATION } from '@/types/Calendar';
 import { generateTimeSlots, createISODateTime } from '@/utils/dateUtils';
+import { capitalizeFirstLetter } from '@/utils/textUtils';
 
 export const useCalendar = () => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
@@ -71,29 +72,25 @@ export const useCalendar = () => {
     
     try {
       setIsBooking(true);
-      console.log(`Starting booking process for ${selectedTime} on ${format(selectedDate, 'PPP')}`);
       
       const startTime = createISODateTime(selectedDate, selectedTime);
       const endTime = new Date(new Date(startTime).getTime() + TIME_SLOT_DURATION * 60 * 1000).toISOString();
       
-      // Create event description with booking details
-      const eventDescription = `
-        Customer: ${firstName} ${lastName}
-        Email: ${email}
-        Phone: ${phone}
-        Service: ${serviceName}
-        Notes: ${notes || 'No additional notes'}
-      `;
+      const eventDetails = {
+        customer: {
+          firstName,
+          lastName,
+          email,
+          phone
+        },
+        service: serviceName,
+        notes: notes || 'No additional notes'
+      };
       
-      console.log('Creating calendar event with:', { 
-        startTime, 
-        endTime, 
-        calendarId: CALENDAR_ID,
-        description: eventDescription
-      });
+      const eventDescription = JSON.stringify(eventDetails);
       
       const result = await calendarService.createCalendarEvent(
-        `Appointment: ${serviceName} - ${firstName} ${lastName}`,
+        `Appointment: ${serviceName}`,
         startTime,
         endTime,
         email,
@@ -101,7 +98,8 @@ export const useCalendar = () => {
           sendEmail: true,
           locale: i18n.locale,
           organizerName: 'LSTS',
-          organizerEmail: CALENDAR_ID
+          organizerEmail: CALENDAR_ID,
+          customerDetails: eventDetails
         },
         eventDescription
       );

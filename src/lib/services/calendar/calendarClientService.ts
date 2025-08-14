@@ -64,6 +64,16 @@ class ClientCalendarService implements ICalendarService {
       locale?: string;
       organizerName?: string;
       organizerEmail?: string;
+      customerDetails?: {
+        customer: {
+          firstName: string;
+          lastName: string;
+          email: string;
+          phone: string;
+        };
+        service: string;
+        notes: string;
+      };
     },
     description?: string,
   ): Promise<CalendarServiceResponse<{ eventId?: string; htmlLink?: string }>> {

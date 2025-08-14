@@ -2,6 +2,7 @@ import { google, calendar_v3 } from 'googleapis';
 import { JWT } from 'google-auth-library';
 import { BusyTimeSlot, ICalendarService, GoogleCredentials, CALENDAR_SCOPES } from '@/types/Calendar';
 import { EmailService } from '../email/EmailService';
+import { capitalizeFirstLetter } from '@/utils/textUtils';
 
 class ServerCalendarService implements ICalendarService {
   private static instance: ServerCalendarService;
@@ -199,6 +200,16 @@ class ServerCalendarService implements ICalendarService {
       locale?: string;
       organizerName?: string;
       organizerEmail?: string;
+      customerDetails?: {
+        customer: {
+          firstName: string;
+          lastName: string;
+          email: string;
+          phone: string;
+        };
+        service: string;
+        notes: string;
+      };
     },
     calendarId: string = 'primary',
     description?: string,
@@ -223,7 +234,7 @@ class ServerCalendarService implements ICalendarService {
       
       const event = {
         summary,
-        description,
+        description: description,
         start: {
           dateTime: startTime,
           timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
@@ -232,14 +243,6 @@ class ServerCalendarService implements ICalendarService {
           dateTime: endTime,
           timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
         },
-        /* attendees: [
-          {
-            email: attendeeEmail,
-            responseStatus: 'accepted',
-            organizer: false,
-            self: false
-          },
-        ], */
         reminders: {
           useDefault: false,
           overrides: [
@@ -302,6 +305,10 @@ class ServerCalendarService implements ICalendarService {
         if (result.success) {
           try {
             const emailService = EmailService.getInstance();
+            const firstName = options.customerDetails ? capitalizeFirstLetter(options.customerDetails.customer.firstName) : '';
+            const lastName = options.customerDetails ? capitalizeFirstLetter(options.customerDetails.customer.lastName) : '';
+            const customer= `${firstName} ${lastName}`;
+              
             await emailService.sendCalendarEventConfirmation(
               attendeeEmail,
               {
@@ -309,12 +316,19 @@ class ServerCalendarService implements ICalendarService {
                 startTime,
                 endTime,
                 timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-                description,
+                description: options.customerDetails ? 
+                  `Service: ${options.customerDetails.service}\n` +
+                  `Customer: ${customer}\n` +
+                  `Email: ${options.customerDetails.customer.email}\n` +
+                  `Phone: ${options.customerDetails.customer.phone}\n` +
+                  (options.customerDetails.notes ? `\nNotes: ${options.customerDetails.notes}` : '') :
+                  description || '',
                 location: meetLink || '',
                 organizer: options.organizerName && options.organizerEmail ? {
                   name: options.organizerName,
                   email: options.organizerEmail
-                } : undefined
+                } : undefined,
+                customerName: firstName,
               },
               options.locale || 'en'
             );
