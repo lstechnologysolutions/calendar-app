@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, ScrollView } from "react-native";
 import { Trans } from "@lingui/react/macro";
 import { Clock, Info } from "lucide-react-native";
 import { Service } from "src/types/Service";
+import { SERVICES, getPaidServices, getFreeServices } from "@/config/services";
 import { PriceDisplay } from "../src/components/ui/PriceDisplay";
 
 interface ServiceSelectionProps {
@@ -12,49 +13,17 @@ interface ServiceSelectionProps {
 
 export default function ServiceSelection({
   onSelectService = () => {},
-  services = [
-    {
-      id: "1",
-      name: "Initial Consultation",
-      description: "A free 15-minute consultation to discuss your needs",
-      duration: "15 min",
-      price: null,
-      type: "free",
-    },
-    {
-      id: "2",
-      name: "Standard Appointment",
-      description: "Regular 30-minute appointment session",
-      duration: "30 min",
-      price: 50,
-      type: "paid",
-    },
-    {
-      id: "3",
-      name: "Extended Session",
-      description: "In-depth 60-minute appointment session",
-      duration: "60 min",
-      price: 90,
-      type: "paid",
-    },
-    {
-      id: "4",
-      name: "Quick Follow-up",
-      description: "Brief follow-up session for existing clients",
-      duration: "15 min",
-      price: null,
-      type: "free",
-    },
-  ],
+  services = SERVICES,
 }: ServiceSelectionProps) {
   const [activeFilter, setActiveFilter] = useState<"all" | "free" | "paid">(
     "all",
   );
 
-  const filteredServices = services.filter((service) => {
-    if (activeFilter === "all") return true;
-    return service.type === activeFilter;
-  });
+  const filteredServices = activeFilter === "all" 
+    ? services 
+    : activeFilter === "paid" 
+      ? getPaidServices() 
+      : getFreeServices();
 
   return (
     <View className="p-4 rounded-lg shadow-sm ">

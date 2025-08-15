@@ -83,9 +83,6 @@ export const paymentService = {
         // Validate card BIN (first 6 digits)
         const bin = cardNumber.substring(0, 6);
         console.log('Processing card with BIN:', bin);
-        
-        // Add additional validation for card BIN if needed
-        // For example, you might want to validate against a list of accepted BINs
       }
 
       // Convert issuer_id to number if it's a string

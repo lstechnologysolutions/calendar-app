@@ -7,41 +7,9 @@ import AppointmentCalendar from "../components/AppointmentCalendar";
 import BookingForm from "../components/BookingForm";
 import { Service } from "@/types/Service";
 import { BookingFormData } from "@/types/Booking";
+import { SERVICES } from "@/config/services";
 
-const mockServices: Service[] = [
-  {
-    id: "1",
-    name: "Initial Consultation",
-    duration: "30 min",
-    price: 0,
-    description: "Free introductory meeting to discuss your needs",
-    type: "free",
-  },
-  {
-    id: "2",
-    name: "Standard Session",
-    duration: "60 min",
-    price: 75,
-    description: "Regular appointment session",
-    type: "paid",
-  },
-  {
-    id: "3",
-    name: "Extended Session",
-    duration: "90 min",
-    price: 120,
-    description: "In-depth consultation for complex issues",
-    type: "paid",
-  },
-  {
-    id: "4",
-    name: "Quick Follow-up",
-    duration: "15 min",
-    price: 0,
-    description: "Brief check-in after previous appointment",
-    type: "free",
-  },
-];
+const Services: Service[] = SERVICES;
 
 export default function BookingPage() {
   const [currentStep, setCurrentStep] = useState(1);
@@ -182,7 +150,7 @@ export default function BookingPage() {
 
           {currentStep === 1 && (
             <ServiceSelection
-              services={mockServices}
+              services={Services}
               onSelectService={handleServiceSelect}
             />
           )}

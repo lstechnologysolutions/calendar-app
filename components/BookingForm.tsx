@@ -3,6 +3,7 @@ import { View, Text, ScrollView } from "react-native";
 import { AlertCircle } from "lucide-react-native";
 import { BookingFormData, BookingFormProps } from "src/types/Booking";
 import PersonalInfoForm from "./BookingStep/PersonalInfoForm";
+import { DEFAULT_SERVICE } from "@/config/services";
 import PaymentMethods from "./BookingStep/PaymentMethods";
 import SuccessScreen from "./BookingStep/SuccessScreen";
 import ErrorScreen from "./BookingStep/ErrorScreen";
@@ -16,16 +17,7 @@ const BookingForm = ({
   selectedDateTime,
   isBooking = false,
 }: BookingFormProps) => {
-  const defaultService = {
-    id: "1",
-    name: "Consultation",
-    duration: "30 min",
-    price: 0,
-    description: "Initial consultation to discuss your needs",
-    type: "free",
-  } as const;
-
-  const service = selectedService || defaultService;
+  const service = selectedService || DEFAULT_SERVICE;
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const scrollRef = useRef<ScrollView>(null);
