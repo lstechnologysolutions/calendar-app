@@ -270,7 +270,7 @@ export const useMercadoPago = (options: UseMercadoPagoProps): UseMercadoPagoRetu
                 const formattedAmounts = getFormattedAmounts(usdAmount);
                 copAmount = formattedAmounts.copValue;
                 
-                numericAmount = parseFloat(copAmount.toFixed(2));
+                numericAmount = parseFloat(usdAmount.toFixed(2));
                 
             } catch (error) {
                 throw new Error('Error al procesar el monto. Por favor intente nuevamente.');
