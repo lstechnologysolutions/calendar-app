@@ -2,10 +2,10 @@ import { MercadoPagoConfig, Payment, Preference } from 'mercadopago';
 import { getEnvVariable } from '@/utils/envUtils';
 import { 
   PaymentData, 
-  PaymentResponse, 
   PreferenceRequest,
   PreferenceResponse,
-} from '@/types/Payment/MercadoPago';
+  PaymentResponseWithMetadata
+} from '@/types/Payment/MercadoPago.types';
 
 // Validate required environment variables
 const mercadoPagoAccessToken = getEnvVariable('MERCADOPAGO_ACCESS_TOKEN');
@@ -51,23 +51,38 @@ export const paymentService = {
   /**
    * Process a payment using MercadoPago
    */
-  async processPayment(paymentData: PaymentData): Promise<PaymentResponse> {
+  async processPayment(paymentData: PaymentData): Promise<PaymentResponseWithMetadata> {
+    const paymentStartTime = new Date();
+    const requestId = `pay_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    
+    // Log the start of payment processing with masked sensitive data
+    console.log(`[${requestId}] Starting payment processing at ${paymentStartTime.toISOString()}`);
+    console.log(`[${requestId}] Payment data:`, {
+      ...paymentData,
+      token: paymentData.token ? `${paymentData.token.substring(0, 8)}...` : 'missing',
+      payer: {
+        ...paymentData.payer,
+        identification: paymentData.payer?.identification ? {
+          type: paymentData.payer.identification.type,
+          number: paymentData.payer.identification.number ? '***' + paymentData.payer.identification.number.slice(-4) : 'missing'
+        } : 'missing'
+      }
+    });
+
     try {
-      console.log('Processing payment with data:', JSON.stringify(paymentData, null, 2));
-  
-      // Validate required fields
-      if (!paymentData.token) {
-        throw new Error('Missing required field: token');
+      // Validate required fields with detailed error messages
+      const missingFields = [];
+      if (!paymentData.token) missingFields.push('token');
+      if (!paymentData.payment_method_id) missingFields.push('payment_method_id');
+      if (!paymentData.payer?.email) missingFields.push('payer.email');
+      
+      if (missingFields.length > 0) {
+        const errorMessage = `Missing required fields: ${missingFields.join(', ')}`;
+        console.error(`[${requestId}] Validation error:`, errorMessage);
+        throw new Error(errorMessage);
       }
 
-      if (!paymentData.payment_method_id) {
-        throw new Error('Missing required field: payment_method_id');
-      }
-      if (!paymentData.payer?.email) {
-        throw new Error('Missing required field: payer.email');
-      }
-
-      // Extract and clean card data if this is a card payment
+      // Process card payment
       const isCardPayment = ['credit_card', 'debit_card'].includes(paymentData.payment_method_id);
       let cardNumber = '';
       
@@ -80,17 +95,11 @@ export const paymentService = {
           throw new Error('Número de tarjeta inválido. Debe tener entre 13 y 16 dígitos.');
         }
         
-        // Validate card BIN (first 6 digits)
-        const bin = cardNumber.substring(0, 6);
-        console.log('Processing card with BIN:', bin);
+        // Log BIN (first 6 digits) for debugging
+        console.log(`[${requestId}] Processing card with BIN:`, cardNumber.substring(0, 6));
       }
 
-      // Convert issuer_id to number if it's a string
-      const issuerId = paymentData.issuer_id ? 
-        (typeof paymentData.issuer_id === 'string' ? parseInt(paymentData.issuer_id, 10) : paymentData.issuer_id) : 
-        undefined;
-
-      // Build the payment request
+      // Prepare payment request
       const paymentRequest: any = {
         transaction_amount: Number(paymentData.transaction_amount),
         token: paymentData.token,
@@ -98,7 +107,6 @@ export const paymentService = {
         installments: Number(paymentData.installments) || 1,
         payment_method_id: paymentData.payment_method_id,
         binary_mode: true,
-        ...(issuerId && { issuer_id: issuerId }),
         payer: {
           email: paymentData.payer.email.trim(),
           identification: {
@@ -107,61 +115,117 @@ export const paymentService = {
           },
           ...(paymentData.cardholder_name && { first_name: paymentData.cardholder_name })
         },
+        metadata: {
+          request_id: requestId,
+          created_at: new Date().toISOString(),
+          source: 'web'
+        }
       };
 
-      // Add card data if this is a card payment
-      if (isCardPayment && cardNumber) {
-        paymentRequest.payment_method = {
-          card: {
-            cardholder: {
-              name: paymentData.cardholder_name || paymentData.payer.identification?.number || '',
-              identification: {
-                type: paymentData.payer.identification?.type || 'DNI',
-                number: (paymentData.payer.identification?.number || '').toString().replace(/\D/g, '')
-              }
-            },
-            expiration_month: paymentData.card_expiration_month?.toString().padStart(2, '0') || '',
-            expiration_year: paymentData.card_expiration_year?.toString().slice(-2) || '',
-            security_code: paymentData.security_code || '',
-            card_number: cardNumber
+      console.log(`[${requestId}] Sending payment request to MercadoPago:`, {
+        ...paymentRequest,
+        token: `${paymentRequest.token.substring(0, 8)}...`,
+        payer: {
+          ...paymentRequest.payer,
+          identification: {
+            ...paymentRequest.payer.identification,
+            number: '***' + (paymentRequest.payer.identification.number || '').slice(-4)
           }
-        };
-        
-        // Add device fingerprint if available
-        if (paymentData.device_fingerprint) {
-          paymentRequest.device_fingerprint = paymentData.device_fingerprint;
         }
-      }
+      });
 
-      console.log('Sending payment request to MercadoPago:', JSON.stringify(paymentRequest, null, 2));
-      
+      // Process payment with MercadoPago
+      const mpStartTime = Date.now();
       const payment = await paymentClient.create({ body: paymentRequest });
-      console.log('Payment response from MercadoPago:', JSON.stringify(payment, null, 2));
+      const mpEndTime = Date.now();
+      const processingTime = mpEndTime - mpStartTime;
 
-      return {
-        success: true,
+      // Safely log payment response with null checks
+      const paymentResponseLog: Record<string, unknown> = {
         status: payment.status,
         status_detail: payment.status_detail,
-        id: payment.id,
+        payment_id: payment.id,
+        payment_method: payment.payment_method_id,
+        transaction_amount: payment.transaction_amount,
+        installments: payment.installments
       };
-    } catch (error: any) {
-      console.error('Error processing payment:', error);
+
+      // Add payer info if available
+      if (payment.payer) {
+        paymentResponseLog.payer = {
+          email: payment.payer.email ? '***' + String(payment.payer.email).substring(3) : 'missing',
+          identification: payment.payer.identification ? {
+            type: payment.payer.identification.type || 'missing',
+            number: payment.payer.identification.number 
+              ? '***' + String(payment.payer.identification.number).slice(-4) 
+              : 'missing'
+          } : 'missing'
+        };
+      } else {
+        paymentResponseLog.payer = 'missing';
+      }
+
+      console.log(`[${requestId}] MercadoPago API response received in ${processingTime}ms`, paymentResponseLog);
+
+      const response: PaymentResponseWithMetadata = {
+        success: true,
+        status: payment.status || 'pending',
+        status_detail: payment.status_detail || 'pending',
+        id: payment.id?.toString() || '',
+        metadata: {
+          request_id: requestId,
+          processing_time_ms: processingTime
+        }
+      };
+
+      return response;
+
+    } catch (error: unknown) {
+      const errorTime = new Date();
+      const processingTime = errorTime.getTime() - paymentStartTime.getTime();
+      const errorObj = error as Record<string, unknown>;
+      
+      // Prepare error details
+      const errorDetails = {
+        name: errorObj.name,
+        message: errorObj.message,
+        stack: typeof errorObj.stack === 'string' ? errorObj.stack.split('\n').slice(0, 3).join('\n') + '...' : 'No stack trace',
+        code: errorObj.code,
+        status: errorObj.status,
+        statusCode: errorObj.statusCode,
+        cause: errorObj.cause ? {
+          code: (errorObj.cause as any)?.code,
+          description: (errorObj.cause as any)?.description,
+          data: (errorObj.cause as any)?.data
+        } : undefined
+      };
+      
+      console.error(`[${requestId}] Error processing payment after ${processingTime}ms:`, {
+        error: errorDetails,
+        timestamp: errorTime.toISOString()
+      });
       
       // Log additional error details for debugging
-      if (error.cause) {
-        console.error('Error cause:', JSON.stringify(error.cause, null, 2));
+      if (errorObj.cause) {
+        console.error(`[${requestId}] Error cause:`, JSON.stringify(errorObj.cause, null, 2));
       }
-      if (error.response) {
-        console.error('Error response:', JSON.stringify(error.response, null, 2));
+      if (errorObj.response) {
+        console.error(`[${requestId}] Error response:`, JSON.stringify(errorObj.response, null, 2));
       }
-      
-      const { errorMessage, errorStatus } = validateError(error);
-      return {
+
+      const { errorMessage, errorStatus } = validateError(error as Error);
+      const errorResponse: PaymentResponseWithMetadata = {
         success: false,
         error: errorMessage,
         status: errorStatus.toString(),
-        details: error.cause || error.response || error.message,
+        details: (errorObj.cause || errorObj.response || errorObj.message) as string,
+        metadata: {
+          request_id: requestId,
+          processing_time_ms: processingTime
+        }
       };
+      
+      return errorResponse;
     }
   },
 

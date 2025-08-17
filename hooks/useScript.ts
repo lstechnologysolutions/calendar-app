@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { UseScriptOptions, UseScriptReturn } from '@/types/hooks/useScript';
+import { UseScriptOptions, UseScriptReturn } from '@/types/hooks/useScript.types';
 declare global {
   interface Window {
     MercadoPago: any;

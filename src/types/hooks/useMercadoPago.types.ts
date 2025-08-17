@@ -1,4 +1,4 @@
-import { PaymentData, PaymentStatus } from '@/types/Payment/MercadoPago';
+import { PaymentData, PaymentStatus } from '@/types/Payment/MercadoPago.types';
 /**
  * Props for the useMercadoPago hook
  */
@@ -68,7 +68,22 @@ export interface UseMercadoPagoReturn {
     /** Function to initialize the card form */
     initCardForm: (formElement: HTMLFormElement) => void;
     /** Function to process the payment */
-    processPayment: (paymentData: PaymentData) => Promise<void>;
+    processPayment: (
+        formData: any, 
+        onSuccess?: (result: any) => void, 
+        onErrorCallback?: (error: Error) => void
+    ) => Promise<{
+        success: boolean;
+        status: string;
+        id: any;
+        token: string;
+        description: string;
+        installments: number;
+        payment_method_id: string;
+        transaction_amount: string | number;
+        issuer_id?: string | number;
+        additionalData?: { [key: string]: any };
+    }>;
     /** MercadoPago instance */
     mpInstance: any;
     /** Available identification types for the current country */

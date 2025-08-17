@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import Card from "react-credit-cards";
 import "react-credit-cards/es/styles-compiled.css";
 import { cn } from "@/lib/utils";
-import { MercadoPagoWebFormProps, INITIAL_STATE_CARD, FormCardState, InstallmentOption } from '@/types/Payment/MercadoPago';
+import { MercadoPagoWebFormProps, INITIAL_STATE_CARD, FormCardState, InstallmentOption } from '@/types/Payment/MercadoPago.types';
 import { FormInput, InstallmentSelect } from './CustomFormComponents';
-import { IDENTIFICATION_TYPES } from "@/types/hooks/useMercadoPago";
+import { IDENTIFICATION_TYPES } from "@/types/hooks/useMercadoPago.types";
 
 export default function MercadoPagoWebForm({
     amount = 0,

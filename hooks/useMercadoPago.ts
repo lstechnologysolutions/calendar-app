@@ -1,8 +1,13 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import useScript from './useScript';
 import { formConfig } from '@/config/mercadoPagoFormConfig';
-import { UseMercadoPagoProps, CardTokenData, UseMercadoPagoReturn, IDENTIFICATION_TYPES } from '@/types/hooks/useMercadoPago';
-import { PaymentData, PaymentStatus } from '@/types/Payment/MercadoPago';
+import { 
+    UseMercadoPagoProps, 
+    CardTokenData, 
+    UseMercadoPagoReturn, 
+    IDENTIFICATION_TYPES,
+} from '@/types/hooks/useMercadoPago.types';
+import { PaymentData, PaymentStatus } from '@/types/Payment/MercadoPago.types';
 import { getFormattedAmounts } from '@/utils/currencyUtils';
 import { paymentService } from '@/lib/services/payment/paymentClientService';
 
@@ -119,26 +124,62 @@ export const useMercadoPago = (options: UseMercadoPagoProps): UseMercadoPagoRetu
                                 identificationNumber: formData.identificationNumber || ''
                             };
 
-                            console.log('Creating card token with data:', tokenData);
+                            console.log('Creating card token with data:', {
+                                ...tokenData,
+                                cardNumber: tokenData.cardNumber ? `${tokenData.cardNumber.substring(0, 4)}...${tokenData.cardNumber.slice(-4)}` : 'missing',
+                                securityCode: tokenData.securityCode ? '***' : 'missing'
+                            });
                             
-                            return mpInstance.createCardToken(tokenData)
-                                .then((tokenData: CardTokenData) => {
-                                    console.log('Token data received:', tokenData);
-                                    if (tokenData && tokenData.id) {
-                                        return tokenData;
-                                    }
-                                    throw new Error('No se pudo generar el token de pago: ' + JSON.stringify(tokenData));
-                                })
-                                .catch((err: Error) => {
-                                    console.error('Error creating card token:', err);
-                                    const error = err instanceof Error ? err : new Error('Error al procesar el pago: ' + String(err));
-                                    setError(error);
-                                    onError?.(error);
-                                    return Promise.reject(error);
-                                })
-                                .finally(() => {
-                                    setIsLoading(false);
+                            const tokenCreationTime = new Date();
+                            console.log('Token creation started at:', tokenCreationTime.toISOString());
+                            
+                            try {
+                                const tokenResponse = await mpInstance.createCardToken(tokenData);
+                                const tokenReceivedTime = new Date();
+                                const tokenAgeMs = tokenReceivedTime.getTime() - tokenCreationTime.getTime();
+                                
+                                console.log('Token data received:', {
+                                    ...tokenResponse,
+                                    tokenAgeMs,
+                                    receivedAt: tokenReceivedTime.toISOString()
                                 });
+                                
+                                if (!tokenResponse || !tokenResponse.id) {
+                                    throw new Error('Invalid token response format: ' + JSON.stringify(tokenResponse));
+                                }
+                                
+                                if (typeof tokenResponse.id !== 'string' || tokenResponse.id.length < 10) {
+                                    throw new Error('Invalid token format received');
+                                }
+                                
+                                const tokenWithTimestamp = {
+                                    ...tokenResponse,
+                                    _createdAt: tokenReceivedTime.toISOString(),
+                                    _expiresAt: new Date(tokenReceivedTime.getTime() + (7 * 60 * 1000)).toISOString() // 7 minutes from now
+                                };
+                                
+                                return tokenWithTimestamp;
+                            } catch (err) {
+                                const errorTime = new Date();
+                                const errorDuration = errorTime.getTime() - tokenCreationTime.getTime();
+                                console.error('Error creating card token:', {
+                                    error: err,
+                                    errorTime: errorTime.toISOString(),
+                                    durationMs: errorDuration,
+                                    tokenData: {
+                                        ...tokenData,
+                                        cardNumber: tokenData.cardNumber ? '***' + tokenData.cardNumber.slice(-4) : 'missing',
+                                        securityCode: '***'
+                                    }
+                                });
+                                
+                                const error = err instanceof Error ? err : new Error('Error al procesar el pago: ' + String(err));
+                                setError(error);
+                                onError?.(error);
+                                return Promise.reject(error);
+                            } finally {
+                                setIsLoading(false);
+                            }
                         } catch (err) {
                             console.error('Error in payment submission:', err);
                             const error = err instanceof Error ? err : new Error('Error al procesar los datos del formulario');
@@ -184,21 +225,13 @@ export const useMercadoPago = (options: UseMercadoPagoProps): UseMercadoPagoRetu
             console.error('Error initializing card form:', err);
             const error = err instanceof Error ? err : new Error('Error al inicializar el formulario de pago');
             setError(error);
-            onError?.(error);
-        }
-    }, [mpInstance, amount, isLoading, onError]);
-
-    const processPayment = useCallback(async (formData: any, onSuccess?: (result: any) => void, onErrorCallback?: (error: Error) => void) => {
-        if (!mpInstance) {
-            const error = new Error('MercadoPago instance is not initialized');
-            console.error(error.message);
-            setError(error);
-            onError?.(error);
-            throw error;
         }
         
-        setIsLoading(true);
-        setError(null);
+    }, [mpInstance, amount, isLoading, onError]);
+    const processPayment = useCallback(async (formData: any, onSuccess?: (result: any) => void, onErrorCallback?: (error: Error) => void) => {
+        if (!mpInstance) {
+            throw new Error('MercadoPago instance is not initialized');
+        }
         
         try {
             const selectedType = identificationTypes.find(t => t.id === formData.identificationType) || 
@@ -214,115 +247,145 @@ export const useMercadoPago = (options: UseMercadoPagoProps): UseMercadoPagoRetu
                 throw new Error('El número de identificación es requerido');
             }
 
-            const cardNumber = (formData.cardNumber || '').replace(/\s/g, '');
-            const cardholderName = formData.cardholderName || '';
-            const cardExpirationMonth = formData.cardExpirationMonth || '';
-            const cardExpirationYear = formData.cardExpirationYear || '';
-            const securityCode = formData.securityCode || '';
-
-            const tokenData = await mpInstance.createCardToken({
-                cardNumber: cardNumber,
-                cardholderName: cardholderName,
-                cardExpirationMonth: cardExpirationMonth,
-                cardExpirationYear: cardExpirationYear.length === 2 ? `20${cardExpirationYear}` : cardExpirationYear,
-                securityCode: securityCode,
-                cardholder: {
-                    identification: {
-                        type: selectedType.id,
-                        number: identificationNumber
-                    },
-                    name: cardholderName
-                }
-            });
-            
-            if (!tokenData?.id) {
-                throw new Error('No se pudo generar el token de pago');
-            }
-            
-            let paymentMethodId = tokenData.payment_method_id;
-            
-            if (!paymentMethodId && tokenData.first_six_digits) {
-                const firstDigit = tokenData.first_six_digits.charAt(0);
-                if (firstDigit === '4') {
-                    paymentMethodId = 'visa';
-                } else if (firstDigit === '5') {
-                    paymentMethodId = 'master';
-                } else if (firstDigit === '3') {
-                    paymentMethodId = 'amex';
-                }
-            }
-            
-            if (!paymentMethodId) {
-                paymentMethodId = 'master';
-            }
-            
-            let numericAmount: number;
-            let copAmount: number;
-            
             try {
-
+                // Validate amount
                 const usdAmount = Number(amount);
-                
                 if (isNaN(usdAmount) || !isFinite(usdAmount) || usdAmount <= 0) {
                     throw new Error('El monto debe ser un número positivo');
                 }
                 
+                // Format amount
                 const formattedAmounts = getFormattedAmounts(usdAmount);
-                copAmount = formattedAmounts.copValue;
-                
-                numericAmount = parseFloat(usdAmount.toFixed(2));
-                
-            } catch (error) {
-                throw new Error('Error al procesar el monto. Por favor intente nuevamente.');
-            }
+                const copAmount = formattedAmounts.copValue;
+                const numericAmount = parseFloat(copAmount.toFixed(2));
 
-            const paymentData = {
-                transaction_amount: numericAmount,
-                token: tokenData.id,
-                description: 'Pago de servicio',
-                payment_method_id: paymentMethodId,
-                payer: {
-                    email: options.email || 'test@test.com',
-                    identification: {
-                        type: selectedType.id,
-                        number: identificationNumber
+                // Create card token
+                const tokenResponse = await mpInstance.createCardToken({
+                    cardNumber: (formData.cardNumber || '').replace(/\s/g, ''),
+                    cardholderName: formData.cardholderName || '',
+                    cardExpirationMonth: formData.cardExpirationMonth || '',
+                    cardExpirationYear: formData.cardExpirationYear?.length === 2 
+                        ? `20${formData.cardExpirationYear}` 
+                        : formData.cardExpirationYear || '',
+                    securityCode: formData.securityCode || '',
+                    cardholder: {
+                        identification: {
+                            type: selectedType.id,
+                            number: identificationNumber
+                        },
+                        name: formData.cardholderName || ''
                     }
-                },
-                binary_mode: true,
-                statement_descriptor: 'PAGO*SERVICIO'
-            };
-
-            const response = await paymentService.processPayment(paymentData);
-
-            if (response.error) {
-                throw new Error(response.error);
-            }
-
-            const result = response.data;
-            console.log('Payment result from server:', result);
-
-            if (result.success && (result.status === 'approved' || result.status === 'in_process')) {
-                // Only call one of the success callbacks, not both
-                //TODO: SIMPLY THIS 
-                if (onSuccess) {
-                    console.log('Calling onSuccess callback with result:', result);
-                    onSuccess(result);
-                } else if (onPaymentSuccess) {
-                    console.log('Calling onPaymentSuccess callback with result:', result);
-                    onPaymentSuccess(result);
+                });
+                
+                if (!tokenResponse?.id) {
+                    throw new Error('No se pudo generar el token de pago');
                 }
-            } else {
-                throw new Error(result.error || result.message || 'El pago no fue aprobado');
+                
+                // Determine payment method
+                const paymentMethodId = tokenResponse.payment_method_id || 
+                    (tokenResponse.first_six_digits ? 
+                        (tokenResponse.first_six_digits.startsWith('4') ? 'visa' : 
+                         tokenResponse.first_six_digits.startsWith('5') ? 'master' : 
+                         tokenResponse.first_six_digits.startsWith('3') ? 'amex' : 'master') 
+                    : 'master');
+
+                // Create payment data
+                const paymentData: PaymentData = {
+                    token: tokenResponse.id,
+                    description: 'Pago de servicio',
+                    installments: 1,
+                    payment_method_id: paymentMethodId,
+                    transaction_amount: numericAmount,
+                    payer: {
+                        email: options.email || 'test@test.com',
+                        identification: {
+                            type: selectedType.id,
+                            number: identificationNumber
+                        },
+                        cardholder_name: formData.cardholderName || ''
+                    },
+                    card_number: formData.cardNumber?.replace(/\s+/g, '') || '',
+                    security_code: formData.securityCode || '',
+                    card_expiration_month: formData.cardExpirationMonth?.toString() || '',
+                    card_expiration_year: formData.cardExpirationYear?.toString() || '',
+                    email: options.email,
+                    documentType: selectedType.id,
+                    documentNumber: identificationNumber,
+                    type: selectedType.id,
+                    number: identificationNumber,
+                    issuer: paymentMethodId,
+                    // Store additional metadata in a way that won't conflict with PaymentData
+                    additionalData: {
+                        token_created: new Date().toISOString(),
+                        request_id: `client_${Date.now()}`
+                    }
+                };
+
+                console.log('Sending payment request:', {
+                    amount: numericAmount,
+                    paymentMethod: paymentMethodId,
+                    timestamp: new Date().toISOString()
+                });
+
+                // Process payment
+                const result = await paymentService.processPayment(paymentData);
+                
+                if (!result) {
+                    throw new Error('No se recibió respuesta del servidor de pago');
+                }
+                
+                // Create a success response that matches the expected PaymentData type
+                const successResponse: PaymentData = {
+                    token: paymentData.token,
+                    description: paymentData.description,
+                    installments: paymentData.installments,
+                    payment_method_id: paymentMethodId,
+                    transaction_amount: numericAmount,
+                    payer: paymentData.payer,
+                    // Include any additional fields from the result
+                    ...(result as any)
+                };
+
+                // Call the success callback with the response
+                const callbackResponse = {
+                    ...successResponse,
+                    success: true,
+                    status: 'approved',
+                    id: (result as any)?.id || `payment_${Date.now()}`
+                };
+
+                if (onSuccess) {
+                    onSuccess(callbackResponse);
+                } else if (onPaymentSuccess) {
+                    onPaymentSuccess(callbackResponse);
+                }
+                
+                return callbackResponse;
+                
+            } catch (err) {
+                console.error('Payment processing error:', err);
+                const error = err instanceof Error ? err : new Error('Error al procesar el pago');
+                
+                if (onErrorCallback) {
+                    onErrorCallback(error);
+                } else if (onError) {
+                    onError(error);
+                }
+                
+                throw error;
+            } finally {
+                setIsLoading(false);
             }
-        } catch (err) {
-            const error = err instanceof Error ? err : new Error('Error al procesar el pago');
-            setError(error);
-            onErrorCallback?.(error) || onError?.(error);
+        } catch (error) {
+            console.error('Error in processPayment:', error);
+            if (onErrorCallback) {
+                onErrorCallback(error instanceof Error ? error : new Error(String(error)));
+            } else if (onError) {
+                onError(error instanceof Error ? error : new Error(String(error)));
+            }
             throw error;
-        } finally {
-            setIsLoading(false);
         }
-    }, [mpInstance, amount, onPaymentSuccess, onError]);
+    }, [mpInstance, amount, onPaymentSuccess, onError, options, identificationTypes]);
 
     return {
         paymentStatus,

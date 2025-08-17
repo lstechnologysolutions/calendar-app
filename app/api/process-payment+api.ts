@@ -1,7 +1,7 @@
 import { MercadoPagoConfig, Payment } from 'mercadopago';
 import { 
   PaymentRequest, 
-} from '@/types/Payment/MercadoPago';
+} from '@/types/Payment/MercadoPago.types';
 
 export async function POST(request: Request) {
   if (request.method !== 'POST') {

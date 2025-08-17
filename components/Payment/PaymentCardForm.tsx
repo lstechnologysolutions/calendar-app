@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, Platform } from 'react-native';
 import { useMercadoPago } from '../../hooks/useMercadoPago';
 import { formatCurrency } from '@/utils/currencyUtils';
-import { PaymentCardFormProps, WebPaymentStatus } from '@/types/Payment/MercadoPago';
+import { PaymentCardFormProps, WebPaymentStatus } from '@/types/Payment/MercadoPago.types';
 import MercadoPagoWebForm from './MercadoPagoWebForm/MercadoPagoWebForm';
 
 const PaymentCardForm: React.FC<PaymentCardFormProps> = ({

@@ -1,4 +1,4 @@
-import { InstallmentOption } from '@/types/Payment/MercadoPago';
+import { InstallmentOption } from '@/types/Payment/MercadoPago.types';
 
 export const FormInput = ({
     id,

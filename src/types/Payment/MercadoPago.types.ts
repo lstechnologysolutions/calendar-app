@@ -3,6 +3,8 @@
  * This file consolidates all payment-related type definitions in one place.
  */
 
+import { CardTokenData } from "../hooks/useMercadoPago.types";
+
 /**
  * Represents the status of a payment operation.
  * Used across the payment flow to track the current state.
@@ -76,6 +78,11 @@ export interface PaymentData {
   issuer?: string;
   /** Device fingerprint for fraud prevention */
   device_fingerprint?: string;
+  
+  /** Additional metadata for the payment */
+  additionalData?: {
+    [key: string]: any;
+  };
 }
 
 /**
@@ -184,6 +191,27 @@ export interface PaymentRequest {
 }
 
 /**
+ * Represents the MercadoPago SDK instance
+ */
+export type MercadoPagoInstance = {
+  new (publicKey: string, options?: { locale: string }): MercadoPagoInstance;
+  getIdentificationTypes: () => Promise<Array<{ id: string; name: string }>>;
+  createCardToken: (cardData: any) => Promise<CardTokenData>;
+  elements: () => {
+    create: (type: string, options: any) => any;
+  };
+};
+
+/**
+ * Represents a payment response with additional fields
+ */
+export interface PaymentResponseExtended extends PaymentData {
+  success: boolean;
+  status: string;
+  id?: string | number;
+}
+
+/**
  * Represents a payment preference request.
  */
 export interface PreferenceRequest {
@@ -207,6 +235,13 @@ export interface PaymentResponse {
   details?: any;
   // Add other fields that might be returned by the API
   [key: string]: any;
+}
+
+export interface PaymentResponseWithMetadata extends PaymentResponse {
+  metadata?: {
+    request_id: string;
+    processing_time_ms: number;
+  };
 }
 
 /**

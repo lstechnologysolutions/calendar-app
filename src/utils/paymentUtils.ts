@@ -30,7 +30,7 @@ export const getCardType = (cardNumber: string): string => {
   return 'visa';
 };
 
-import { PaymentFormState } from '@/types/Payment/MercadoPago';
+import { PaymentFormState } from '@/types/Payment/MercadoPago.types';
 
 export const validateField = <K extends keyof PaymentFormState>(
   field: K,
