@@ -1,4 +1,4 @@
-import { BusyTimeSlot, ICalendarService, API_BASE_URL, CalendarServiceResponse } from '@/types/Calendar';
+import { BusyTimeSlot, ICalendarService, API_BASE_URL, CalendarServiceResponse } from '@/types/Calendar.types';
 
 class ClientCalendarService implements ICalendarService {
   private static instance: ClientCalendarService;
@@ -11,11 +11,9 @@ class ClientCalendarService implements ICalendarService {
     return ClientCalendarService.instance;
   }
 
-  public async fetchBusySlots(date: string, calendarId: string = 'primary'): Promise<CalendarServiceResponse<BusyTimeSlot[]>> {
+  public async fetchBusySlots(date: string, calendarId: string): Promise<CalendarServiceResponse<BusyTimeSlot[]>> {
     try {
       const response = await fetch(`${API_BASE_URL}?date=${date}&calendarId=${encodeURIComponent(calendarId)}`);
-      
-      // Check if response is JSON
       const contentType = response.headers.get('content-type');
       if (!contentType || !contentType.includes('application/json')) {
         const text = await response.text();
@@ -74,6 +72,7 @@ class ClientCalendarService implements ICalendarService {
         service: string;
         notes: string;
       };
+      calendarId: string;
     },
     description?: string,
   ): Promise<CalendarServiceResponse<{ eventId?: string; htmlLink?: string }>> {

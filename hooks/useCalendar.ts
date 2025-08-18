@@ -3,9 +3,8 @@ import { i18n } from '@/i18n';
 import { format } from 'date-fns';
 import { Alert } from 'react-native';
 import { ClientCalendarService } from '@/lib/services/calendar/calendarClientService';
-import { BusyTimeSlot, CALENDAR_ID, TIME_SLOT_DURATION } from '@/types/Calendar';
+import { BusyTimeSlot, CALENDAR_ID, TIME_SLOT_DURATION } from '@/types/Calendar.types';
 import { generateTimeSlots, createISODateTime } from '@/utils/dateUtils';
-import { capitalizeFirstLetter } from '@/utils/textUtils';
 
 export const useCalendar = () => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
@@ -90,7 +89,7 @@ export const useCalendar = () => {
       const eventDescription = JSON.stringify(eventDetails);
       
       const result = await calendarService.createCalendarEvent(
-        `Appointment: ${serviceName}`,
+        `${serviceName} | ${email}`,
         startTime,
         endTime,
         email,
@@ -99,7 +98,8 @@ export const useCalendar = () => {
           locale: i18n.locale,
           organizerName: 'LSTS',
           organizerEmail: CALENDAR_ID,
-          customerDetails: eventDetails
+          customerDetails: eventDetails,
+          calendarId: CALENDAR_ID
         },
         eventDescription
       );

@@ -1,6 +1,6 @@
 import { google, calendar_v3 } from 'googleapis';
 import { JWT } from 'google-auth-library';
-import { BusyTimeSlot, ICalendarService, GoogleCredentials, CALENDAR_SCOPES } from '@/types/Calendar';
+import { BusyTimeSlot, ICalendarService, GoogleCredentials, CALENDAR_SCOPES } from '@/types/Calendar.types';
 import { EmailService } from '../email/EmailService';
 import { capitalizeFirstLetter } from '@/utils/textUtils';
 
@@ -15,7 +15,6 @@ class ServerCalendarService implements ICalendarService {
   public static getInstance(): ServerCalendarService {
     if (!ServerCalendarService.instance) {
       ServerCalendarService.instance = new ServerCalendarService();
-      // Initialize immediately when getting the instance
       ServerCalendarService.instance.initialize().catch(error => {
         console.error('Error during service initialization:', error);
       });
@@ -53,7 +52,6 @@ class ServerCalendarService implements ICalendarService {
 
   private async getAuthClient(): Promise<JWT> {
     try {
-      // Log which environment variables are present (without values for security)
       const envVars = [
         'GOOGLE_PROJECT_ID',
         'GOOGLE_PRIVATE_KEY',
@@ -64,13 +62,11 @@ class ServerCalendarService implements ICalendarService {
         'GOOGLE_ADMIN_EMAIL'
       ];
       
-      const presentVars = envVars.filter(varName => {
+      envVars.forEach(varName => {
         const isPresent = !!process.env[varName];
         console.log(`Env var ${varName} is ${isPresent ? 'present' : 'missing'}`);
-        return isPresent;
       });
 
-      // Validate required environment variables
       const requiredVars = ['GOOGLE_PROJECT_ID', 'GOOGLE_PRIVATE_KEY', 'GOOGLE_CLIENT_EMAIL'];
       const missingVars = requiredVars.filter(varName => !process.env[varName]);
       
@@ -80,7 +76,6 @@ class ServerCalendarService implements ICalendarService {
         throw new Error(errorMsg);
       }
 
-      // Create credentials object
       const credentials: GoogleCredentials = {
         type: 'service_account',
         project_id: process.env.GOOGLE_PROJECT_ID || '',
@@ -105,8 +100,7 @@ class ServerCalendarService implements ICalendarService {
       const auth = new JWT({
         email: credentials.client_email,
         key: credentials.private_key,
-        scopes: CALENDAR_SCOPES,
-        //subject: process.env.GOOGLE_ADMIN_EMAIL || undefined
+        scopes: CALENDAR_SCOPES
       });
 
       try {
@@ -134,7 +128,7 @@ class ServerCalendarService implements ICalendarService {
     }
   }
 
-  public async fetchBusySlots(date: string, calendarId: string = 'primary'): Promise<{ success: boolean; data?: BusyTimeSlot[]; error?: string }> {
+  public async fetchBusySlots(date: string, calendarId: string): Promise<{ success: boolean; data?: BusyTimeSlot[]; error?: string }> {
     if (!this.isInitialized) {
       const { success, error } = await this.initialize();
       if (!success) {
@@ -154,19 +148,20 @@ class ServerCalendarService implements ICalendarService {
       }
 
       const timeMin = new Date(date);
-      timeMin.setHours(0, 0, 0, 0);
+      timeMin.setHours(9, 0, 0, 0);
       
       const timeMax = new Date(date);
-      timeMax.setHours(23, 59, 59, 999);
+      timeMax.setHours(17, 59, 59, 999);
 
       const response = await this.calendar.freebusy.query({
         requestBody: {
           timeMin: timeMin.toISOString(),
           timeMax: timeMax.toISOString(),
-          timeZone: 'UTC',
+          timeZone: 'UTC-5',
           items: [{ id: calendarId }],
         },
       });
+
 
       const busySlots = response.data.calendars?.[calendarId]?.busy || [];
       if (busySlots.length === 0) {
@@ -210,8 +205,8 @@ class ServerCalendarService implements ICalendarService {
         service: string;
         notes: string;
       };
+      calendarId: string;
     },
-    calendarId: string = 'primary',
     description?: string,
   ): Promise<{ 
     success: boolean; 
@@ -230,11 +225,9 @@ class ServerCalendarService implements ICalendarService {
         throw new Error('Calendar client not initialized');
       }
 
-      console.log('Creating calendar event with Google Meet');
-      
       const event = {
         summary,
-        description: description,
+        description,
         start: {
           dateTime: startTime,
           timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
@@ -255,13 +248,18 @@ class ServerCalendarService implements ICalendarService {
         guestsCanSeeOtherGuests: true
       };
 
+      console.log('Event to create:', event);
+      console.log('Calendar ID:', options.calendarId);
+
       let response = await this.calendar.events.insert({
-        calendarId,
+        calendarId: options.calendarId,
         requestBody: event,
         sendUpdates: 'all',
         conferenceDataVersion: 0,
         sendNotifications: true,
       });
+
+      console.log('Event created:', response.data);
 
       if (!response.data.id) {
         throw new Error('Failed to create calendar event');
@@ -269,7 +267,7 @@ class ServerCalendarService implements ICalendarService {
 
       try {
         response = await this.calendar.events.patch({
-          calendarId,
+          calendarId: options.calendarId,
           eventId: response.data.id,
           requestBody: {
             conferenceData: {
@@ -291,8 +289,6 @@ class ServerCalendarService implements ICalendarService {
           (response.data.conferenceData?.entryPoints?.find(
             (ep: any) => ep.entryPointType === 'video' || ep.entryPointType === 'more'
           )?.uri)) ?? undefined;
-
-        console.log('Event created successfully' + (meetLink ? ' with Google Meet' : ''));
 
         const result = { 
           success: true, 
@@ -369,7 +365,7 @@ class ServerCalendarService implements ICalendarService {
       console.error('Event creation failed:', {
         error: errorDetails,
         userFriendlyMessage,
-        request: { summary, startTime, endTime, calendarId }
+        request: { summary, startTime, endTime, options }
       });
       
       return { 

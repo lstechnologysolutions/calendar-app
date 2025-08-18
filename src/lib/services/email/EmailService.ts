@@ -3,7 +3,7 @@ import { i18n } from '@lingui/core';
 import { t } from '@lingui/macro';
 import { SentMessageInfo } from 'nodemailer';
 import { activateLocale } from '@/i18n';
-import { EmailOptions } from '@/types/services/email/email';
+import { EmailOptions } from '@/types/services/email/email.types';
 import { capitalizeFirstLetter } from '@/utils/textUtils';
 
 export class EmailService {

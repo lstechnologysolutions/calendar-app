@@ -1,4 +1,4 @@
-import { PaymentData, PaymentStatus } from '@/types/Payment/MercadoPago.types';
+import { PaymentData, PaymentStatus } from '@/types/Payment/mercadoPago.types';
 /**
  * Props for the useMercadoPago hook
  */

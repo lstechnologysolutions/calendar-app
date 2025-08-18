@@ -5,9 +5,9 @@ import ServiceSelection from "../components/ServiceSelection";
 import useCalendar from "hooks/useCalendar";
 import AppointmentCalendar from "../components/AppointmentCalendar";
 import BookingForm from "../components/BookingForm";
-import { Service } from "@/types/Service";
-import { BookingFormData } from "@/types/Booking";
-import { SERVICES } from "@/config/services";
+import { Service } from "@/types/Service.types";
+import { BookingFormData } from "@/types/Booking.types";
+import { SERVICES } from "@/config/services.config";
 
 const Services: Service[] = SERVICES;
 

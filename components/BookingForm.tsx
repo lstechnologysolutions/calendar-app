@@ -1,9 +1,9 @@
 import React, { useRef, useState, useCallback } from "react";
 import { View, Text, ScrollView } from "react-native";
 import { AlertCircle } from "lucide-react-native";
-import { BookingFormData, BookingFormProps } from "src/types/Booking";
+import { BookingFormData, BookingFormProps } from "@/types/Booking.types";
 import PersonalInfoForm from "./BookingStep/PersonalInfoForm";
-import { DEFAULT_SERVICE } from "@/config/services";
+import { DEFAULT_SERVICE } from "@/config/services.config";
 import PaymentMethods from "./BookingStep/PaymentMethods";
 import SuccessScreen from "./BookingStep/SuccessScreen";
 import ErrorScreen from "./BookingStep/ErrorScreen";
@@ -106,7 +106,6 @@ const BookingForm = ({
       isValid = false;
     }
 
-    // Validate payment fields if it's a paid service and we're including payment validation
     if (includePayment && service && service.price && service.price > 0) {
       if (!formData.cardNumber.trim()) {
         newErrors.cardNumber = "Card number is required";
@@ -140,7 +139,6 @@ const BookingForm = ({
 
 
   const handleSubmit = useCallback(async () => {
-    // Ensure we have a valid service before proceeding
     if (!service) {
       console.error('No service selected');
       return;
@@ -154,22 +152,20 @@ const BookingForm = ({
 
     setIsSubmitting(true);
     try {
-      // Call the parent's onSubmit handler with the form data
       const result = await onSubmit(formData);
       
-      // Check the response status
       if (result.status === 'success') {
-        setCurrentStep(3); // Show success screen
+        setCurrentStep(3);
       } else {
         const errorMessage = result.error || "Something went wrong while processing your request.";
         setSubmitError(errorMessage);
-        setCurrentStep(4); // Show error screen
+        setCurrentStep(4);
       }
     } catch (e) {
       console.error('Form submission error:', e);
       const errorMessage = e instanceof Error ? e.message : "An unexpected error occurred. Please try again.";
       setSubmitError(errorMessage);
-      setCurrentStep(4); // Show error screen
+      setCurrentStep(4);
     } finally {
       setIsSubmitting(false);
     }
@@ -193,7 +189,7 @@ const BookingForm = ({
             </View>
           </View>
         )}
-        {/* Progress indicator */}
+
         {currentStep < 3 && (
           <View className="flex-row items-center justify-between mb-6">
             <View className="flex-1">
@@ -210,7 +206,6 @@ const BookingForm = ({
           </View>
         )}
 
-        {/* Form steps */}
         {currentStep === 1  && selectedDateTime && (
           <PersonalInfoForm
             formData={formData}

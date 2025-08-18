@@ -2,7 +2,7 @@ import React, { useEffect, useMemo } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
 import { Calendar, DateData } from 'react-native-calendars';
 import { isToday } from 'date-fns';
-import { TimeSlotProps, CalendarComponentProps } from '@/types/Calendar';
+import { TimeSlotProps, CalendarComponentProps } from '@/types/Calendar.types';
 import { formatDate, isSlotInPast } from '@/utils/dateUtils';
 import useCalendar from 'hooks/useCalendar';
 import { Trans } from "@lingui/react/macro";
@@ -71,24 +71,20 @@ const CalendarComponent: React.FC<CalendarComponentProps> = ({ onTimeSlotSelect 
   }, [fetchBusySlotsForDate, selectedDate]);
 
   const handleDateSelect = (dateString: string) => {
-    console.log('Selected date:', dateString);
-    // Create date in local timezone to avoid timezone issues
     const [year, month, day] = dateString.split('-').map(Number);
     const newDate = new Date(year, month - 1, day);
     
-    // Don't allow selecting past dates
     const todayStart = new Date(today);
-    todayStart.setHours(0, 0, 0, 0);
+    todayStart.setHours(9, 0, 0, 0);
     
     if (newDate < todayStart) {
       return;
     }
     
-    // Update UI immediately for better responsiveness
     setSelectedDate(newDate);
     setSelectedTime('');
     setTentativeSelectedTime('');
-    // Fetch slots in the background
+
     fetchBusySlotsForDate(newDate);
   };
 
@@ -96,8 +92,6 @@ const CalendarComponent: React.FC<CalendarComponentProps> = ({ onTimeSlotSelect 
 
   const handleTimeSelect = (time: string) => {
     setTentativeSelectedTime(time);
-    // Only update the selected time in local state
-    // The parent component will be notified when the confirm button is clicked
     setSelectedTime(time);
   };
 
@@ -122,7 +116,6 @@ const CalendarComponent: React.FC<CalendarComponentProps> = ({ onTimeSlotSelect 
       };
     }
 
-    // Disable past days
     const todayStr = formatDate(today);
     if (formatDate(selectedDate) < todayStr) {
       marked[formatDate(selectedDate)].disabled = true;
@@ -157,7 +150,6 @@ const CalendarComponent: React.FC<CalendarComponentProps> = ({ onTimeSlotSelect 
           current={formatDate(selectedDate)}
           onDayPress={(day) => {
             const selected = new Date(day.dateString);
-            // If weekend is selected, move to next working day
             if (selected.getDay() === 0 || selected.getDay() === 6) {
               const nextWorkingDay = getNextWorkingDay(selected);
               setSelectedDate(nextWorkingDay);

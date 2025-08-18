@@ -2,22 +2,15 @@ import React, { useState } from "react";
 import { View, Text, TouchableOpacity, ScrollView } from "react-native";
 import { Trans } from "@lingui/react/macro";
 import { Clock, Info } from "lucide-react-native";
-import { Service } from "src/types/Service";
-import { SERVICES, getPaidServices, getFreeServices } from "@/config/services";
+import { ServiceSelectionProps, ServiceFilter } from "@/types/Service.types";
+import { SERVICES, getPaidServices, getFreeServices } from "@/config/services.config";
 import { PriceDisplay } from "../src/components/ui/PriceDisplay";
-
-interface ServiceSelectionProps {
-  onSelectService?: (service: Service) => void;
-  services?: Service[];
-}
 
 export default function ServiceSelection({
   onSelectService = () => {},
   services = SERVICES,
 }: ServiceSelectionProps) {
-  const [activeFilter, setActiveFilter] = useState<"all" | "free" | "paid">(
-    "all",
-  );
+  const [activeFilter, setActiveFilter] = useState<ServiceFilter>("all");
 
   const filteredServices = activeFilter === "all" 
     ? services 
@@ -31,7 +24,6 @@ export default function ServiceSelection({
         <Trans>Select a Service</Trans>
       </Text>
 
-      {/* Filter Tabs */}
       <View className="flex-row justify-center mb-6">
         <TouchableOpacity
           className={`px-4 py-2 rounded-l-lg ${activeFilter === "all" ? "bg-primary" : "bg-base-200"}`}
@@ -65,7 +57,6 @@ export default function ServiceSelection({
         </TouchableOpacity>
       </View>
 
-      {/* Service Cards */}
       <ScrollView className="max-h-128">
         {filteredServices.map((service) => (
           <TouchableOpacity
@@ -100,7 +91,6 @@ export default function ServiceSelection({
         ))}
       </ScrollView>
 
-      {/* Info Text */}
       <View className="flex-row items-center justify-center mt-4 bg-base-200 p-3 rounded-lg">
         <Info size={16} color={`rgb(var(--color-primary))`} />
         <Text className="text-base-content ml-2 text-sm">

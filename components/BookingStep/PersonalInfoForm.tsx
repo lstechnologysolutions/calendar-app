@@ -2,8 +2,8 @@ import React, { useMemo, useState, useCallback } from "react";
 import { View, Text, TextInput, TouchableOpacity, Modal, FlatList } from "react-native";
 import { Trans } from "@lingui/react/macro";
 import { User, Phone, Mail, AlertCircle, ChevronDown, Search, Loader2 } from "lucide-react-native";
-import { countryCodes } from "@/config/countryCodes";
-import { BookingFormData, SelectedDateTime } from "@/types/Booking";
+import { countryCodes } from "@/config/countryCodes.config";
+import { BookingFormData, SelectedDateTime } from "@/types/Booking.types";
 
 export type PersonalInfoFormProps = {
   formData: BookingFormData;
@@ -35,23 +35,19 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
   
   
   const handleNext = useCallback(async () => {
-    // Clear any previous validation errors
     onShowValidationSummary(false);
 
-    // Validate required fields
     if (!formData.firstName?.trim() || !formData.lastName?.trim()) {
       onShowValidationSummary(true, 'Please fill in all required fields');
       return;
     }
     
-    // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!formData.email?.trim() || !emailRegex.test(formData.email)) {
       onShowValidationSummary(true, 'Please enter a valid email address');
       return;
     }
 
-    // Validate phone number (basic validation)
     if (!formData.phone?.trim() || formData.phone.replace(/\D/g, '').length < 7) {
       onShowValidationSummary(true, 'Please enter a valid phone number');
       return;
@@ -59,7 +55,6 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
 
     try {
       setIsLoading(true);
-      // Call onNext which will be handled by the parent component
       onNext();
     } catch (error) {
       console.error('Error during booking:', error);

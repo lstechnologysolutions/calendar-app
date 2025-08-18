@@ -1,13 +1,12 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import useScript from './useScript';
-import { formConfig } from '@/config/mercadoPagoFormConfig';
+import { formConfig } from '@/config/mercadoPagoForm.config';
 import { 
     UseMercadoPagoProps, 
-    CardTokenData, 
     UseMercadoPagoReturn, 
     IDENTIFICATION_TYPES,
 } from '@/types/hooks/useMercadoPago.types';
-import { PaymentData, PaymentStatus } from '@/types/Payment/MercadoPago.types';
+import { PaymentData, PaymentStatus } from '@/types/Payment/mercadoPago.types';
 import { getFormattedAmounts } from '@/utils/currencyUtils';
 import { paymentService } from '@/lib/services/payment/paymentClientService';
 

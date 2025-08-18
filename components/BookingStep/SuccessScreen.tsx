@@ -2,8 +2,8 @@ import React from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import { Calendar as CalendarIcon, Scissors as ScissorsIcon, Info as InfoIcon } from "lucide-react-native";
 import { Trans } from "@lingui/react/macro";
-import { Service } from "@/types/Service";
-import { SelectedDateTime } from "@/types/Booking";
+import { Service } from "@/types/Service.types";
+import { SelectedDateTime } from "@/types/Booking.types";
 import { PriceDisplay } from "../../src/components/ui/PriceDisplay";
 
 type Props = {
@@ -132,22 +132,6 @@ const SuccessScreen: React.FC<Props> = ({
             <Trans>Book Another Appointment</Trans>
           </Text>
         </TouchableOpacity>
-
-        <TouchableOpacity
-          className="py-3.5 px-6 rounded-xl border border-base-300 bg-base-100 dark:bg-base-200"
-          onPress={onReturnHome}
-        >
-
-          <TouchableOpacity
-            onPress={() => window.open('https://lstech.solutions' , '_blank')}
-          >
-            <Text className="text-base-content text-center font-medium dark:text-base-content/60">
-              <Trans>Return to Home</Trans>
-            </Text>
-          </TouchableOpacity>
-
-        </TouchableOpacity>
-
 
       </View>
     </View>

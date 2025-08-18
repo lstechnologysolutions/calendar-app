@@ -1,8 +1,8 @@
 import { ServerCalendarService } from '@/lib/services/calendar/calendarServerService';
-
+import { CalendarServiceResponse } from '@/types/Calendar.types';
+import { BusyTimeSlot } from '@/types/Calendar.types';
 const calendarService = ServerCalendarService.getInstance();
 
-// Helper function to create consistent JSON responses
 const jsonResponse = (data: any, status = 200) => {
   return new Response(JSON.stringify(data), {
     status,
@@ -25,9 +25,9 @@ export async function GET(request: Request) {
   }
 
   try {
-    const busySlots = await calendarService.fetchBusySlots(date, calendarId);
+    const busySlots: CalendarServiceResponse<BusyTimeSlot[]> = await calendarService.fetchBusySlots(date, calendarId);
     return Response.json(
-      { success: true, data: busySlots },
+      busySlots,
       { status: 200, headers: { 'Content-Type': 'application/json' } }
     );
   } catch (error) {
@@ -57,14 +57,14 @@ export async function POST(request: Request) {
       );
     }
 
-    const { summary, startTime, endTime, calendarId = 'primary', options, attendeeEmail, description } = body;
+    const { summary, startTime, endTime, options, attendeeEmail, description } = body;
     
     if (!summary || !startTime || !endTime || !attendeeEmail) {
       return jsonResponse(
         { 
           success: false,
           error: 'Missing required fields',
-          message: 'Please provide summary, startTime, endTime, and attendeeEmail'
+          message: 'Please provide summary, startTime, endTime, attendeeEmail'
         },
         400
       );
@@ -76,7 +76,6 @@ export async function POST(request: Request) {
       endTime, 
       attendeeEmail,
       options || {},
-      calendarId,
       description
     );
 
@@ -99,7 +98,6 @@ export async function POST(request: Request) {
         summary, 
         startTime, 
         endTime, 
-        calendarId,
         eventId: result.eventId,
         htmlLink: result.htmlLink
       }

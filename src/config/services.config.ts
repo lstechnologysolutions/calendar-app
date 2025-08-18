@@ -1,4 +1,4 @@
-import { Service } from "@/types/Service";
+import { Service } from "@/types/Service.types";
 
 // Parse service prices from environment variable
 const parseServicePrices = (): Record<string, number> => {

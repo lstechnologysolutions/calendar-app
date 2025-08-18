@@ -5,7 +5,7 @@ import {
   PreferenceRequest,
   PreferenceResponse,
   PaymentResponseWithMetadata
-} from '@/types/Payment/MercadoPago.types';
+} from '@/types/Payment/mercadoPago.types';
 
 // Validate required environment variables
 const mercadoPagoAccessToken = getEnvVariable('MERCADOPAGO_ACCESS_TOKEN');

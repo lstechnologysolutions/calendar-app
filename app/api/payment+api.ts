@@ -2,7 +2,7 @@ import { paymentService } from '@/lib/services/payment/paymentServerService';
 import { 
   PaymentRequest, 
   PreferenceRequest 
-} from '@/types/Payment/MercadoPago.types';
+} from '@/types/Payment/mercadoPago.types';
 
 // Initialize payment service
 paymentService.initialize();

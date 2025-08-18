@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import { Trans } from "@lingui/react/macro";
-import { Service } from "@/types/Service";
+import { Service } from "@/types/Service.types";
 
 
 type Props = {
