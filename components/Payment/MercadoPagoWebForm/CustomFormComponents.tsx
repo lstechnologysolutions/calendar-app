@@ -28,7 +28,7 @@ export const FormInput = ({
     disabled?: boolean;
 }) => (
     <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-medium mb-1 text-base-content">
             {label}
         </label>
         <input
@@ -39,7 +39,7 @@ export const FormInput = ({
             onChange={(e) => onChange(e.target.value)}
             onFocus={onFocus}
             placeholder={placeholder}
-            className={`w-full p-2 border rounded-md ${className}`}
+            className={`w-full p-2 border rounded-md ${className} text-base-content bg-base-100`}
             maxLength={maxLength}
             required={required}
             disabled={disabled}
@@ -62,13 +62,13 @@ export const InstallmentSelect = ({
     optionsLabel: string;
 }) => (
     <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-medium mb-1 text-base-content">
             {label}
         </label>
         <select
             value={value}
             onChange={(e) => onChange(e.target.value)}
-            className="w-full p-2 border rounded-md bg-white"
+            className="w-full p-2 border rounded-md text-base-content bg-base-100"
         >
             <option value=""> {optionsLabel}</option>
             {options.map((option) => (

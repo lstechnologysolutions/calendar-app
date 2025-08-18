@@ -1,7 +1,7 @@
 {
   "name": "calendar-app",
   "main": "expo-router/entry",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "scripts": {
     "start": "expo start",
     "reset-project": "node ./scripts/reset-project.js",
@@ -12,6 +12,8 @@
     "build:web": "npm run prebuild && expo export -p web && npx workbox-cli generateSW workbox-config.js",
     "web": "expo start --web",
     "test": "jest --watchAll",
+    "extract": "npx lingui extract",
+    "compile": "npx lingui compile",
     "lint": "expo lint"
   },
   "jest": {

@@ -34,3 +34,16 @@ export type BookingFormProps = {
   onBookAnother?: () => void;
   onReturnHome?: () => void;
 };  
+
+export type PersonalInfoFormProps = {
+  formData: BookingFormData;
+  errors: Record<string, string>;
+  onChange: (key: keyof BookingFormData, value: string) => void;
+  onNext: () => void;
+  onBack: () => void;
+  selectedServicePrice?: number | null;
+  submitError?: string | null;
+  onShowValidationSummary: (show: boolean, message?: string) => void;
+  selectedDateTime: SelectedDateTime;  
+  isBooking: boolean;
+};

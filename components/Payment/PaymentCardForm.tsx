@@ -13,6 +13,7 @@ const PaymentCardForm: React.FC<PaymentCardFormProps> = ({
     email = '',
 }) => {
     const [localEmail, setLocalEmail] = useState(email);
+    const [processingStatus, setProcessingStatus] = useState<WebPaymentStatus>('idle');
 
     const {
         isLoading,
@@ -29,8 +30,6 @@ const PaymentCardForm: React.FC<PaymentCardFormProps> = ({
             console.log('Loading state changed:', loading);
         }
     });
-    
-    const paymentStatus: WebPaymentStatus = isLoading ? 'loading' : 'idle';
 
     useEffect(() => {
         if (email && email !== localEmail) {
@@ -38,7 +37,15 @@ const PaymentCardForm: React.FC<PaymentCardFormProps> = ({
         }
     }, [email, localEmail]);
 
+    useEffect(() => {
+        if (isLoading) {
+            setProcessingStatus('loading');
+        }
+    }, [isLoading]);
+
     const handleSubmit = useCallback(async (formData: any) => {
+        console.log('Processing payment...');
+        setProcessingStatus('processing');
         try {
             const paymentData = {
                 ...formData,
@@ -47,9 +54,13 @@ const PaymentCardForm: React.FC<PaymentCardFormProps> = ({
             await processPayment(paymentData);
         } catch (error) {
             console.error('Payment submission error:', error);
+            setProcessingStatus('error');
             if (onError) {
                 onError(error instanceof Error ? error : new Error('Error al procesar el pago'));
             }
+        }
+        finally {
+            setProcessingStatus('idle');
         }
     }, [processPayment, onError, localEmail, email]);
 
@@ -62,13 +73,13 @@ const PaymentCardForm: React.FC<PaymentCardFormProps> = ({
     if (Platform.OS === 'web') {
         return (
             <View style={styles.container}>
-                <MercadoPagoWebForm 
+                <MercadoPagoWebForm
                     amount={amount}
-                    paymentStatus={paymentStatus}
+                    paymentStatus={processingStatus}
                     errorMessage={error?.message || ''}
                     onSubmit={handleSubmit}
                     onInputChange={handleInputChange}
-                    onInputFocus={() => {}} // Dummy handler since it's required but not used
+                    onInputFocus={() => { }} // Dummy handler since it's required but not used
                 />
             </View>
         );

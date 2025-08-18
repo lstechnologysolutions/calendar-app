@@ -1,10 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { t } from '@lingui/macro';
+import { Trans } from '@lingui/react/macro';
+import { useLingui } from '@lingui/react';
 import Card from "react-credit-cards";
 import "react-credit-cards/es/styles-compiled.css";
 import { cn } from "@/lib/utils";
 import { MercadoPagoWebFormProps, INITIAL_STATE_CARD, FormCardState, InstallmentOption } from '@/types/Payment/mercadoPago.types';
 import { FormInput, InstallmentSelect } from './CustomFormComponents';
 import { IDENTIFICATION_TYPES } from "@/types/hooks/useMercadoPago.types";
+import { capitalizeFirstLetter } from "@/utils/textUtils";
+
 
 export default function MercadoPagoWebForm({
     amount = 0,
@@ -14,34 +19,57 @@ export default function MercadoPagoWebForm({
     onInputChange,
     onInputFocus,
 }: MercadoPagoWebFormProps) {
-    const [formData, setFormData] = useState<FormCardState >({
+    const [formData, setFormData] = useState<FormCardState>({
         ...INITIAL_STATE_CARD,
         securityCode: '',
         expiryDate: '',
         email: '',
         focus: 'number'
     });
+    const [useCustomerName, setUseCustomerName] = useState(true);
+    const [customerFullName, setCustomerFullName] = useState('');
 
-    const installmentOptions: InstallmentOption[] = [
+    const { i18n } = useLingui();
+
+    const [installmentOptions, setInstallmentOptions] = useState<InstallmentOption[]>([
         {
             installments: 1,
-            recommended_message: `1 cuota de $${amount.toFixed(2)}`,
+            recommended_message: t`1 cuota de $${amount.toFixed(2)}`,
             installments_amount: amount,
             total_amount: amount
         },
         {
             installments: 3,
-            recommended_message: `3 cuotas de $${(amount / 3).toFixed(2)}`,
+            recommended_message: t`3 cuotas de $${(amount / 3).toFixed(2)}`,
             installments_amount: amount / 3,
             total_amount: amount
         },
         {
             installments: 6,
-            recommended_message: `6 cuotas de $${(amount / 6).toFixed(2)}`,
+            recommended_message: t`6 cuotas de $${(amount / 6).toFixed(2)}`,
             installments_amount: amount / 6,
             total_amount: amount
         }
-    ];
+    ]);
+
+    useEffect(() => {
+        try {
+            const savedData = localStorage.getItem('bookingFormData');
+            if (savedData) {
+                const { firstName = '', lastName = '' } = JSON.parse(savedData);
+                const fullName = `${capitalizeFirstLetter(firstName)} ${capitalizeFirstLetter(lastName)}`.trim();
+                setCustomerFullName(fullName);
+                if (fullName) {
+                    setFormData(prev => ({
+                        ...prev,
+                        cardholderName: fullName
+                    }));
+                }
+            }
+        } catch (error) {
+            console.error('Failed to load customer name from localStorage', error);
+        }
+    }, []);
 
     const handleInputChange = (field: keyof FormCardState, value: string) => {
         const newState = {
@@ -79,7 +107,7 @@ export default function MercadoPagoWebForm({
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (paymentStatus === 'loading') {
+        if (paymentStatus === 'loading' || paymentStatus === 'processing') {
             return;
         }
 
@@ -94,6 +122,7 @@ export default function MercadoPagoWebForm({
                 email: formData.cardholderEmail.trim(),
                 // Ensure we have all required fields for the payment
                 cardNumber: formData.cardNumber.replace(/\s+/g, ''), // Remove spaces from card number
+                cardholderName: formData.cardholderName.trim(),
                 securityCode: formData.securityCode,
                 cardExpirationMonth: formData.cardExpirationMonth || formData.expiryDate.split('/')[0],
                 cardExpirationYear: formData.cardExpirationYear || formData.expiryDate.split('/')[1]?.slice(-2),
@@ -139,11 +168,13 @@ export default function MercadoPagoWebForm({
     };
 
     return (
-        <div className="w-full max-w-md mx-auto p-6 bg-card rounded-lg shadow-sm border border-border">
-            <h2 className="text-2xl font-semibold mb-6 text-foreground">Pago con Tarjeta</h2>
+        <div className="w-full max-w-md mx-auto p-4 sm:p-6 bg-card rounded-lg shadow-sm border border-border overflow-hidden">
+            <h2 className="text-2xl font-semibold mb-6 text-foreground">
+                <Trans>Pago con Tarjeta</Trans>
+            </h2>
 
-            <div className="mb-6">
-                <div className="relative">
+            <div className="mb-6 w-full flex justify-center">
+                <div className="relative" style={{ transform: 'scale(0.9)', transformOrigin: 'center' }}>
                     <Card
                         cvc={formData.cvc}
                         expiry={formData.cardExpirationMonth + formData.cardExpirationYear}
@@ -152,23 +183,26 @@ export default function MercadoPagoWebForm({
                         focused={formData.focus}
                         issuer={formData.issuer}
                     />
-                    {formData.issuer && (
-                        <div className="absolute top-2 right-2 bg-white bg-opacity-80 px-2 py-1 rounded text-sm font-medium">
-                            {formData.issuer}
-                        </div>
-                    )}
                 </div>
             </div>
 
             {errorMessage && (
-                <div className="mb-4 p-3 text-sm text-red-700 bg-red-100 rounded-md">
-                    {errorMessage}
+                <div className="mb-4 p-3 text-sm text-red-700 bg-red-100 border border-red-200 rounded-md">
+                    {errorMessage.includes('rejected')
+                        ? <Trans id="payment.paymentRejected">El pago fue rechazado. Por favor verifica los datos de tu tarjeta o intenta con otro método de pago.</Trans>
+                        : errorMessage}
                 </div>
             )}
 
             {paymentStatus === 'success' && (
                 <div className="mb-4 p-3 bg-green-100 border border-green-400 text-green-700 rounded">
-                    Pago procesado exitosamente
+                    <Trans id="payment.paymentProcessed">Pago procesado exitosamente</Trans>
+                </div>
+            )}
+
+            {paymentStatus === 'error' && !errorMessage && (
+                <div className="mb-4 p-3 text-sm text-red-700 bg-red-100 border border-red-200 rounded-md">
+                    <Trans id="payment.processingError">Ocurrió un error al procesar el pago. Por favor inténtalo de nuevo.</Trans>
                 </div>
             )}
 
@@ -178,93 +212,111 @@ export default function MercadoPagoWebForm({
                 onSubmit={handleSubmit}
             >
                 <div className="space-y-4">
-                    {/* Email */}
                     <FormInput
-                        label="Correo electrónico"
+                        label={i18n._(t`form.email`)}
                         type="email"
                         id="form-checkout__cardholderEmail"
                         name="cardholderEmail"
                         value={formData.cardholderEmail}
                         onChange={(value) => handleInputChange('cardholderEmail', value)}
                         onFocus={() => onInputFocus('email')}
-                        placeholder="tucorreo@ejemplo.com"
+                        placeholder={i18n._(t`form.emailPlaceholder`)}
                         required
-                        disabled={paymentStatus === 'loading'}
+                        disabled={paymentStatus === 'processing'}
                     />
 
-                    {/* Card Number */}
                     <FormInput
-                        label="Número de tarjeta"
+                        label={i18n._(t`form.cardNumber`)}
                         name="cardNumber"
                         type="text"
                         id="form-checkout__cardNumber"
                         value={formData.cardNumber}
                         onChange={handleCardNumberChange}
                         onFocus={() => onInputFocus('number')}
-                        placeholder="1234 5678 9012 3456"
-                        disabled={paymentStatus === 'loading'}
+                        placeholder={i18n._(t`form.cardNumberPlaceholder`)}
+                        disabled={paymentStatus === 'processing'}
                     />
 
-                    {/* Cardholder Name */}
-                    <FormInput
-                        label="Nombre del titular"
-                        name="cardholderName"
-                        type="text"
-                        id="form-checkout__cardholderName"
-                        value={formData.cardholderName || ''}
-                        onChange={(value) => handleInputChange('cardholderName', value)}
-                        onFocus={() => onInputFocus('name')}
-                        placeholder="Como aparece en la tarjeta"
-                        required
-                        disabled={paymentStatus === 'loading'}
-                    />
+                    <div className="mb-4">
+                        <FormInput
+                            label={i18n._(t`form.cardholderName`)}
+                            type="text"
+                            id="form-checkout__cardholderName"
+                            name="cardholderName"
+                            value={formData.cardholderName}
+                            onChange={(value) => handleInputChange('cardholderName', value)}
+                            onFocus={() => onInputFocus('name')}
+                            placeholder={i18n._(t`form.cardholderNamePlaceholder`)}
+                            required
+                            disabled={paymentStatus === 'processing' || useCustomerName}
+                        />
+                        <div className="flex items-center mb-2">
+                            <input
+                                type="checkbox"
+                                id="useCustomerName"
+                                checked={useCustomerName}
+                                onChange={(e) => {
+                                    const isChecked = e.target.checked;
+                                    setUseCustomerName(isChecked);
+                                    if (isChecked) {
+                                        setFormData(prev => ({
+                                            ...prev,
+                                            cardholderName: customerFullName
+                                        }));
+                                    } else {
+                                        setFormData(prev => ({
+                                            ...prev,
+                                            cardholderName: ''
+                                        }));
+                                    }
+                                }}
+                                className="h-4 w-4 text-base focus:ring-primary border-border rounded"
+                            />
+                            <label htmlFor="useCustomerName" className="ml-2 block text-sm text-base-content">
+                                <Trans id="form.useCustomerData">Usar datos de cliente</Trans>
+                            </label>
+                        </div>
+                    </div>
 
                     {/* Expiration Date and Security Code */}
                     <div className="grid grid-cols-2 gap-4 mb-4">
                         <div>
                             <FormInput
-                                label="Vencimiento (MM/AA)"
+                                label={i18n._(t`form.expirationDate`)}
                                 name="expiryDate"
                                 type="text"
                                 id="form-checkout__expiryDate"
                                 value={formData.expiryDate}
                                 onChange={handleExpirationChange}
                                 onFocus={() => onInputFocus('expiry')}
-                                placeholder="MM/AA"
+                                placeholder={i18n._(t`form.expirationDatePlaceholder`)}
                                 maxLength={5}
-                                disabled={paymentStatus === 'loading'}
+                                disabled={paymentStatus === 'processing'}
                             />
                         </div>
                         <div>
                             <FormInput
-                                label="Código de seguridad"
+                                label={i18n._(t`form.securityCode`)}
                                 name="securityCode"
                                 type="password"
                                 id="form-checkout__securityCode"
                                 value={formData.securityCode}
                                 onChange={handleSecurityCodeChange}
                                 onFocus={() => onInputFocus('cvc')}
-                                placeholder="CVC"
+                                placeholder={i18n._(t`form.securityCodePlaceholder`)}
                                 maxLength={4}
-                                disabled={paymentStatus === 'loading'}
+                                disabled={paymentStatus === 'processing'}
                             />
                         </div>
                     </div>
-
-                    {/* Issuer Display */}
-                    {formData.issuer && (
-                        <div className="mb-4 p-3 bg-gray-50 rounded-md border">
-                            <p className="text-sm font-medium text-gray-700">Emisor: {formData.issuer}</p>
-                        </div>
-                    )}
 
                     <div className="mb-4">
                         <InstallmentSelect
                             options={installmentOptions}
                             value={formData.installments || ''}
                             onChange={handleInstallmentChange}
-                            label="Número de cuotas"
-                            optionsLabel="Seleccione el número de cuotas"
+                            label={i18n._(t`form.installments`)}
+                            optionsLabel={i18n._(t`form.selectInstallments`)}
                         />
                     </div>
                 </div>
@@ -272,23 +324,23 @@ export default function MercadoPagoWebForm({
                 {/* Document Type and Number */}
                 <div className="grid grid-cols-2 gap-4 mb-4">
                     <div>
-                        <label htmlFor="form-checkout__identificationType" className="block text-sm font-medium text-foreground/80 mb-1">
-                            Tipo de documento
+                        <label htmlFor="form-checkout__identificationType" className="block text-sm font-medium mb-1">
+                            {i18n._(t`form.documentType`)}
                         </label>
                         <select
                             id="form-checkout__identificationType"
                             name="documentType"
                             className={cn(
                                 'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50',
-                                'text-foreground',
+                                'text-foreground bg-base-100',
                                 errorMessage && 'border-red-500 focus-visible:ring-red-500',
-                                (paymentStatus === 'loading') && 'opacity-50 cursor-not-allowed'
+                                (paymentStatus === 'processing') && 'opacity-50 cursor-not-allowed'
                             )}
                             value={formData.documentType}
                             onChange={(e) => handleInputChange('documentType', e.target.value)}
                             onFocus={() => onInputFocus('documentType')}
                             required
-                            disabled={paymentStatus === 'loading'}
+                            disabled={paymentStatus === 'processing'}
                         >
                             {IDENTIFICATION_TYPES.map((type) => (
                                 <option key={type.id} value={type.id}>
@@ -299,16 +351,16 @@ export default function MercadoPagoWebForm({
                     </div>
                     <div>
                         <FormInput
-                            label="Número de documento"
+                            label={i18n._(t`form.documentNumber`)}
                             name="documentNumber"
                             type="text"
                             id="form-checkout__identificationNumber"
                             value={formData.documentNumber}
                             onChange={(value) => handleInputChange('documentNumber', value)}
                             onFocus={() => onInputFocus('documentNumber')}
-                            placeholder="12345678"
+                            placeholder={i18n._(t`form.documentNumberPlaceholder`)}
                             required
-                            disabled={paymentStatus === 'loading'}
+                            disabled={paymentStatus === 'processing'}
                         />
                     </div>
                 </div>
@@ -318,24 +370,23 @@ export default function MercadoPagoWebForm({
                         type="submit"
                         className={cn(
                             'w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary',
-                            (paymentStatus === 'loading') ? 'opacity-70 cursor-not-allowed' : ''
+                            (paymentStatus === 'processing') ? 'opacity-70 cursor-not-allowed' : ''
                         )}
-                        disabled={paymentStatus === 'loading'}
+                        disabled={paymentStatus === 'processing'}
                     >
-                        {paymentStatus === 'loading' ? (
+                        {paymentStatus === 'processing' ? (
                             <>
                                 <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                 </svg>
-                                Procesando...
+                                <Trans id="form.processing">Procesando...</Trans>
                             </>
                         ) : (
-                            `Pagar ${amount.toLocaleString('es-AR', { style: 'currency', currency: 'ARS' })}`
+                            i18n._(t`form.payAmount`).replace('{amount}', amount.toLocaleString('es-CO', { style: 'currency', currency: 'COP' }))
                         )}
                     </button>
                 </div>
-                <p className="text-xs text-muted-foreground text-center mt-1">Procesando pago...</p>
             </form>
         </div>
     );

@@ -5,14 +5,13 @@ import { Trans } from "@lingui/react/macro";
 import { Service } from "@/types/Service.types";
 import { SelectedDateTime } from "@/types/Booking.types";
 import { PriceDisplay } from "../../src/components/ui/PriceDisplay";
-
+import { formatDate } from "@/utils/dateUtils";
 type Props = {
   formData: { email: string };
   selectedService: Service;
   selectedDateTime: SelectedDateTime;
   isBooking?: boolean;
   onBookAnother: () => void;
-  onReturnHome: () => void;
 };
 
 const SuccessScreen: React.FC<Props> = ({
@@ -20,7 +19,6 @@ const SuccessScreen: React.FC<Props> = ({
   selectedService,
   selectedDateTime,
   onBookAnother,
-  onReturnHome,
 }) => {
   return (
     <View className="items-center justify-center py-6 px-4 w-full">
@@ -46,8 +44,8 @@ const SuccessScreen: React.FC<Props> = ({
           <Text className="text-lg font-bold text-base-content">
             <Trans>Appointment Details</Trans>
           </Text>
-          <View className="px-2 py-1 bg-green-50 dark:bg-green-900/30 rounded-full">
-            <Text className="text-xs font-medium text-green-600 dark:text-green-400">
+          <View className="flex-shrink px-2 py-1 bg-green-50 dark:bg-green-900/30 rounded-full max-w-[120px]">
+            <Text className="text-xs font-medium text-green-600 dark:text-green-400 truncate">
               <Trans>CONFIRMED</Trans>
             </Text>
           </View>
@@ -55,24 +53,24 @@ const SuccessScreen: React.FC<Props> = ({
 
         <View className="space-y-4">
           <View className="flex-row items-start">
-            <View className="bg-blue-50 dark:bg-blue-900/20 p-2 rounded-lg mr-3">
+            <View className="bg-blue-50 dark:bg-blue-900/20 p-2 rounded-lg mr-3 flex-shrink-0">
               <CalendarIcon size={20} className="text-blue-600 dark:text-blue-400" />
             </View>
-            <View>
+            <View className="flex-1">
               <Text className="text-sm text-base-content/60"><Trans>Date & Time</Trans></Text>
-              <Text className="font-medium text-base-content">
-                {selectedDateTime.date} • {selectedDateTime.time}
+              <Text className="font-medium text-base-content break-words">
+                {formatDate(selectedDateTime.date)} • {selectedDateTime.time}
               </Text>
             </View>
           </View>
 
           <View className="flex-row items-start">
-            <View className="bg-purple-50 dark:bg-purple-900/20 p-2 rounded-lg mr-3">
+            <View className="bg-purple-50 dark:bg-purple-900/20 p-2 rounded-lg mr-3 flex-shrink-0">
               <ScissorsIcon size={20} className="text-purple-600 dark:text-purple-400" />
             </View>
-            <View>
+            <View className="flex-1">
               <Text className="text-sm text-base-content/60"><Trans>Service</Trans></Text>
-              <Text className="font-medium text-base-content">{selectedService.name}</Text>
+              <Text className="font-medium text-base-content break-words">{selectedService.name}</Text>
               <Text className="text-sm text-base-content/60">{selectedService.duration} min</Text>
             </View>
           </View>
@@ -81,7 +79,7 @@ const SuccessScreen: React.FC<Props> = ({
             <Text className="font-medium text-base-content">
               <Trans>Total</Trans>
             </Text>
-            <View className="items-end">
+            <View className="items-end flex-shrink">
               <PriceDisplay 
                 amount={selectedService.price} 
                 variant="large"

@@ -1,16 +1,13 @@
 import React, { useCallback, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
-import { useRouter } from 'expo-router';
 import { Trans } from '@lingui/react/macro';
-import { CreditCard, ArrowLeft, AlertCircle, CheckCircle2 } from 'lucide-react-native';
+import { ArrowLeft, AlertCircle } from 'lucide-react-native';
 import { PriceDisplay } from '../../src/components/ui/PriceDisplay';
 import { BookingFormData, SelectedDateTime } from '@/types/Booking.types';
 import { Service } from '@/types/Service.types';
-import { paymentService } from '@/lib/services/payment/paymentClientService';
 import PaymentCardForm from '../Payment/PaymentCardForm';
 import SuccessScreen from './SuccessScreen';
-
-
+import { router } from 'expo-router';
 
 type PaymentStatus = 'idle' | 'processing' | 'success' | 'error';
 
@@ -41,31 +38,45 @@ const PaymentMethods: React.FC<PaymentMethodsProps> = ({
   const handlePaymentError = useCallback((error: Error) => {
     console.error('Payment form error:', error);
     setPaymentStatus('error');
-    setErrorMessage(error.message || 'Error initializing payment form.');
+    
+    // Check for specific error messages from MercadoPago
+    const errorMessage = error.message.toLowerCase();
+    if (errorMessage.includes('rejected') || errorMessage.includes('rechazado')) {
+      setErrorMessage('El pago fue rechazado. Por favor verifica los datos de tu tarjeta o intenta con otro método de pago.');
+    } else if (errorMessage.includes('expired') || errorMessage.includes('expirada')) {
+      setErrorMessage('La tarjeta ha expirado. Por favor verifica la fecha de vencimiento o utiliza otro método de pago.');
+    } else if (errorMessage.includes('insufficient') || errorMessage.includes('fondos')) {
+      setErrorMessage('Fondos insuficientes. Por favor verifica el saldo de tu tarjeta o utiliza otro método de pago.');
+    } else {
+      setErrorMessage(error.message || 'Error al procesar el pago. Por favor inténtalo de nuevo.');
+    }
   }, []);
 
   const handlePaymentSuccess = useCallback(async (paymentData: any) => {
     console.log('processing payment...');
+    console.log(paymentData)
     if (!selectedService) return;
     setPaymentStatus('processing');
 
     try {
-     /*  const { data, error } = await paymentService.processPayment({
-        ...paymentData,
-        description: `Booking for ${selectedService.name}`,
-        amount: selectedService.price,
-      });
-
-      if (error) {
-        throw new Error(error);
-      } */
-
-      setPaymentStatus('success');
-      //onPaymentSuccess(data);
+      if (paymentData.data.status === 'approved') {
+        setPaymentStatus('success');
+      }
+      if (paymentData.data.status === 'rejected') {
+        setErrorMessage('El pago fue rechazado. Por favor verifica los datos de tu tarjeta o intenta con otro método de pago.');
+        setPaymentStatus('error');
+      }
     } catch (error: any) {
       console.error('Payment error:', error);
       setPaymentStatus('error');
-      setErrorMessage(error.message || 'Failed to process payment. Please try again.');
+      
+      // If the error is already formatted with a specific message, use it
+      if (error.message && error.message.startsWith('payment_rejected:')) {
+        setErrorMessage(error.message.replace('payment_rejected:', '').trim());
+      } else {
+        // Otherwise, use a generic error message
+        setErrorMessage('Error al procesar el pago. Por favor verifica los datos e inténtalo de nuevo.');
+      }
     }
   }, [selectedService, onPaymentSuccess]);
 
@@ -91,8 +102,7 @@ const PaymentMethods: React.FC<PaymentMethodsProps> = ({
           formData={formData}
           selectedService={selectedService}
           selectedDateTime={selectedDateTime}
-          onBookAnother={() => {}}
-          onReturnHome={() => {}}
+          onBookAnother={() => {router.push('/')}}
           />
       </View>
     );
@@ -101,10 +111,10 @@ const PaymentMethods: React.FC<PaymentMethodsProps> = ({
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={onBack} style={styles.backButton}>
-          <ArrowLeft size={24} color="#000" />
+        <TouchableOpacity onPress={onBack} style={styles.backButton} className="p-2 bg-base-200 rounded-full text-base-content">
+          <ArrowLeft size={24}  />
         </TouchableOpacity>
-        <Text style={styles.title}>
+        <Text style={styles.title} className="text-xl font-bold text-base-content">
           <Trans>Payment Information</Trans>
         </Text>
       </View>

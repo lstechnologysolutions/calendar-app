@@ -1,22 +1,11 @@
 import React, { useMemo, useState, useCallback } from "react";
 import { View, Text, TextInput, TouchableOpacity, Modal, FlatList } from "react-native";
 import { Trans } from "@lingui/react/macro";
-import { User, Phone, Mail, AlertCircle, ChevronDown, Search, Loader2 } from "lucide-react-native";
+import { User, Phone, Mail, AlertCircle, ChevronDown, Search } from "lucide-react-native";
 import { countryCodes } from "@/config/countryCodes.config";
-import { BookingFormData, SelectedDateTime } from "@/types/Booking.types";
-
-export type PersonalInfoFormProps = {
-  formData: BookingFormData;
-  errors: Record<string, string>;
-  onChange: (key: keyof BookingFormData, value: string) => void;
-  onNext: () => void;
-  onBack: () => void;
-  selectedServicePrice?: number | null;
-  submitError?: string | null;
-  onShowValidationSummary: (show: boolean, message?: string) => void;
-  selectedDateTime: SelectedDateTime;  
-  isBooking: boolean;
-};
+import { PersonalInfoFormProps } from "@/types/Booking.types";
+import { formatLongDate } from "@/utils/dateUtils";
+import { usePersistentForm } from '../../hooks/usePersistentForm';
 
 const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
   formData,
@@ -32,6 +21,9 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
   const [showCountryPicker, setShowCountryPicker] = useState(false);
   const [countrySearchQuery, setCountrySearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  
+  // Initialize persistent form handling
+  const { handleFieldChange } = usePersistentForm(onChange);
   
   
   const handleNext = useCallback(async () => {
@@ -77,7 +69,7 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
     <View className="space-y-4">
       <View className="flex-row justify-between items-center mb-4">
         <Text className="text-xl font-bold text-base-content">
-          <Trans>Personal Information</Trans>
+          <Trans>Client Information</Trans>
         </Text>
       </View>
 
@@ -93,7 +85,7 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
             className="flex-1 ml-2"
             placeholder="Enter your first name"
             value={formData.firstName}
-            onChangeText={(text) => onChange("firstName", text)}
+            onChangeText={(text) => handleFieldChange("firstName", text)}
           />
         </View>
         {errors.firstName ? (
@@ -116,7 +108,7 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
             className="flex-1 ml-2"
             placeholder="Enter your last name"
             value={formData.lastName}
-            onChangeText={(text) => onChange("lastName", text)}
+            onChangeText={(text) => handleFieldChange("lastName", text)}
           />
         </View>
         {errors.lastName ? (
@@ -141,7 +133,7 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
             keyboardType="email-address"
             autoCapitalize="none"
             value={formData.email}
-            onChangeText={(text) => onChange("email", text)}
+            onChangeText={(text) => handleFieldChange("email", text)}
           />
         </View>
         {errors.email ? (
@@ -172,7 +164,7 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
             placeholder="Enter your phone number"
             keyboardType="phone-pad"
             value={formData.phone}
-            onChangeText={(text) => onChange("phone", text)}
+            onChangeText={(text) => handleFieldChange("phone", text)}
           />
         </View>
         {errors.phone ? (
@@ -194,7 +186,7 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
             multiline
             textAlignVertical="top"
             value={formData.notes}
-            onChangeText={(text) => onChange("notes", text)}
+            onChangeText={(text) => handleFieldChange("notes", text)}
           />
         </View>
       </View>
@@ -203,7 +195,7 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
         <View className="bg-base-200 dark:bg-base-300 p-3 rounded-lg border border-base-300 dark:border-base-400">
           <View className="flex-row justify-between items-center mb-1">
             <Text className="text-sm font-medium text-base-content/70"><Trans>Date & Time</Trans></Text>
-            <Text className="text-sm font-medium text-base-content">{selectedDateTime.date} • {selectedDateTime.time}</Text>
+            <Text className="text-sm font-medium text-base-content">{formatLongDate(selectedDateTime.date)} • {selectedDateTime.time}</Text>
           </View>
           <View className="flex-row justify-between items-center">
             <Text className="text-sm font-medium text-base-content/70"><Trans>Service</Trans></Text>
@@ -284,13 +276,14 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
               <TouchableOpacity
                 className="flex-row items-center justify-between p-4 border-b border-base-200"
                 onPress={() => {
-                  onChange("countryCode", item.code);
+                  handleFieldChange("countryCode", item.code);
                   setShowCountryPicker(false);
                   setCountrySearchQuery("");
                 }}
               >
                 <View>
                   <Text className="font-medium text-base-content">{item.name}</Text>
+                  <Text className="text-base-content text-sm">{item.code}</Text>
                   <Text className="text-base-content text-sm">{item.code}</Text>
                 </View>
                 {formData.countryCode === item.code && (

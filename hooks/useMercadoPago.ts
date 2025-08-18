@@ -341,7 +341,6 @@ export const useMercadoPago = (options: UseMercadoPagoProps): UseMercadoPagoRetu
                     payment_method_id: paymentMethodId,
                     transaction_amount: numericAmount,
                     payer: paymentData.payer,
-                    // Include any additional fields from the result
                     ...(result as any)
                 };
 

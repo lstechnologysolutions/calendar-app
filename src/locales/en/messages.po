@@ -10,13 +10,18 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
-"Language-Team: \n"
-"Plural-Forms: \n"
+"Language-Team: English\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#. js-lingui-explicit-id
+#: components/Payment/MercadoPagoWebForm/MercadoPagoWebForm.tsx:327
+#~ msgid "form.documentType"
+#~ msgstr "Document Type"
 
 #. placeholder {0}: service.description
 #. placeholder {0}: translations.title
 #. placeholder {0}: translations.hello
-#: components/ServiceSelection.tsx:122
+#: components/ServiceSelection.tsx:82
 #: src/lib/services/email/EmailService.ts:210
 #: src/lib/services/email/EmailService.ts:211
 #: src/lib/services/email/EmailService.ts:212
@@ -35,11 +40,26 @@ msgstr "{0}"
 #~ msgid "& Confirm"
 #~ msgstr "& Confirm"
 
-#: components/BookingStep/SuccessScreen.tsx:38
+#. placeholder {0}: amount.toFixed(2)
+#: components/Payment/MercadoPagoWebForm/MercadoPagoWebForm.tsx:37
+msgid "1 cuota de ${0}"
+msgstr "1 cuota de ${0}"
+
+#. placeholder {0}: (amount / 3).toFixed(2)
+#: components/Payment/MercadoPagoWebForm/MercadoPagoWebForm.tsx:43
+msgid "3 cuotas de ${0}"
+msgstr "3 cuotas de ${0}"
+
+#. placeholder {0}: (amount / 6).toFixed(2)
+#: components/Payment/MercadoPagoWebForm/MercadoPagoWebForm.tsx:49
+msgid "6 cuotas de ${0}"
+msgstr "6 cuotas de ${0}"
+
+#: components/BookingStep/SuccessScreen.tsx:36
 msgid "A confirmation has been sent to"
 msgstr "A confirmation has been sent to"
 
-#: components/BookingStep/PersonalInfoForm.tsx:193
+#: components/BookingStep/PersonalInfoForm.tsx:180
 msgid "Additional Notes (Optional)"
 msgstr "Additional Notes (Optional)"
 
@@ -47,7 +67,7 @@ msgstr "Additional Notes (Optional)"
 msgid "Admin Dashboard"
 msgstr "Admin Dashboard"
 
-#: components/ServiceSelection.tsx:74
+#: components/ServiceSelection.tsx:35
 msgid "All"
 msgstr "All"
 
@@ -55,7 +75,7 @@ msgstr "All"
 msgid "All Appointments"
 msgstr "All Appointments"
 
-#: components/BookingStep/SuccessScreen.tsx:47
+#: components/BookingStep/SuccessScreen.tsx:45
 msgid "Appointment Details"
 msgstr "Appointment Details"
 
@@ -63,7 +83,7 @@ msgstr "Appointment Details"
 msgid "Appointments"
 msgstr "Appointments"
 
-#: components/BookingStep/ErrorScreen.tsx:46
+#: components/BookingStep/ErrorScreen.tsx:80
 msgid "Attempted Booking"
 msgstr "Attempted Booking"
 
@@ -71,31 +91,31 @@ msgstr "Attempted Booking"
 #~ msgid "Back to Personal Info"
 #~ msgstr "Back to Personal Info"
 
-#: app/index.tsx:203
+#: app/index.tsx:171
 msgid "Back to service selection"
 msgstr "Back to service selection"
 
-#: components/BookingStep/PersonalInfoForm.tsx:256
+#: components/BookingStep/PersonalInfoForm.tsx:243
 msgid "Back to Time Selection"
 msgstr "Back to Time Selection"
 
-#: components/BookingStep/SuccessScreen.tsx:132
+#: components/BookingStep/SuccessScreen.tsx:130
 msgid "Book Another Appointment"
 msgstr "Book Another Appointment"
 
-#: app/index.tsx:135
+#: app/index.tsx:103
 msgid "Book Your Appointment"
 msgstr "Book Your Appointment"
 
-#: components/BookingStep/SuccessScreen.tsx:35
+#: components/BookingStep/SuccessScreen.tsx:33
 msgid "Booking Confirmed!"
 msgstr "Booking Confirmed!"
 
-#: components/BookingStep/ErrorScreen.tsx:35
+#: components/BookingStep/ErrorScreen.tsx:67
 msgid "Booking Failed"
 msgstr "Booking Failed"
 
-#: components/BookingStep/PaymentMethods.tsx:121
+#: components/BookingStep/PaymentMethods.tsx:131
 msgid "Booking Summary"
 msgstr "Booking Summary"
 
@@ -104,21 +124,21 @@ msgstr "Booking Summary"
 msgid "Calendar Appointments"
 msgstr "Calendar Appointments"
 
-#: components/BookingStep/PaymentMethods.tsx:68
-#~ msgid "Card Number"
-#~ msgstr "Card Number"
-
-#: components/BookingStep/ErrorScreen.tsx:68
+#: components/BookingStep/ErrorScreen.tsx:103
 msgid "Check your payment method and try again"
 msgstr "Check your payment method and try again"
 
-#: src/components/Calendar/CalendarComponent.tsx:244
+#: src/components/Calendar/CalendarComponent.tsx:236
 msgid "Choose a Time"
 msgstr "Choose a Time"
 
-#: app/index.tsx:162
+#: app/index.tsx:130
 msgid "Choose Time"
 msgstr "Choose Time"
+
+#: components/BookingStep/PersonalInfoForm.tsx:72
+msgid "Client Information"
+msgstr "Client Information"
 
 #: app/admin/dashboard.tsx:148
 msgid "Configure booking rules, notifications, and Google Calendar sync."
@@ -128,7 +148,7 @@ msgstr "Configure booking rules, notifications, and Google Calendar sync."
 msgid "Configure your services, pricing, and availability."
 msgstr "Configure your services, pricing, and availability."
 
-#: components/BookingStep/PersonalInfoForm.tsx:239
+#: components/BookingStep/PersonalInfoForm.tsx:226
 msgid "Confirm Appointment"
 msgstr "Confirm Appointment"
 
@@ -136,19 +156,19 @@ msgstr "Confirm Appointment"
 msgid "Confirmed"
 msgstr "Confirmed"
 
-#: components/BookingStep/SuccessScreen.tsx:51
+#: components/BookingStep/SuccessScreen.tsx:49
 msgid "CONFIRMED"
 msgstr "CONFIRMED"
 
-#: components/BookingStep/ErrorScreen.tsx:70
+#: components/BookingStep/ErrorScreen.tsx:105
 msgid "Contact our support team for assistance"
 msgstr "Contact our support team for assistance"
 
-#: components/BookingStep/ErrorScreen.tsx:89
+#: components/BookingStep/ErrorScreen.tsx:134
 msgid "Contact Support"
 msgstr "Contact Support"
 
-#: components/BookingStep/PersonalInfoForm.tsx:237
+#: components/BookingStep/PersonalInfoForm.tsx:224
 msgid "Continue to Payment"
 msgstr "Continue to Payment"
 
@@ -173,20 +193,29 @@ msgstr "Dark"
 msgid "Dark"
 msgstr "Dark"
 
-#: components/BookingStep/PersonalInfoForm.tsx:210
-#: components/BookingStep/SuccessScreen.tsx:62
+#: components/BookingStep/PersonalInfoForm.tsx:197
+#: components/BookingStep/SuccessScreen.tsx:60
 msgid "Date & Time"
 msgstr "Date & Time"
 
-#: components/BookingStep/ErrorScreen.tsx:54
+#: components/BookingStep/ErrorScreen.tsx:88
 msgid "Date:"
 msgstr "Date:"
 
-#: components/BookingStep/PersonalInfoForm.tsx:268
+#: components/Payment/MercadoPagoWebForm/MercadoPagoWebForm.tsx:328
+msgid "Document Type"
+msgstr "Document Type"
+
+#: components/BookingStep/PersonalInfoForm.tsx:255
 msgid "Done"
 msgstr "Done"
 
-#: components/BookingStep/PersonalInfoForm.tsx:137
+#. js-lingui-explicit-id
+#: components/Payment/MercadoPagoWebForm/MercadoPagoWebForm.tsx:192
+msgid "payment.paymentRejected"
+msgstr "El pago fue rechazado. Por favor verifica los datos de tu tarjeta o intenta con otro método de pago."
+
+#: components/BookingStep/PersonalInfoForm.tsx:124
 msgid "Email"
 msgstr "Email"
 
@@ -198,20 +227,92 @@ msgstr "Email"
 msgid "Filter"
 msgstr "Filter"
 
-#: components/BookingStep/PersonalInfoForm.tsx:91
+#: components/BookingStep/PersonalInfoForm.tsx:78
 msgid "First Name"
 msgstr "First Name"
 
-#: components/BookingStep/PersonalInfoForm.tsx:215
-#: components/ServiceSelection.tsx:84
+#: components/Payment/MercadoPagoWebForm/MercadoPagoWebForm.tsx:242
+msgid "form.cardholderName"
+msgstr "Card Holder Name"
+
+#: components/Payment/MercadoPagoWebForm/MercadoPagoWebForm.tsx:249
+msgid "form.cardholderNamePlaceholder"
+msgstr "As it appears on the card"
+
+#: components/Payment/MercadoPagoWebForm/MercadoPagoWebForm.tsx:229
+msgid "form.cardNumber"
+msgstr "Card Number"
+
+#: components/Payment/MercadoPagoWebForm/MercadoPagoWebForm.tsx:236
+msgid "form.cardNumberPlaceholder"
+msgstr "1234 5678 9012 3456"
+
+#: components/Payment/MercadoPagoWebForm/MercadoPagoWebForm.tsx:354
+msgid "form.documentNumber"
+msgstr "Document Number"
+
+#: components/Payment/MercadoPagoWebForm/MercadoPagoWebForm.tsx:361
+msgid "form.documentNumberPlaceholder"
+msgstr "12345678"
+
+#: components/Payment/MercadoPagoWebForm/MercadoPagoWebForm.tsx:
+#~ msgid "form.documentType"
+#~ msgstr "Document Type"
+
+#: components/Payment/MercadoPagoWebForm/MercadoPagoWebForm.tsx:216
+msgid "form.email"
+msgstr "Email"
+
+#: components/Payment/MercadoPagoWebForm/MercadoPagoWebForm.tsx:223
+msgid "form.emailPlaceholder"
+msgstr "your.email@example.com"
+
+#: components/Payment/MercadoPagoWebForm/MercadoPagoWebForm.tsx:285
+msgid "form.expirationDate"
+msgstr "Expiration Date"
+
+#: components/Payment/MercadoPagoWebForm/MercadoPagoWebForm.tsx:292
+msgid "form.expirationDatePlaceholder"
+msgstr "MM/YY"
+
+#: components/Payment/MercadoPagoWebForm/MercadoPagoWebForm.tsx:318
+msgid "form.installments"
+msgstr "Installments"
+
+#: components/Payment/MercadoPagoWebForm/MercadoPagoWebForm.tsx:386
+msgid "form.payAmount"
+msgstr "Pay Amount"
+
+#: components/Payment/MercadoPagoWebForm/MercadoPagoWebForm.tsx:
+#~ msgid "form.processing"
+#~ msgstr "Processing..."
+
+#: components/Payment/MercadoPagoWebForm/MercadoPagoWebForm.tsx:299
+msgid "form.securityCode"
+msgstr "Security Code"
+
+#: components/Payment/MercadoPagoWebForm/MercadoPagoWebForm.tsx:306
+msgid "form.securityCodePlaceholder"
+msgstr "123"
+
+#: components/Payment/MercadoPagoWebForm/MercadoPagoWebForm.tsx:319
+msgid "form.selectInstallments"
+msgstr "Select Installments"
+
+#: components/Payment/MercadoPagoWebForm/MercadoPagoWebForm.tsx:
+#~ msgid "form.useCustomerData"
+#~ msgstr "Use customer data"
+
+#: components/BookingStep/PersonalInfoForm.tsx:202
+#: components/ServiceSelection.tsx:45
 msgid "Free"
 msgstr "Free"
 
-#: components/ServiceSelection.tsx:113
+#: components/ServiceSelection.tsx:73
 msgid "FREE"
 msgstr "FREE"
 
-#: components/BookingStep/PersonalInfoForm.tsx:114
+#: components/BookingStep/PersonalInfoForm.tsx:101
 msgid "Last Name"
 msgstr "Last Name"
 
@@ -232,20 +333,34 @@ msgstr "Manage your booking system"
 msgid "Manage your customer database here."
 msgstr "Manage your customer database here."
 
-#: components/BookingStep/SuccessScreen.tsx:119
+#: components/BookingStep/SuccessScreen.tsx:117
 msgid "Need to reschedule? Contact us at least 24 hours in advance"
 msgstr "Need to reschedule? Contact us at least 24 hours in advance"
 
-#: components/BookingStep/PaymentMethods.tsx:79
+#: components/BookingStep/PaymentMethods.tsx:90
 msgid "No service selected. Please go back and select a service."
 msgstr "No service selected. Please go back and select a service."
+
+#. js-lingui-explicit-id
+#: components/Payment/MercadoPagoWebForm/MercadoPagoWebForm.tsx:205
+msgid "payment.processingError"
+msgstr "Ocurrió un error al procesar el pago. Por favor inténtalo de nuevo."
 
 #: app/admin/dashboard.tsx:171
 msgid "Overview"
 msgstr "Overview"
 
+#: components/Payment/MercadoPagoWebForm/MercadoPagoWebForm.tsx:173
+msgid "Pago con Tarjeta"
+msgstr "Pay with Card"
+
+#. js-lingui-explicit-id
+#: components/Payment/MercadoPagoWebForm/MercadoPagoWebForm.tsx:199
+msgid "payment.paymentProcessed"
+msgstr "Payment processed successfully"
+
 #: app/admin/dashboard.tsx:276
-#: components/ServiceSelection.tsx:94
+#: components/ServiceSelection.tsx:55
 msgid "Paid"
 msgstr "Paid"
 
@@ -253,7 +368,7 @@ msgstr "Paid"
 #~ msgid "Pay"
 #~ msgstr "Pay"
 
-#: components/BookingStep/PaymentMethods.tsx:108
+#: components/BookingStep/PaymentMethods.tsx:118
 msgid "Payment Information"
 msgstr "Payment Information"
 
@@ -262,10 +377,10 @@ msgid "Pending"
 msgstr "Pending"
 
 #: components/BookingStep/PersonalInfoForm.tsx:85
-msgid "Personal Information"
-msgstr "Personal Information"
+#~ msgid "Personal Information"
+#~ msgstr "Personal Information"
 
-#: components/BookingStep/PersonalInfoForm.tsx:162
+#: components/BookingStep/PersonalInfoForm.tsx:149
 msgid "Phone"
 msgstr "Phone"
 
@@ -273,31 +388,36 @@ msgstr "Phone"
 #~ msgid "Price"
 #~ msgstr "Price"
 
-#: components/BookingStep/PaymentMethods.tsx:144
+#. js-lingui-explicit-id
+#: components/Payment/MercadoPagoWebForm/MercadoPagoWebForm.tsx:383
+msgid "form.processing"
+msgstr "Processing..."
+
+#: components/BookingStep/PaymentMethods.tsx:154
 msgid "Processing your payment..."
 msgstr "Processing your payment..."
 
-#: components/BookingStep/PersonalInfoForm.tsx:230
+#: components/BookingStep/PersonalInfoForm.tsx:217
 msgid "Processing..."
 msgstr "Processing..."
 
 #: components/BookingStep/SuccessScreen.tsx:145
-msgid "Return to Home"
-msgstr "Return to Home"
+#~ msgid "Return to Home"
+#~ msgstr "Return to Home"
 
 #: app/admin/dashboard.tsx:86
 msgid "Revenue"
 msgstr "Revenue"
 
-#: components/ServiceSelection.tsx:62
+#: components/ServiceSelection.tsx:24
 msgid "Select a Service"
 msgstr "Select a Service"
 
-#: components/ServiceSelection.tsx:138
+#: components/ServiceSelection.tsx:97
 msgid "Select a service to continue booking"
 msgstr "Select a service to continue booking"
 
-#: components/BookingStep/PersonalInfoForm.tsx:264
+#: components/BookingStep/PersonalInfoForm.tsx:251
 msgid "Select Country"
 msgstr "Select Country"
 
@@ -305,12 +425,12 @@ msgstr "Select Country"
 msgid "Select Date & Time"
 msgstr "Select Date & Time"
 
-#: app/index.tsx:146
+#: app/index.tsx:114
 msgid "Select Service"
 msgstr "Select Service"
 
-#: components/BookingStep/PersonalInfoForm.tsx:214
-#: components/BookingStep/SuccessScreen.tsx:74
+#: components/BookingStep/PersonalInfoForm.tsx:201
+#: components/BookingStep/SuccessScreen.tsx:72
 msgid "Service"
 msgstr "Service"
 
@@ -318,7 +438,7 @@ msgstr "Service"
 msgid "Service Management"
 msgstr "Service Management"
 
-#: components/BookingStep/ErrorScreen.tsx:50
+#: components/BookingStep/ErrorScreen.tsx:84
 msgid "Service:"
 msgstr "Service:"
 
@@ -330,7 +450,7 @@ msgstr "Services"
 msgid "Settings"
 msgstr "Settings"
 
-#: components/BookingStep/ErrorScreen.tsx:82
+#: components/BookingStep/ErrorScreen.tsx:124
 msgid "Start Over"
 msgstr "Start Over"
 
@@ -352,11 +472,15 @@ msgstr "System (Light)"
 msgid "System Settings"
 msgstr "System Settings"
 
-#: components/BookingStep/ErrorScreen.tsx:58
+#: components/BookingStep/ErrorScreen.tsx:92
 msgid "Time:"
 msgstr "Time:"
 
-#: components/BookingStep/SuccessScreen.tsx:82
+#: components/Payment/MercadoPagoWebForm/MercadoPagoWebForm.tsx:328
+#~ msgid "Tipo de documento"
+#~ msgstr "Tipo de documento"
+
+#: components/BookingStep/SuccessScreen.tsx:80
 msgid "Total"
 msgstr "Total"
 
@@ -364,11 +488,11 @@ msgstr "Total"
 msgid "Total Appointments"
 msgstr "Total Appointments"
 
-#: components/BookingStep/ErrorScreen.tsx:77
+#: components/BookingStep/ErrorScreen.tsx:116
 msgid "Try Again"
 msgstr "Try Again"
 
-#: components/BookingStep/ErrorScreen.tsx:69
+#: components/BookingStep/ErrorScreen.tsx:104
 msgid "Try selecting a different time slot"
 msgstr "Try selecting a different time slot"
 
@@ -376,35 +500,40 @@ msgstr "Try selecting a different time slot"
 msgid "Upcoming Appointments"
 msgstr "Upcoming Appointments"
 
+#. js-lingui-explicit-id
+#: components/Payment/MercadoPagoWebForm/MercadoPagoWebForm.tsx:276
+msgid "form.useCustomerData"
+msgstr "Use customer data"
+
 #: app/admin/dashboard.tsx:110
 msgid "View All Appointments"
 msgstr "View All Appointments"
 
-#: components/BookingStep/SuccessScreen.tsx:113
+#: components/BookingStep/SuccessScreen.tsx:111
 msgid "We'll send a reminder 24 hours before your appointment"
 msgstr "We'll send a reminder 24 hours before your appointment"
 
-#: components/BookingStep/ErrorScreen.tsx:38
+#: components/BookingStep/ErrorScreen.tsx:71
 msgid "We're sorry, but there was an issue processing your booking. This could be due to a payment problem or a technical error."
 msgstr "We're sorry, but there was an issue processing your booking. This could be due to a payment problem or a technical error."
 
-#: components/BookingStep/ErrorScreen.tsx:66
+#: components/BookingStep/ErrorScreen.tsx:100
 msgid "What You Can Do:"
 msgstr "What You Can Do:"
 
-#: components/BookingStep/SuccessScreen.tsx:100
+#: components/BookingStep/SuccessScreen.tsx:98
 msgid "What's Next?"
 msgstr "What's Next?"
 
-#: components/BookingStep/SuccessScreen.tsx:107
+#: components/BookingStep/SuccessScreen.tsx:105
 msgid "You'll receive a calendar invite shortly"
 msgstr "You'll receive a calendar invite shortly"
 
-#: components/BookingStep/PersonalInfoForm.tsx:243
+#: components/BookingStep/PersonalInfoForm.tsx:230
 msgid "You'll receive a confirmation email"
 msgstr "You'll receive a confirmation email"
 
-#: app/index.tsx:178
+#: app/index.tsx:146
 msgid "Your Details"
 msgstr "Your Details"
 
@@ -413,6 +542,6 @@ msgstr "Your Details"
 msgid "Your Event: {0}"
 msgstr "Your Event: {0}"
 
-#: components/BookingStep/ErrorScreen.tsx:71
+#: components/BookingStep/ErrorScreen.tsx:106
 msgid "Your time slot is still available for the next 10 minutes"
 msgstr "Your time slot is still available for the next 10 minutes"

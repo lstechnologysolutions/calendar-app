@@ -255,7 +255,6 @@ const BookingForm = ({
             selectedService={service}
             selectedDateTime={selectedDateTime}
             onBookAnother={onBookAnother}
-            onReturnHome={onReturnHome}
           />
         )}
         {currentStep === 4 && selectedDateTime && (

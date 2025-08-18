@@ -15,7 +15,7 @@ export type PaymentStatus = 'idle' | 'loading' | 'processing' | 'success' | 'err
  * Simplified payment status used in web forms.
  * Maps to the core PaymentStatus but with fewer states for simpler UI handling.
  */
-export type WebPaymentStatus = 'idle' | 'loading' | 'success' | 'error';
+export type WebPaymentStatus = 'idle' | 'loading' | 'processing' | 'success' | 'error';
 
 /**
  * Represents which field in the card form is currently focused.
