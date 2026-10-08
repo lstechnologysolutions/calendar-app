@@ -1,7 +1,7 @@
 {
   "name": "calendar-app",
   "main": "expo-router/entry",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "scripts": {
     "start": "expo start",
     "reset-project": "node ./scripts/reset-project.js",
@@ -14,7 +14,13 @@
     "test": "jest --watchAll",
     "extract": "npx lingui extract",
     "compile": "npx lingui compile",
-    "lint": "expo lint"
+    "lint": "expo lint",
+    "release:secrets": "versioning check-secrets",
+    "release:readme": "versioning update-readme",
+    "release:changelog": "versioning check-changelog",
+    "release:guard": "node scripts/check-release-readme.js",
+    "release:verify": "npm run release:changelog && npm run release:guard",
+    "release:patch": "npm run release:secrets && versioning patch --no-tag --no-commit && npm run release:readme && npm run release:verify"
   },
   "jest": {
     "preset": "jest-expo"
@@ -83,6 +89,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
+    "@edcalderon/versioning": "^1.5.13",
     "@lingui/babel-preset-react": "^2.9.2",
     "@lingui/cli": "^5.4.0",
     "@types/jest": "^29.5.12",

@@ -51,6 +51,14 @@ export const SERVICES: Service[] = [
         price: getServicePrice('1'),
         type: 'free',
     },
+    {
+        id: '5',
+        name: 'Extended Double Session + Bonus Time',
+        description: 'An extended double session with bonus time included',
+        duration: '120 min + bonus time',
+        price: getServicePrice('5') || 180,
+        type: 'paid',
+    },
 ];
 
 export const DEFAULT_SERVICE: Service = SERVICES.find(service => service.id === "1")!;

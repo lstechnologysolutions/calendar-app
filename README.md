@@ -10,6 +10,19 @@ A modern calendar application built with React Native and Expo that integrates w
 - Responsive design that works on mobile and web
 - Easy booking flow with confirmation
 
+## 📋 Latest Changes (v1.1.1)
+
+### Added
+
+- Added the Extended Double Session + Bonus Time service to the sellable calendar catalog at USD 180.
+- Added the guarded `@edcalderon/versioning` patch release flow with changelog, README, release, and secret checks.
+
+For full version history, see [CHANGELOG.md](./CHANGELOG.md) and [GitHub releases](https://github.com/lstechnologysolutions/calendar-app/releases)
+
+## Services for Sale
+
+- Extended Double Session + Bonus Time — USD 180
+
 ## Prerequisites
 
 - Node.js 16+ and npm
@@ -77,6 +90,17 @@ calendar-app/
 - `npm run web` - Run in web browser
 - `npm test` - Run tests
 - `npm run lint` - Run ESLint
+- `npm run release:patch` - Run the guarded patch release flow (secret scan, version bump, changelog, README, and release checks)
+
+### Release flow
+
+Install dependencies, stage the intended changes, then run:
+
+```bash
+npm run release:patch
+```
+
+The flow uses `@edcalderon/versioning` to bump the patch version without creating a tag or commit. It then updates the README from the generated changelog and verifies the changelog entry and README release marker. Create the tag and commit only after reviewing the generated files.
 
 ## Configuration
 
@@ -86,7 +110,7 @@ Create a `.env` file in the root directory with the following variables:
 
 ```env
 # Firebase Configuration
-EXPO_PUBLIC_FIREBASE_API_KEY=your_api_key
+EXPO_PUBLIC_FIREBASE_API_KEY=YOUR_FIREBASE_API_KEY
 EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN=your_project_id.firebaseapp.com
 EXPO_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
 EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET=your_project_id.appspot.com

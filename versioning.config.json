@@ -1,0 +1,21 @@
+{
+  "rootPackageJson": "package.json",
+  "packages": [],
+  "changelogFile": "CHANGELOG.md",
+  "conventionalCommits": true,
+  "syncDependencies": false,
+  "releaseGuard": {
+    "enabled": true,
+    "tagPrefix": "v",
+    "allowBuildMetadata": true,
+    "checkReleaseFloor": true
+  },
+  "extensionConfig": {
+    "secrets-check": {
+      "enabled": true
+    },
+    "readme-maintainer": {
+      "repositoryUrl": "https://github.com/lstechnologysolutions/calendar-app"
+    }
+  }
+}
